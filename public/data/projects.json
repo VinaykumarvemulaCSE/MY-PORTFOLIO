@@ -1,1 +1,23 @@
-[]
+[
+  {
+    "id": "project-1774464605845",
+    "title": "BLOOD-LINE",
+    "description": "Blood-Line is a full-stack web application designed to streamline blood donation and request workflows by connecting donors and recipients in real time.\n\nThe platform implements a dual-dashboard system:\n\nReceiver Dashboard enables users to create and manage urgent blood requests with live status tracking.\nDonor Dashboard allows registered donors to discover nearby requests and respond efficiently.\n\nCore system features include:\n\nSecure user authentication and profile management\nReal-time blood request creation and updates using Firestore\nStructured data modeling for donors, receivers, and request lifecycle\nPayment gateway integration (Razorpay test mode) to simulate transaction flows\nResponsive UI optimized for accessibility and clarity\n\nThe project emphasizes real-world usability, focusing on reducing friction in emergency scenarios while maintaining scalable architecture and clean UI design.",
+    "tech": [
+      "React",
+      "Tailwind",
+      "Vercel",
+      "Javascript",
+      "GitHub",
+      "Firebase"
+    ],
+    "live": true,
+    "liveLink": "https://blood-line-2007.vercel.app",
+    "githubLink": "https://github.com/VinaykumarvemulaCSE/BLOOD-LINE",
+    "status": "Live",
+    "coverImage": "/projects/project-1774464605845/Screenshot_2026-03-26_000730.png",
+    "gallery": [],
+    "createdAt": "2026-03-25T18:50:06.967Z",
+    "updatedAt": "2026-03-25T18:50:06.967Z"
+  }
+]
