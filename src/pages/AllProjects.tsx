@@ -139,21 +139,7 @@ export default function AllProjects() {
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
                   <div className="relative flex-1 flex flex-col p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      {!project.coverImage && <FiFolder className="text-primary" size={26} />}
-                      <div className="flex gap-2 ml-auto" onClick={(e) => e.stopPropagation()}>
-                        {project.githubLink && (
-                          <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors z-10">
-                            <FiGithub size={18} />
-                          </a>
-                        )}
-                        {project.liveLink && (
-                          <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors z-10">
-                            <FiExternalLink size={18} />
-                          </a>
-                        )}
-                      </div>
-                    </div>
+                    {!project.coverImage && <div className="mb-4"><FiFolder className="text-primary" size={26} /></div>}
 
                     <h3 className="font-heading font-semibold text-foreground mb-2 text-lg group-hover:text-primary transition-colors">{project.title}</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1 line-clamp-3">{project.description}</p>
@@ -173,6 +159,22 @@ export default function AllProjects() {
                         </span>
                       )}
                     </div>
+
+                    {/* Action Buttons */}
+                    {(project.liveLink || project.githubLink) && (
+                      <div className="flex gap-3 mt-5 pt-5 border-t border-border/40 w-full" onClick={(e) => e.stopPropagation()}>
+                        {project.liveLink && (
+                          <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 py-2 rounded-lg text-sm font-bold transition-all z-10 shadow-lg shadow-primary/20">
+                            <FiExternalLink size={16} /> Live Demo
+                          </a>
+                        )}
+                        {project.githubLink && (
+                          <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className={`flex items-center justify-center gap-2 bg-secondary/30 hover:bg-secondary border border-border/50 text-foreground py-2 px-3 rounded-lg text-sm font-semibold transition-colors z-10 ${!project.liveLink ? 'flex-1' : ''}`}>
+                            <FiGithub size={16} /> {project.liveLink ? '' : 'GitHub'}
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </motion.article>
               );
