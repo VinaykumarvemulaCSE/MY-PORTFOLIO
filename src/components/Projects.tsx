@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { FiGithub, FiExternalLink, FiFolder, FiArrowRight } from "react-icons/fi";
+import { FiGithub, FiExternalLink, FiFolder, FiArrowRight, FiX, FiChevronLeft, FiChevronRight, FiImage } from "react-icons/fi";
 import useEmblaCarousel from "embla-carousel-react";
 
 interface Project {
@@ -15,6 +15,7 @@ interface Project {
   githubLink?: string;
   status: string;
   coverImage?: string;
+  gallery?: string[];
 }
 
 export default function Projects() {
@@ -27,6 +28,50 @@ export default function Projects() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [galleryIndex, setGalleryIndex] = useState(0);
+
+  // Build the full images list for a project (cover + gallery)
+  const getImages = (p: Project) => {
+    const imgs: string[] = [];
+    if (p.coverImage) imgs.push(p.coverImage);
+    (p.gallery || []).forEach((g) => imgs.push(g));
+    return imgs;
+  };
+
+  const openProject = (p: Project) => {
+    setSelectedProject(p);
+    setGalleryIndex(0);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeProject = useCallback(() => {
+    setSelectedProject(null);
+    document.body.style.overflow = "";
+  }, []);
+
+  const prev = () => {
+    if (!selectedProject) return;
+    const imgs = getImages(selectedProject);
+    setGalleryIndex((i) => (i - 1 + imgs.length) % imgs.length);
+  };
+
+  const next = () => {
+    if (!selectedProject) return;
+    const imgs = getImages(selectedProject);
+    setGalleryIndex((i) => (i + 1) % imgs.length);
+  };
+
+  // Close lightbox on initial layout or Escape/Arrow key press
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeProject();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [selectedProject, closeProject]);
 
   useEffect(() => {
     // Fetch from static JSON — served directly by Vite/Vercel, no backend needed
@@ -102,7 +147,8 @@ export default function Projects() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={isVisible ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: 0.08 * (i + 1), duration: 0.45 }}
-                  className="flex-[0_0_85%] md:flex-[0_0_44%] lg:flex-[0_0_31%] min-w-0 rounded-2xl glass border border-border/50 hover:border-primary/30 flex flex-col group relative overflow-hidden card-hover"
+                  className="flex-[0_0_85%] md:flex-[0_0_44%] lg:flex-[0_0_31%] min-w-0 rounded-2xl glass border border-border/50 hover:border-primary/30 flex flex-col group relative overflow-hidden card-hover cursor-pointer"
+                  onClick={() => openProject(project)}
                 >
                   {/* Screenshot */}
                   {project.coverImage ? (
@@ -113,6 +159,12 @@ export default function Projects() {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none" />
+                      {/* Gallery count badge */}
+                      {getImages(project).length > 1 && (
+                        <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded-full">
+                          <FiImage size={10} /> {getImages(project).length}
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="w-full h-20 bg-secondary/30 flex items-center justify-center">
@@ -177,6 +229,101 @@ export default function Projects() {
           </div>
         )}
       </div>
+
+      {/* Lightbox Modal */}
+      <AnimatePresence>
+        {selectedProject && (() => {
+          const images = getImages(selectedProject);
+          return (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-sm"
+              onClick={closeProject}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 md:p-6 border-b border-border/40 shrink-0" onClick={(e) => e.stopPropagation()}>
+                <div>
+                  <h2 className="text-xl font-heading font-bold">{selectedProject.title}</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {images.length > 1 ? `${galleryIndex + 1} / ${images.length} screenshots` : "1 screenshot"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {selectedProject.githubLink && (
+                    <a href={selectedProject.githubLink} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" onClick={(e) => e.stopPropagation()}>
+                      <FiGithub size={20} />
+                    </a>
+                  )}
+                  {selectedProject.liveLink && (
+                    <a href={selectedProject.liveLink} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" onClick={(e) => e.stopPropagation()}>
+                      <FiExternalLink size={20} />
+                    </a>
+                  )}
+                  <button onClick={closeProject} className="p-2 rounded-lg hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
+                    <FiX size={20} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Main image */}
+              <div className="flex-1 flex items-center justify-center relative overflow-hidden p-4" onClick={(e) => e.stopPropagation()}>
+                {images.length > 0 ? (
+                  <motion.img
+                    key={galleryIndex}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    src={images[galleryIndex]}
+                    alt={`${selectedProject.title} screenshot ${galleryIndex + 1}`}
+                    className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                  />
+                ) : (
+                  <div className="text-muted-foreground">No screenshots available</div>
+                )}
+
+                {images.length > 1 && (
+                  <>
+                    <button onClick={prev} className="absolute left-4 p-3 rounded-full bg-background/80 border border-border/50 hover:border-primary/40 text-foreground hover:text-primary transition-all shadow-lg">
+                      <FiChevronLeft size={22} />
+                    </button>
+                    <button onClick={next} className="absolute right-4 p-3 rounded-full bg-background/80 border border-border/50 hover:border-primary/40 text-foreground hover:text-primary transition-all shadow-lg">
+                      <FiChevronRight size={22} />
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {/* Thumbnail strip */}
+              {images.length > 1 && (
+                <div className="shrink-0 flex gap-2 p-4 overflow-x-auto border-t border-border/40 justify-center" onClick={(e) => e.stopPropagation()}>
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setGalleryIndex(i)}
+                      className={`w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition-all ${i === galleryIndex ? "border-primary scale-105" : "border-border/40 opacity-60 hover:opacity-100"}`}
+                    >
+                      <img src={img} alt={`thumb-${i}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Description strip */}
+              <div className="shrink-0 px-6 py-4 border-t border-border/40" onClick={(e) => e.stopPropagation()}>
+                <p className="text-sm text-muted-foreground line-clamp-2 max-w-3xl mx-auto text-center">{selectedProject.description}</p>
+                <div className="flex flex-wrap gap-1.5 justify-center mt-2">
+                  {(selectedProject.tech || []).map((t) => (
+                    <span key={t} className="text-[10px] uppercase font-mono px-2 py-0.5 rounded border border-border/50 bg-secondary/30 text-muted-foreground">{t}</span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })()}
+      </AnimatePresence>
     </section>
   );
 }
