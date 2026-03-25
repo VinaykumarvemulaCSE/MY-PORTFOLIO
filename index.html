@@ -9,6 +9,14 @@
     <meta property="og:title" content="Vinay Kumar Vemula — Portfolio" />
     <meta property="og:description" content="Computer Science student learning modern web development and building scalable applications." />
     <meta property="og:type" content="website" />
+    <script>
+      const theme = localStorage.getItem('theme');
+      if (theme === 'dark' || !theme) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    </script>
   </head>
 
   <body>
