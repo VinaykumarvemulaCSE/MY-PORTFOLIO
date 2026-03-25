@@ -142,7 +142,7 @@ export default function AllProjects() {
                     {!project.coverImage && <div className="mb-4"><FiFolder className="text-primary" size={26} /></div>}
 
                     <h3 className="font-heading font-semibold text-foreground mb-2 text-lg group-hover:text-primary transition-colors">{project.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-5 line-clamp-3">{project.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-6 line-clamp-3 break-words">{project.description}</p>
 
                     <div className="flex items-center justify-between mt-auto gap-2">
                       <div className="flex flex-wrap gap-1.5">
@@ -266,7 +266,7 @@ export default function AllProjects() {
 
               {/* Description strip */}
               <div className="shrink-0 px-6 py-4 border-t border-border/40" onClick={(e) => e.stopPropagation()}>
-                <p className="text-sm text-muted-foreground line-clamp-2 max-w-3xl mx-auto text-center">{selectedProject.description}</p>
+                <p className="text-sm text-muted-foreground line-clamp-2 max-w-3xl mx-auto text-center break-words">{selectedProject.description}</p>
                 <div className="flex flex-wrap gap-1.5 justify-center mt-2">
                   {(selectedProject.tech || []).map((t) => (
                     <span key={t} className="text-[10px] uppercase font-mono px-2 py-0.5 rounded border border-border/50 bg-secondary/30 text-muted-foreground">{t}</span>
