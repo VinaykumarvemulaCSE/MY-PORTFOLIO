@@ -142,7 +142,7 @@ export default function AllProjects() {
                     {!project.coverImage && <div className="mb-4"><FiFolder className="text-primary" size={26} /></div>}
 
                     <h3 className="font-heading font-semibold text-foreground mb-2 text-lg group-hover:text-primary transition-colors">{project.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1 line-clamp-3">{project.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-5 line-clamp-3">{project.description}</p>
 
                     <div className="flex items-center justify-between mt-auto gap-2">
                       <div className="flex flex-wrap gap-1.5">

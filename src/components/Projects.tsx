@@ -129,7 +129,7 @@ export default function Projects() {
                     <h3 className="font-heading font-semibold text-foreground mb-2 text-lg group-hover:text-primary transition-colors">
                       {project.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed mb-5 flex-1 line-clamp-3">
+                    <p className="text-sm text-muted-foreground leading-relaxed mb-5 line-clamp-3">
                       {project.description}
                     </p>
 
