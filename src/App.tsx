@@ -8,6 +8,8 @@ import { HelmetProvider } from "react-helmet-async";
 
 const Index = lazy(() => import("./pages/Index.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Admin = lazy(() => import("./pages/Admin.tsx"));
+const AllProjects = lazy(() => import("./pages/AllProjects.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,8 @@ const App = () => (
           <Suspense fallback={<div className="flex items-center justify-center h-screen w-full">Loading...</div>}>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/projects" element={<AllProjects />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -1,4 +1,5 @@
 import { FiGithub, FiLinkedin, FiMail, FiHeart, FiArrowUp } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const links = [
@@ -6,7 +7,6 @@ const links = [
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
-  { label: "Dashboard", href: "#dashboard" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -14,6 +14,7 @@ const socials = [
   { icon: FiGithub, href: "https://github.com/VinaykumarvemulaCSE", label: "GitHub" },
   { icon: FiLinkedin, href: "https://www.linkedin.com/in/vinay-kumar-vemula-220056382?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", label: "LinkedIn" },
   { icon: FiMail, href: "mailto:kumarvinay072007@gmail.com", label: "Email" },
+  { icon: FaWhatsapp, href: "https://wa.me/8019551015", label: "WhatsApp" },
 ];
 
 export default function Footer() {

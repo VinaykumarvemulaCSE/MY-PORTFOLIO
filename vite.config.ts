@@ -11,6 +11,14 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    proxy: {
+      // In local dev, proxy /api/* to Vercel dev server on port 3000
+      // Run `vercel dev` on port 3000 alongside `vite` to use the API locally
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {

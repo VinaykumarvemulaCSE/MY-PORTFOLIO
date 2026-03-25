@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useForm } from "react-hook-form";
 import { FiGithub, FiLinkedin, FiMail, FiSend, FiArrowUpRight } from "react-icons/fi";
+import { FaWhatsapp } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -52,6 +53,7 @@ const onSubmit = async (data: ContactForm) => {
     { icon: FiGithub, label: "GitHub", href: "https://github.com/VinaykumarvemulaCSE", handle: "@VinaykumarvemulaCSE" },
     { icon: FiLinkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/vinay-kumar-vemula-220056382?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", handle: "VEMULA VINAY KUMAR" },
     { icon: FiMail, label: "Email", href: "mailto:kumarvinay072007@gmail.com", handle: "kumarvinay072007@gmail.com" },
+    { icon: FaWhatsapp, label: "WhatsApp", href: "https://wa.me/8019551015", handle: "8019551015" },
   ];
 
   return (
