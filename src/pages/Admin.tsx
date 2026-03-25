@@ -139,33 +139,65 @@ export default function Admin() {
     if (!title.trim()) return toast.error("Title is required");
     setIsSaving(true);
 
-    try {
-      let imageBase64: string | undefined;
-      let imageFilename: string | undefined;
-      let imageMime: string | undefined;
+    const id = isEditing || `project-${Date.now()}`;
 
+    try {
+      let coverImageUrl = isEditing ? previewImage : "";
       if (imageFile) {
-        toast.loading("Encoding image…", { id: "img" });
-        imageBase64 = await fileToBase64(imageFile);
-        imageFilename = imageFile.name.replace(/\s+/g, "_");
-        imageMime = imageFile.type;
+        toast.loading("Uploading cover image (1/1)...", { id: "img" });
+        const b64 = await fileToBase64(imageFile);
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "upload_image",
+            projectId: isEditing ?? id,
+            imageBase64: b64,
+            imageMime: imageFile.type,
+            imageFilename: imageFile.name.replace(/\s+/g, "_"),
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to upload cover");
+        coverImageUrl = data.url;
         toast.dismiss("img");
       }
 
-      // Encode gallery images
-      const galleryPayload: { base64: string; filename: string; mime: string }[] = [];
+      // 2) Upload gallery images sequentially
+      const newGalleryUrls: string[] = [];
+      let currentGalleryIdx = 1;
       for (const f of galleryFiles) {
+        toast.loading(`Uploading gallery image (${currentGalleryIdx}/${galleryFiles.length})...`, { id: "gal" });
         const b64 = await fileToBase64(f);
-        galleryPayload.push({ base64: b64, filename: f.name.replace(/\s+/g, "_"), mime: f.type });
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "upload_image",
+            projectId: isEditing ?? id,
+            imageBase64: b64,
+            imageMime: f.type,
+            imageFilename: `gallery/${f.name.replace(/\s+/g, "_")}`,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `Failed to upload gallery image ${currentGalleryIdx}`);
+        newGalleryUrls.push(data.url);
+        currentGalleryIdx++;
       }
+      toast.dismiss("gal");
 
-      toast.loading("Committing to GitHub…", { id: "commit" });
+      // Combine existing gallery with newly uploaded ones
+      const finalGallery = [...existingGallery, ...newGalleryUrls];
+
+      toast.loading("Committing project metadata to GitHub…", { id: "commit" });
 
       const payload = {
-        id: isEditing ?? undefined,
+        action: "save_project",
+        id: isEditing ?? id,
         title, description, tech, live, liveLink, githubLink, status,
-        ...(imageBase64 ? { imageBase64, imageFilename, imageMime } : {}),
-        ...(galleryPayload.length > 0 ? { gallery: galleryPayload } : {}),
+        coverImage: coverImageUrl,
+        gallery: finalGallery,
       };
 
       const res = await fetch(API_URL, {
@@ -296,7 +328,7 @@ export default function Admin() {
                           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                             <FiUploadCloud size={22} />
                           </div>
-                          <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Click to upload cover</span><br />PNG, JPG, WebP — max 5 MB</p>
+                          <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Click to upload cover</span><br />PNG, JPG, WebP</p>
                         </>
                       )}
                       <input id="img-upload" type="file" accept="image/*" className="hidden"

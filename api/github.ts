@@ -72,73 +72,51 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // ---------- POST: create / update ----------
     if (req.method === "POST") {
-      const body = req.body as {
-        id?: string;
-        title: string;
-        description: string;
-        tech: string[];
-        live: boolean;
-        liveLink?: string;
-        githubLink?: string;
-        status: string;
-        imageBase64?: string;
-        imageMime?: string;
-        imageFilename?: string;
-        gallery?: { base64: string; filename: string; mime: string }[];
-      };
+      const body = req.body as any;
 
-      const id = body.id || `project-${Date.now()}`;
-
-      // Upload cover image if provided
-      let coverImage = "";
-      if (body.imageBase64 && body.imageFilename) {
-        coverImage = await uploadImage(body.imageBase64, body.imageMime || "image/png", id, body.imageFilename);
+      // Single image upload route
+      if (body.action === "upload_image") {
+        const url = await uploadImage(body.imageBase64, body.imageMime || "image/png", body.projectId, body.imageFilename);
+        return res.status(200).json({ success: true, url });
       }
 
-      // Upload gallery images if provided
-      const galleryUrls: string[] = [];
-      if (body.gallery && body.gallery.length > 0) {
-        for (const img of body.gallery) {
-          const url = await uploadImage(img.base64, img.mime || "image/png", id, `gallery/${img.filename}`);
-          galleryUrls.push(url);
+      // Project saving route
+      if (body.action === "save_project") {
+        const id = body.id;
+        const file = await getFile(DATA_PATH);
+        let projects: any[] = file ? JSON.parse(file.content) : [];
+
+        const isUpdate = projects.findIndex((p: any) => p.id === id);
+        const newProject = {
+          id,
+          title: body.title,
+          description: body.description,
+          tech: body.tech,
+          live: body.live,
+          liveLink: body.liveLink || "",
+          githubLink: body.githubLink || "",
+          status: body.status,
+          coverImage: body.coverImage || (isUpdate !== -1 ? projects[isUpdate].coverImage : ""),
+          gallery: body.gallery || (isUpdate !== -1 ? projects[isUpdate].gallery : []),
+          createdAt: isUpdate !== -1 ? projects[isUpdate].createdAt : new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        if (isUpdate !== -1) {
+          projects[isUpdate] = newProject;
+        } else {
+          projects.unshift(newProject);
         }
+
+        await commitFile(
+          DATA_PATH,
+          JSON.stringify(projects, null, 2),
+          `feat: ${isUpdate !== -1 ? "update" : "add"} project "${body.title}"`,
+          file?.sha
+        );
+
+        return res.status(200).json({ success: true, project: newProject });
       }
-
-      const file = await getFile(DATA_PATH);
-      let projects: any[] = file ? JSON.parse(file.content) : [];
-
-      const isUpdate = projects.findIndex((p: any) => p.id === id);
-      const newProject = {
-        id,
-        title: body.title,
-        description: body.description,
-        tech: body.tech,
-        live: body.live,
-        liveLink: body.liveLink || "",
-        githubLink: body.githubLink || "",
-        status: body.status,
-        coverImage: coverImage || (isUpdate !== -1 ? projects[isUpdate].coverImage : ""),
-        gallery: galleryUrls.length > 0 ? galleryUrls : (isUpdate !== -1 ? projects[isUpdate].gallery : []),
-        createdAt: isUpdate !== -1 ? projects[isUpdate].createdAt : new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      if (isUpdate !== -1) {
-        // Update in place
-        projects[isUpdate] = newProject;
-      } else {
-        // FILO: newest first
-        projects.unshift(newProject);
-      }
-
-      await commitFile(
-        DATA_PATH,
-        JSON.stringify(projects, null, 2),
-        `feat: ${isUpdate !== -1 ? "update" : "add"} project "${body.title}"`,
-        file?.sha
-      );
-
-      return res.status(200).json({ success: true, project: newProject });
     }
 
     // ---------- DELETE ----------
