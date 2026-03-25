@@ -84,14 +84,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         imageBase64?: string;
         imageMime?: string;
         imageFilename?: string;
+        gallery?: { base64: string; filename: string; mime: string }[];
       };
 
       const id = body.id || `project-${Date.now()}`;
 
-      // Upload image if provided
+      // Upload cover image if provided
       let coverImage = "";
       if (body.imageBase64 && body.imageFilename) {
         coverImage = await uploadImage(body.imageBase64, body.imageMime || "image/png", id, body.imageFilename);
+      }
+
+      // Upload gallery images if provided
+      const galleryUrls: string[] = [];
+      if (body.gallery && body.gallery.length > 0) {
+        for (const img of body.gallery) {
+          const url = await uploadImage(img.base64, img.mime || "image/png", id, `gallery/${img.filename}`);
+          galleryUrls.push(url);
+        }
       }
 
       const file = await getFile(DATA_PATH);
@@ -108,7 +118,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         githubLink: body.githubLink || "",
         status: body.status,
         coverImage: coverImage || (isUpdate !== -1 ? projects[isUpdate].coverImage : ""),
-        gallery: [],
+        gallery: galleryUrls.length > 0 ? galleryUrls : (isUpdate !== -1 ? projects[isUpdate].gallery : []),
         createdAt: isUpdate !== -1 ? projects[isUpdate].createdAt : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

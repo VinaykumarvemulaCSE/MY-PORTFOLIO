@@ -23,6 +23,7 @@ interface Project {
   githubLink: string;
   status: "Live" | "In Progress" | "Coming Soon";
   coverImage: string;
+  gallery: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -47,6 +48,10 @@ export default function Admin() {
   const [live, setLive] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState("");
+  // Gallery: files selected but not yet uploaded
+  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
+  // Gallery: existing URLs (when editing a project that already has a gallery)
+  const [existingGallery, setExistingGallery] = useState<string[]>([]);
 
   const loadProjects = useCallback(async () => {
     setIsLoading(true);
@@ -83,7 +88,8 @@ export default function Admin() {
   const resetForm = () => {
     setTitle(""); setDescription(""); setStatus("Live"); setTech([]);
     setTechInput(""); setLiveLink(""); setGithubLink(""); setLive(false);
-    setImageFile(null); setPreviewImage(""); setIsEditing(null);
+    setImageFile(null); setPreviewImage(""); setGalleryFiles([]); setExistingGallery([]);
+    setIsEditing(null);
   };
 
   const handleEdit = (p: Project) => {
@@ -92,6 +98,7 @@ export default function Admin() {
     setTech(p.tech || []); setLiveLink(p.liveLink || "");
     setGithubLink(p.githubLink || ""); setLive(p.live);
     setImageFile(null); setPreviewImage(p.coverImage || "");
+    setGalleryFiles([]); setExistingGallery(p.gallery || []);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -145,12 +152,20 @@ export default function Admin() {
         toast.dismiss("img");
       }
 
+      // Encode gallery images
+      const galleryPayload: { base64: string; filename: string; mime: string }[] = [];
+      for (const f of galleryFiles) {
+        const b64 = await fileToBase64(f);
+        galleryPayload.push({ base64: b64, filename: f.name.replace(/\s+/g, "_"), mime: f.type });
+      }
+
       toast.loading("Committing to GitHub…", { id: "commit" });
 
       const payload = {
         id: isEditing ?? undefined,
         title, description, tech, live, liveLink, githubLink, status,
         ...(imageBase64 ? { imageBase64, imageFilename, imageMime } : {}),
+        ...(galleryPayload.length > 0 ? { gallery: galleryPayload } : {}),
       };
 
       const res = await fetch(API_URL, {
@@ -262,7 +277,7 @@ export default function Admin() {
 
                 {/* RIGHT */}
                 <div className="space-y-5">
-                  {/* Drag-and-drop image upload */}
+                  {/* Cover Screenshot */}
                   <div className="space-y-2">
                     <Label className="font-semibold">Cover Screenshot</Label>
                     <div
@@ -281,11 +296,62 @@ export default function Admin() {
                           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                             <FiUploadCloud size={22} />
                           </div>
-                          <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Click to upload</span><br />PNG, JPG, WebP — max 5 MB</p>
+                          <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Click to upload cover</span><br />PNG, JPG, WebP — max 5 MB</p>
                         </>
                       )}
                       <input id="img-upload" type="file" accept="image/*" className="hidden"
                         onChange={(e) => { if (e.target.files?.[0]) { setImageFile(e.target.files[0]); setPreviewImage(""); } }} />
+                    </div>
+                  </div>
+
+                  {/* Gallery Upload */}
+                  <div className="space-y-2">
+                    <Label className="font-semibold">Gallery Screenshots <span className="text-muted-foreground font-normal">(multiple)</span></Label>
+                    <div
+                      className="border-2 border-dashed border-border/50 hover:border-primary/40 transition-colors rounded-xl p-3 bg-secondary/10 cursor-pointer"
+                      onClick={() => document.getElementById("gallery-upload")?.click()}
+                    >
+                      {/* Existing saved gallery */}
+                      {existingGallery.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {existingGallery.map((url, i) => (
+                            <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden group">
+                              <img src={url} className="w-full h-full object-cover" />
+                              <button type="button"
+                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                                onClick={(e) => { e.stopPropagation(); setExistingGallery(existingGallery.filter((_, j) => j !== i)); }}>
+                                <FiX className="text-white" size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {/* New files selected */}
+                      {galleryFiles.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {galleryFiles.map((f, i) => (
+                            <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden group">
+                              <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" />
+                              <button type="button"
+                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
+                                onClick={(e) => { e.stopPropagation(); setGalleryFiles(galleryFiles.filter((_, j) => j !== i)); }}>
+                                <FiX className="text-white" size={14} />
+                              </button>
+                            </div>
+                          ))}
+                          <div className="w-16 h-16 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center text-muted-foreground">
+                            <FiUploadCloud size={18} />
+                          </div>
+                        </div>
+                      ) : (
+                        existingGallery.length === 0 && (
+                          <p className="text-sm text-muted-foreground text-center py-4">
+                            <span className="font-semibold text-foreground">Click to add gallery images</span><br/>Select multiple screenshots
+                          </p>
+                        )
+                      )}
+                      <input id="gallery-upload" type="file" accept="image/*" multiple className="hidden"
+                        onChange={(e) => { if (e.target.files) setGalleryFiles(Array.from(e.target.files)); }} />
                     </div>
                   </div>
 
