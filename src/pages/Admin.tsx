@@ -9,8 +9,8 @@ import { toast } from "sonner";
 import { FiPlus, FiEdit, FiTrash, FiLogOut, FiX, FiUploadCloud, FiRefreshCw, FiEye, FiEyeOff, FiLock, FiMail } from "react-icons/fi";
 import { TECH_ICONS, getAllTechNames } from "../constants/techIcons";
 
-const ADMIN_EMAIL = "kumarvinay072007@gmail.com";
-const ADMIN_PASS = "Vinay@123";
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD;
 
 // Relative API endpoint — works locally (via Vite proxy) and on Vercel
 const API_URL = "/api/github";
