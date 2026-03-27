@@ -1,26 +1,63 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vinay Kumar Vemula — Portfolio</title>
-    <meta name="description" content="Aspiring Full Stack Developer building modern web applications with React and TypeScript." />
-    <meta name="author" content="Vinay Kumar Vemula" />
-    <meta property="og:title" content="Vinay Kumar Vemula — Portfolio" />
-    <meta property="og:description" content="Computer Science student learning modern web development and building scalable applications." />
-    <meta property="og:type" content="website" />
-    <script>
-      const theme = localStorage.getItem('theme');
-      if (theme === 'dark' || !theme) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" href="/favicon.ico" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#f59e0b" />
+  <title>Vinay Kumar Vemula | Full Stack Developer Portfolio</title>
+  <meta name="description"
+    content="Official portfolio of Vinay Kumar Vemula — a Creative Full Stack Developer specializing in React, TypeScript, and modern web architecture." />
+  <meta name="keywords"
+    content="Vinay Kumar Vemula, Vinay Vemula, Portfolio, Full Stack Developer, React Developer, TypeScript Engineer, Software Engineer, Web Development" />
+  <meta name="author" content="Vinay Kumar Vemula" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://my-portfolio-072007.vercel.app/" />
+  <meta property="og:title" content="Vinay Kumar Vemula | Full Stack Developer" />
+  <meta property="og:description"
+    content="Explore the portfolio of Vinay Kumar Vemula, featuring innovative web projects and modern tech solutions." />
+  <meta property="og:image" content="https://my-portfolio-072007.vercel.app/" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://my-portfolio-072007.vercel.app/" />
+  <meta property="twitter:title" content="Vinay Kumar Vemula | Full Stack Developer" />
+  <meta property="twitter:description" content="Explore the projects and skills of Vinay Kumar Vemula." />
+  <meta property="twitter:image" content="https://my-portfolio-072007.vercel.app/" />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Vinay Kumar Vemula",
+        "url": "https://vinaykumarvemula-portfolio.vercel.app/",
+        "jobTitle": "Full Stack Developer",
+        "knowsAbout": ["React", "TypeScript", "Node.js", "Firebase", "Web Development"],
+        "sameAs": [
+          "https://github.com/VinaykumarvemulaCSE",
+          "https://linkedin.com/in/vinaykumarvemula"
+        ]
       }
     </script>
-  </head>
+  <script>
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark' || !theme) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+</head>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

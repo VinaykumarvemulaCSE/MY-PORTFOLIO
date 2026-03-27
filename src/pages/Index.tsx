@@ -16,8 +16,8 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Helmet>
-        <title>Portfolio | Creative Developer</title>
-        <meta name="description" content="Portfolio of a creative developer specializing in modern web technologies, React, and UI/UX design." />
+        <title>Vinay Kumar Vemula | Creative Full Stack Developer</title>
+        <meta name="description" content="Official portfolio of Vinay Kumar Vemula — a creative developer specializing in modern web technologies, React, TypeScript, and high-end UI/UX design." />
       </Helmet>
       <Navbar isDark={isDark} onToggleTheme={toggle} />
       <main>

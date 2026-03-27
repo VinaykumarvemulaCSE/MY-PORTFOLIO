@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { FiPlus, FiEdit, FiTrash, FiLogOut, FiX, FiUploadCloud, FiRefreshCw } from "react-icons/fi";
+import { FiPlus, FiEdit, FiTrash, FiLogOut, FiX, FiUploadCloud, FiRefreshCw, FiEye, FiEyeOff, FiLock, FiMail } from "react-icons/fi";
+import { TECH_ICONS, getAllTechNames } from "../constants/techIcons";
 
 const ADMIN_EMAIL = "kumarvinay072007@gmail.com";
 const ADMIN_PASS = "Vinay@123";
@@ -36,6 +38,8 @@ export default function Admin() {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Form states
   const [title, setTitle] = useState("");
@@ -69,15 +73,21 @@ export default function Admin() {
 
   useEffect(() => { if (isAuthenticated) loadProjects(); }, [isAuthenticated, loadProjects]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoggingIn(true);
+    
+    // Tiny delay to make the login feel "validated" and perfect
+    await new Promise(r => setTimeout(r, 800));
+
     if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
       setIsAuthenticated(true);
       localStorage.setItem("portfolio_admin_auth", "true");
-      toast.success("Welcome back!");
+      toast.success("Welcome back, Vinay!");
     } else {
-      toast.error("Invalid credentials");
+      toast.error("Invalid credentials. Please check your email and password.");
     }
+    setIsLoggingIn(false);
   };
 
   const handleLogout = () => {
@@ -222,24 +232,93 @@ export default function Admin() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <Card className="w-full max-w-sm border-border/50 shadow-xl">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="text-2xl font-bold font-heading text-gradient">Admin Access</CardTitle>
-          </CardHeader>
-          <form onSubmit={handleLogin}>
-            <CardContent className="space-y-4">
-              <div className="border border-border/50 rounded-lg p-2 bg-secondary/20 space-y-1.5">
-                <Input type="email" placeholder="Email" className="border-0 bg-transparent focus-visible:ring-0 shadow-none text-sm" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                <div className="h-px bg-border/50 mx-2" />
-                <Input type="password" placeholder="Password" className="border-0 bg-transparent focus-visible:ring-0 shadow-none text-sm" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary/10 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-primary/5 rounded-full blur-[100px]" />
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <Card className="glass border-border/40 shadow-2xl relative z-10 overflow-hidden rounded-[2rem]">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50" />
+            
+            <CardHeader className="text-center pt-10 pb-6">
+              <div className="mx-auto w-16 h-16 bg-primary/10 rounded-3xl flex items-center justify-center mb-4 border border-primary/20">
+                <FiLock className="text-primary" size={28} />
               </div>
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="w-full font-semibold">Login to Dashboard</Button>
-            </CardFooter>
-          </form>
-        </Card>
+              <CardTitle className="text-3xl font-bold font-heading">
+                Admin <span className="text-primary">Portal</span>
+              </CardTitle>
+              <p className="text-muted-foreground text-sm mt-2">Secure access to your portfolio dashboard</p>
+            </CardHeader>
+
+            <form onSubmit={handleLogin} className="pb-8">
+              <CardContent className="space-y-5 px-8">
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Email Address</Label>
+                  <div className="relative group">
+                    <FiMail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
+                    <Input 
+                      type="email" 
+                      placeholder="admin@example.com" 
+                      className="h-12 pl-12 bg-background/40 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all rounded-xl" 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      required 
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1">Password</Label>
+                  <div className="relative group">
+                    <FiLock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
+                    <Input 
+                      type={showPassword ? "text" : "password"} 
+                      placeholder="••••••••" 
+                      className="h-12 pl-12 pr-12 bg-background/40 border-border/50 focus:border-primary/50 focus:ring-primary/20 transition-all rounded-xl" 
+                      value={password} 
+                      onChange={(e) => setPassword(e.target.value)} 
+                      required 
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors p-1"
+                    >
+                      {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+                    </button>
+                  </div>
+                </div>
+              </CardContent>
+
+              <CardFooter className="px-8 pt-2">
+                <Button 
+                  type="submit" 
+                  disabled={isLoggingIn}
+                  className="w-full h-12 rounded-xl font-bold text-base bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-[0.98] relative overflow-hidden group"
+                >
+                  {isLoggingIn ? (
+                    <div className="flex items-center gap-2">
+                      <FiRefreshCw className="animate-spin" size={18} />
+                      <span>Authenticating...</span>
+                    </div>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Unlock Dashboard <FiLock size={16} className="group-hover:translate-x-0.5 transition-transform" />
+                    </span>
+                  )}
+                </Button>
+              </CardFooter>
+            </form>
+          </Card>
+          <p className="text-center text-xs text-muted-foreground mt-8">
+            &copy; {new Date().getFullYear()} Vinay Kumar Vemula. All rights reserved.
+          </p>
+        </motion.div>
       </div>
     );
   }
@@ -287,22 +366,67 @@ export default function Admin() {
 
                   {/* Tech Stack — button-like tags */}
                   <div className="space-y-2">
-                    <Label className="font-semibold">Tech Stack</Label>
-                    <div className="p-3 bg-secondary/20 border border-border/50 rounded-xl space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="font-semibold">Tech Stack</Label>
+                      <span className="text-[10px] text-muted-foreground uppercase tracking-wider">Select or type</span>
+                    </div>
+                    <div className="p-3 bg-secondary/10 border border-border/50 rounded-xl space-y-3">
                       <div className="flex flex-wrap gap-2 min-h-[28px]">
-                        {tech.map((t) => (
-                          <span key={t} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/30 text-primary text-xs font-semibold group cursor-default">
-                            {t}
-                            <button type="button" onClick={() => setTech(tech.filter((x) => x !== t))}
-                              className="text-primary/50 hover:text-primary transition-colors"><FiX size={11} /></button>
-                          </span>
-                        ))}
+                        {tech.map((t) => {
+                          const iconInfo = TECH_ICONS[t];
+                          return (
+                            <span key={t} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-background border border-border/50 text-foreground text-xs font-semibold group cursor-default shadow-sm border-primary/20">
+                              {iconInfo && <iconInfo.icon size={12} style={{ color: iconInfo.color }} />}
+                              {t}
+                              <button type="button" onClick={() => setTech(tech.filter((x) => x !== t))}
+                                className="text-muted-foreground hover:text-destructive transition-colors ml-1"><FiX size={11} /></button>
+                            </span>
+                          );
+                        })}
                         {tech.length === 0 && <span className="text-xs text-muted-foreground/60">No tech added yet</span>}
                       </div>
-                      <Input value={techInput} onChange={(e) => setTechInput(e.target.value)}
-                        onKeyDown={handleAddTech} onBlur={handleAddTech}
-                        placeholder="Type tech and press Enter (e.g. React.js)"
-                        className="h-9 text-sm bg-background/50" />
+
+                      <div className="relative">
+                        <Input value={techInput} onChange={(e) => setTechInput(e.target.value)}
+                          onKeyDown={handleAddTech}
+                          placeholder="Search or add technology..."
+                          className="h-9 text-sm bg-background/50 pr-8" />
+                        <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+                          <FiPlus size={14} />
+                        </div>
+                      </div>
+
+                      {/* Tech Suggestions Grid */}
+                      <div className="bg-background/40 rounded-lg p-2 max-h-40 overflow-y-auto custom-scrollbar border border-border/30">
+                        <div className="flex flex-wrap gap-1.5">
+                          {getAllTechNames()
+                            .filter(t => !tech.includes(t) && t.toLowerCase().includes(techInput.toLowerCase()))
+                            .map(t => {
+                              const info = TECH_ICONS[t];
+                              return (
+                                <button
+                                  key={t}
+                                  type="button"
+                                  onClick={() => { setTech([...tech, t]); setTechInput(""); }}
+                                  className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary/30 hover:bg-primary/20 border border-transparent hover:border-primary/30 text-[10px] font-medium transition-all"
+                                >
+                                  {info && <info.icon size={10} style={{ color: info.color }} />}
+                                  {t}
+                                </button>
+                              );
+                            })
+                          }
+                          {techInput && !getAllTechNames().includes(techInput) && !tech.includes(techInput) && (
+                             <button
+                               type="button"
+                               onClick={() => { setTech([...tech, techInput]); setTechInput(""); }}
+                               className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-primary/10 hover:bg-primary/20 border border-primary/30 text-[10px] font-bold text-primary transition-all"
+                             >
+                               Add "{techInput}"
+                             </button>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
