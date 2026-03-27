@@ -22,8 +22,6 @@ const techStack: TechItem[] = [
   { name: "TypeScript", icon: SiTypescript, color: "#3178C6", category: "Frontend" },
   { name: "React", icon: SiReact, color: "#61DAFB", category: "Frontend" },
   { name: "Tailwind CSS", icon: SiTailwindcss, color: "#06B6D4", category: "Frontend" },
-  //{ name: "Framer Motion", icon: SiFramer, color: "#0055FF", category: "Frontend" },
-  //{ name: "Vite", icon: SiVite, color: "#646CFF", category: "Frontend" },
   { name: "Node.js", icon: SiNodedotjs, color: "#339933", category: "Backend" },
   { name: "Express", icon: SiExpress, color: "#888888", category: "Backend" },
   { name: "Firebase", icon: SiFirebase, color: "#FFCA28", category: "Backend" },

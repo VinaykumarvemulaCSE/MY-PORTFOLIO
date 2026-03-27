@@ -5,7 +5,7 @@ import ParticleField from "./ParticleField";
 import demoPhoto from "@/assets/demo.png";
 import resume from "@/assets/RESUME.pdf";
 
-const roles = ["Aspiring Full Stack Developer", "Tech Enthusiast", "CSE Student", "Problem Solver"];
+const roles = ["AI-Augmented Full Stack Developer", "Tech Enthusiast", "CSE Student", "Problem Solver"];
 
 export default function Hero() {
   const [roleIdx, setRoleIdx] = useState(0);
@@ -79,7 +79,7 @@ export default function Hero() {
               transition={{ delay: 0.5 }}
               className="text-muted-foreground max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed text-lg"
             >
-              Computer Science student passionate about crafting beautiful, 
+              Computer Science student passionate about crafting beautiful,
               performant web experiences. Building the future, one component at a time.
             </motion.p>
 
@@ -125,10 +125,10 @@ export default function Hero() {
               {/* Decorative ring */}
               <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-spin-slow" />
               <div className="absolute -inset-3 rounded-full border border-dashed border-primary/10 animate-spin-slow" style={{ animationDirection: "reverse", animationDuration: "30s" }} />
-              
+
               {/* Glow behind photo */}
               <div className="absolute inset-4 rounded-full bg-primary/20 blur-2xl" />
-              
+
               {/* Photo */}
               <div className="absolute inset-3 rounded-full overflow-hidden border-2 border-primary/30">
                 <img

@@ -53,36 +53,6 @@ export default function Architecture() {
             </motion.div>
           ))}
         </div>
-
-        {/* Code snippet preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
-          transition={{ delay: 0.6 }}
-          className="mt-10 p-6 rounded-2xl bg-card border border-border/50 overflow-hidden"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-3 h-3 rounded-full bg-destructive/60" />
-            <div className="w-3 h-3 rounded-full bg-primary/60" />
-            <div className="w-3 h-3 rounded-full bg-accent/60" />
-            <span className="ml-2 text-xs text-muted-foreground font-mono">project-structure.ts</span>
-          </div>
-          <pre className="text-sm font-mono text-muted-foreground overflow-x-auto leading-relaxed">
-            <code>{`src/
-├── components/     // Reusable UI components
-│   ├── Navbar      // Sticky nav with blur + active tracking
-│   ├── Hero        // Particles + typing animation
-│   ├── Skills      // Icon-based tech buttons
-│   └── Dashboard   // Recharts data visualizations
-├── data/           // Separated data layer
-│   ├── skills.ts   // Tech stack definitions
-│   └── projects.ts // Project metadata
-├── hooks/          // Custom React hooks
-│   ├── useScrollAnimation
-│   └── useDarkMode
-└── pages/          // Route-level components`}</code>
-          </pre>
-        </motion.div>
       </div>
     </section>
   );
