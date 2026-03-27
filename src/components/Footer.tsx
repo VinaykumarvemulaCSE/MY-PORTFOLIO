@@ -14,7 +14,7 @@ const socials = [
   { icon: FiGithub, href: "https://github.com/VinaykumarvemulaCSE", label: "GitHub" },
   { icon: FiLinkedin, href: "https://www.linkedin.com/in/vinay-kumar-vemula-220056382?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", label: "LinkedIn" },
   { icon: FiMail, href: "mailto:kumarvinay072007@gmail.com", label: "Email" },
-  { icon: FaWhatsapp, href: "https://wa.me/8019551015", label: "WhatsApp" },
+  { icon: FaWhatsapp, href: "https://wa.me/918019551015", label: "WhatsApp" },
 ];
 
 export default function Footer() {

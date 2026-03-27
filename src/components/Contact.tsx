@@ -53,7 +53,7 @@ const onSubmit = async (data: ContactForm) => {
     { icon: FiGithub, label: "GitHub", href: "https://github.com/VinaykumarvemulaCSE", handle: "@VinaykumarvemulaCSE" },
     { icon: FiLinkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/vinay-kumar-vemula-220056382?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", handle: "VEMULA VINAY KUMAR" },
     { icon: FiMail, label: "Email", href: "mailto:kumarvinay072007@gmail.com", handle: "kumarvinay072007@gmail.com" },
-    { icon: FaWhatsapp, label: "WhatsApp", href: "https://wa.me/8019551015", handle: "8019551015" },
+    { icon: FaWhatsapp, label: "WhatsApp", href: "https://wa.me/918019551015", handle: "+91 80195 51015" },
   ];
 
   return (
