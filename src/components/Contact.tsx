@@ -1,8 +1,10 @@
+"use client";
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useForm } from "react-hook-form";
-import { FiGithub, FiLinkedin, FiMail, FiSend, FiArrowUpRight } from "react-icons/fi";
+import { FiGithub, FiLinkedin, FiMail, FiSend, FiArrowUpRight, FiCopy, FiCheck } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,9 +19,23 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>;
 
-export default function Contact() {
+export default function Contact({ profileData }: { profileData?: any }) {
   const { ref, isVisible } = useScrollAnimation();
   const [sending, setSending] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const contactInfo = profileData?.contact || {};
+  const socialInfo = profileData?.social || {};
+  const contactSection = profileData?.sections?.contact || {};
+
+  const copyEmail = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const email = contactInfo.email || "kumarvinay072007@gmail.com";
+    navigator.clipboard.writeText(email);
+    setCopiedEmail(true);
+    toast.success("Email copied to clipboard!");
+    setTimeout(() => setCopiedEmail(false), 2500);
+  };
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactForm>({ resolver: zodResolver(contactSchema) });
 
@@ -29,14 +45,14 @@ const onSubmit = async (data: ContactForm) => {
 
   try {
     await emailjs.send(
-      "service_iased9k",
-      "template_51sf5e6",
+      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
       {
         name: data.name,
         email: data.email,
         message: data.message,
       },
-      "9lCKHbqstw6tgHVqb"
+      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ""
     );
 
     toast.success("Message sent!");
@@ -50,10 +66,10 @@ const onSubmit = async (data: ContactForm) => {
 };
 
   const socials = [
-    { icon: FiGithub, label: "GitHub", href: "https://github.com/VinaykumarvemulaCSE", handle: "@VinaykumarvemulaCSE" },
-    { icon: FiLinkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/vinay-kumar-vemula-220056382?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", handle: "VEMULA VINAY KUMAR" },
-    { icon: FiMail, label: "Email", href: "mailto:kumarvinay072007@gmail.com", handle: "kumarvinay072007@gmail.com" },
-    { icon: FaWhatsapp, label: "WhatsApp", href: "https://wa.me/918019551015", handle: "+91 80195 51015" },
+    { icon: FiGithub, label: "GitHub", href: socialInfo.github || "https://github.com/VinaykumarvemulaCSE", handle: "GitHub Profile" },
+    { icon: FiLinkedin, label: "LinkedIn", href: socialInfo.linkedin || "https://www.linkedin.com/in/vinaykumarvemula", handle: "LinkedIn Profile" },
+    { icon: FiMail, label: "Email", href: `mailto:${contactInfo.email || "kumarvinay072007@gmail.com"}`, handle: contactInfo.email || "kumarvinay072007@gmail.com" },
+    { icon: FaWhatsapp, label: "WhatsApp", href: `https://wa.me/${(contactInfo.phone || "918019551015").replace(/[^0-9]/g, '')}`, handle: contactInfo.phone || "+91 80195 51015" },
   ];
 
   return (
@@ -70,11 +86,17 @@ const onSubmit = async (data: ContactForm) => {
           className="text-center mb-14"
         >
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-3">
-            Let's <span className="text-gradient">Connect</span>
+            {contactSection.title ? (
+              contactSection.title.split(' ').map((word: string, i: number, arr: string[]) => 
+                i === arr.length - 1 ? <span key={i} className="text-gradient"> {word}</span> : <span key={i}>{word} </span>
+              )
+            ) : (
+              <>Let's <span className="text-gradient">Connect</span></>
+            )}
           </h2>
           <div className="w-12 h-1 bg-primary rounded-full mx-auto mb-4" />
           <p className="text-muted-foreground max-w-md mx-auto">
-            Open to opportunities, collaborations, or just a friendly tech chat
+            {contactSection.description || "Open to opportunities, collaborations, or just a friendly tech chat"}
           </p>
         </motion.div>
 
@@ -86,22 +108,41 @@ const onSubmit = async (data: ContactForm) => {
             className="space-y-4"
           >
             {socials.map((s) => (
-              <a
+              <div
                 key={s.label}
-                href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="card-hover flex items-center gap-4 p-4 rounded-xl glass border border-border/50 hover:border-primary/30 group"
+                className="card-hover flex items-center gap-4 p-4 rounded-xl glass border border-border/50 hover:border-primary/30 group relative"
               >
-                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                  <s.icon size={18} className="text-primary" />
-                </div>
-                <div className="flex-1">
-                  <span className="text-sm font-semibold text-foreground">{s.label}</span>
-                  <p className="text-xs text-muted-foreground font-mono">{s.handle}</p>
-                </div>
-                <FiArrowUpRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
-              </a>
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Visit my ${s.label}`}
+                  className="flex items-center gap-4 flex-1"
+                >
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <s.icon size={18} className="text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <span className="text-sm font-semibold text-foreground">{s.label}</span>
+                    <p className="text-xs text-muted-foreground font-mono">{s.handle}</p>
+                  </div>
+                </a>
+                
+                {s.label === "Email" ? (
+                  <button
+                    type="button"
+                    onClick={copyEmail}
+                    className="p-2 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                    title="Copy Email Address"
+                  >
+                    {copiedEmail ? <FiCheck size={16} className="text-green-500" /> : <FiCopy size={16} />}
+                  </button>
+                ) : (
+                  <a href={s.href} target="_blank" rel="noopener noreferrer">
+                    <FiArrowUpRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                  </a>
+                )}
+              </div>
             ))}
           </motion.div>
 

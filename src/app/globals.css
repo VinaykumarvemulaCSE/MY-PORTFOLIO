@@ -1,43 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 220 14% 95%; /* Softer, slightly darker background to prevent blinding */
-    --foreground: 220 25% 15%; /* Softer off-black text */
+    /* Vercel / Stripe Ultra-Modern Light Theme */
+    --background: 0 0% 100%; /* Pure White */
+    --foreground: 0 0% 9%; /* Charcoal Black */
     --card: 0 0% 100%;
-    --card-foreground: 220 25% 15%;
+    --card-foreground: 0 0% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 25% 15%;
-    --primary: 38 92% 50%;
-    --primary-foreground: 220 25% 10%;
-    --secondary: 220 15% 88%; /* Dimmed secondary for better contrast without glare */
-    --secondary-foreground: 220 25% 25%;
-    --muted: 220 15% 90%;
-    --muted-foreground: 220 10% 45%;
-    --accent: 38 80% 55%;
-    --accent-foreground: 220 25% 15%;
+    --popover-foreground: 0 0% 9%;
+    
+    /* Primary brand tone - Electric Blue */
+    --primary: 212 100% 48%; 
+    --primary-foreground: 0 0% 100%; /* White */
+    
+    /* Secondary tone - Very Faint Gray */
+    --secondary: 0 0% 96%; 
+    --secondary-foreground: 0 0% 9%;
+    
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    
+    /* Accent - Soft Blue Hover State */
+    --accent: 212 100% 96%;
+    --accent-foreground: 212 100% 48%;
+    
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 220 15% 85%; /* Slightly darker borders for depth */
-    --input: 220 15% 85%;
-    --ring: 38 92% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 0 0% 89%; /* Light Silver */
+    --input: 0 0% 89%;
+    --ring: 212 100% 48%;
+    
     --radius: 0.75rem;
-    --glow: 38 92% 50%;
-    --glass: 220 14% 96% / 0.75; /* Smooth frosted glass instead of pure white */
-    --glass-border: 220 15% 85% / 0.4;
+    --glow: 212 100% 48%;
+    
+    /* Crisp Vercel-style glass & shadows */
+    --glass: 0 0% 100% / 0.8;
+    --glass-border: 0 0% 89% / 0.8;
+    --glass-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.8);
 
-    --sidebar-background: 0 0% 97%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 86%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 212 100% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 89%;
+    --sidebar-ring: 212 100% 48%;
   }
 
   .dark {
@@ -63,6 +75,7 @@
     --glow: 38 92% 50%;
     --glass: 225 22% 10% / 0.6;
     --glass-border: 225 18% 25% / 0.3;
+    --glass-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px hsl(var(--primary) / 0.1);
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -85,11 +98,32 @@
   html {
     scroll-behavior: smooth;
   }
+  ::selection {
+    background-color: hsl(var(--primary) / 0.25);
+    color: hsl(var(--foreground));
+  }
+  /* Elegant scrollbar matching the theme */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.6);
+  }
 }
 
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(212 100% 45%), hsl(235 90% 58%), hsl(265 85% 60%));
+  }
+  .dark .text-gradient {
     background-image: linear-gradient(135deg, hsl(38 92% 50%), hsl(38 80% 65%), hsl(30 90% 55%));
   }
   .glow {
@@ -103,19 +137,17 @@
   }
   .glass {
     background: hsl(var(--glass));
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    backdrop-filter: blur(24px) saturate(1.6);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
     border: 1px solid hsl(var(--glass-border));
-    box-shadow: 
-      0 0 0 1px hsl(var(--glass-border)),
-      0 10px 40px -10px rgba(0, 0, 0, 0.4),
-      0 0 20px -5px hsl(var(--primary) / 0.1);
+    box-shadow: var(--glass-shadow);
   }
   .glass-subtle {
     background: hsl(var(--glass));
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+    border: 1px solid hsl(var(--glass-border));
+    box-shadow: 0 4px 14px -2px rgba(0, 0, 0, 0.08);
   }
 }
 
@@ -134,10 +166,18 @@
 
 /* Smooth card hover */
 .card-hover {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
 }
 .card-hover:hover {
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+}
+
+/* Button micro-interaction */
+button, a {
+  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+button:active, a:active {
+  transform: scale(0.97);
 }
 
 /* Tech button pulse on hover */

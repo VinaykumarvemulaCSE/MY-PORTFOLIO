@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { FiBox, FiLayers, FiZap, FiShield, FiSmartphone, FiSearch } from "react-icons/fi";
@@ -22,8 +24,9 @@ export default function Architecture() {
 
       <div ref={ref} className="max-w-5xl mx-auto relative">
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.5 }}
           className="text-center mb-14"
         >
@@ -40,9 +43,10 @@ export default function Architecture() {
           {principles.map((p, i) => (
             <motion.div
               key={p.title}
-              initial={{ opacity: 0, y: 30 }}
-              animate={isVisible ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.08 * (i + 1), duration: 0.5 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.05 * (i + 1), duration: 0.4 }}
               className="card-hover p-5 rounded-2xl glass border border-border/50 hover:border-primary/30 group"
             >
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">

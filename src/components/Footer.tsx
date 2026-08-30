@@ -1,3 +1,5 @@
+"use client";
+
 import { FiGithub, FiLinkedin, FiMail, FiHeart, FiArrowUp } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 import { motion } from "framer-motion";
@@ -10,14 +12,18 @@ const links = [
   { label: "Contact", href: "#contact" },
 ];
 
-const socials = [
-  { icon: FiGithub, href: "https://github.com/VinaykumarvemulaCSE", label: "GitHub" },
-  { icon: FiLinkedin, href: "https://www.linkedin.com/in/vinay-kumar-vemula-220056382?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", label: "LinkedIn" },
-  { icon: FiMail, href: "mailto:kumarvinay072007@gmail.com", label: "Email" },
-  { icon: FaWhatsapp, href: "https://wa.me/918019551015", label: "WhatsApp" },
-];
+export default function Footer({ profileData }: { profileData?: any }) {
+  const socialInfo = profileData?.social || {};
+  const contactInfo = profileData?.contact || {};
+  const name = profileData?.name || "Vinay Kumar Vemula";
 
-export default function Footer() {
+  const socials = [
+    { icon: FiGithub, href: socialInfo.github || "https://github.com/VinaykumarvemulaCSE", label: "GitHub" },
+    { icon: FiLinkedin, href: socialInfo.linkedin || "https://www.linkedin.com/in/vinaykumarvemula", label: "LinkedIn" },
+    { icon: FiMail, href: `mailto:${contactInfo.email || "kumarvinay072007@gmail.com"}`, label: "Email" },
+    { icon: FaWhatsapp, href: `https://wa.me/${(contactInfo.phone || "918019551015").replace(/[^0-9]/g, '')}`, label: "WhatsApp" },
+  ];
+
   return (
     <footer className="relative border-t border-border/30 py-14 px-4 md:px-8" role="contentinfo">
       <div className="max-w-5xl mx-auto">
@@ -35,7 +41,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
           <a href="#home" className="font-heading font-bold text-xl text-foreground">
-            <span className="text-gradient">V</span>inay Kumar Vemula
+            <span className="text-gradient">{name.charAt(0)}</span>{name.slice(1)}
           </a>
           <nav aria-label="Footer navigation">
             <ul className="flex flex-wrap justify-center gap-5">
@@ -65,7 +71,7 @@ export default function Footer() {
         </div>
 
         <div className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5 font-mono">
-          © {new Date().getFullYear()} Vinay Kumar Vemula — Built with <FiHeart size={12} className="text-primary" /> React & Tailwind CSS
+          © {new Date().getFullYear()} {name} — Built with <FiHeart size={12} className="text-primary" /> Next.js & Tailwind CSS
         </div>
       </div>
     </footer>

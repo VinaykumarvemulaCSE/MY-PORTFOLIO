@@ -1,19 +1,56 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import { FiGithub, FiDownload, FiMail, FiArrowDown } from "react-icons/fi";
+import { FiGithub, FiDownload, FiMail, FiArrowDown, FiCopy, FiCheck } from "react-icons/fi";
+import { toast } from "sonner";
 import ParticleField from "./ParticleField";
-import demoPhoto from "@/assets/demo.png";
-import resume from "@/assets/RESUME.pdf";
+import Image from "next/image";
+const demoPhoto = "/demo.png";
+const resume = "/RESUME.pdf";
 
-const roles = ["AI-Augmented Full Stack Developer", "Tech Enthusiast", "CSE Student", "Problem Solver"];
+const defaultRoles = ["AI-Augmented Full Stack Developer", "Tech Enthusiast", "CSE Student", "Problem Solver"];
 
-export default function Hero() {
+interface ProfileConfig {
+  name: string;
+  roles: string[];
+  bio: string;
+  availableForOpportunities: boolean;
+  profileImage: string;
+  resumeUrl: string;
+  githubUrl: string;
+}
+
+export default function Hero({ profileData }: { profileData?: any }) {
+  const profile = {
+    name: profileData?.name || "Vinay Kumar Vemula",
+    roles: profileData?.roles || defaultRoles,
+    bio: profileData?.bio || "Computer Science student passionate about crafting beautiful, performant web experiences.",
+    availableForOpportunities: profileData?.availableForOpportunities ?? true,
+    profileImage: profileData?.profileImage || demoPhoto,
+    resumeUrl: profileData?.resumeUrl || resume,
+    githubUrl: profileData?.social?.github || "https://github.com/VinaykumarvemulaCSE",
+  };
+
   const [roleIdx, setRoleIdx] = useState(0);
   const [displayed, setDisplayed] = useState("");
   const [typing, setTyping] = useState(true);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const email = profileData?.contact?.email || "kumarvinay072007@gmail.com";
+
+  const copyEmail = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(email);
+    setCopiedEmail(true);
+    toast.success("Email copied to clipboard!");
+    setTimeout(() => setCopiedEmail(false), 2500);
+  };
+
+  const roles = profile.roles && profile.roles.length > 0 ? profile.roles : defaultRoles;
 
   useEffect(() => {
-    const role = roles[roleIdx];
+    const role = roles[roleIdx % roles.length];
     if (typing) {
       if (displayed.length < role.length) {
         const t = setTimeout(() => setDisplayed(role.slice(0, displayed.length + 1)), 55);
@@ -31,7 +68,7 @@ export default function Hero() {
         setTyping(true);
       }
     }
-  }, [displayed, typing, roleIdx]);
+  }, [displayed, typing, roleIdx, roles]);
 
   return (
     <section id="home" className="relative min-h-screen flex items-center justify-center section-padding pt-24 overflow-hidden">
@@ -41,15 +78,17 @@ export default function Hero() {
         <div className="flex flex-col-reverse lg:flex-row items-center gap-12 lg:gap-16">
           {/* Text content */}
           <div className="flex-1 text-center lg:text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
-            >
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-sm font-medium text-primary font-mono">Available for opportunities</span>
-            </motion.div>
+            {profile.availableForOpportunities && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
+              >
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-sm font-medium text-primary font-mono">Available for opportunities</span>
+              </motion.div>
+            )}
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -58,7 +97,7 @@ export default function Hero() {
               className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-foreground mb-4 leading-tight"
             >
               Hi, I'm{" "}
-              <span className="text-gradient">Vinay Kumar Vemula</span>
+              <span className="text-gradient">{profile.name}</span>
             </motion.h1>
 
             <motion.div
@@ -79,8 +118,7 @@ export default function Hero() {
               transition={{ delay: 0.5 }}
               className="text-muted-foreground max-w-lg mx-auto lg:mx-0 mb-10 leading-relaxed text-lg"
             >
-              Computer Science student passionate about crafting beautiful,
-              performant web experiences. Building the future, one component at a time.
+              {profile.bio}
             </motion.p>
 
             <motion.div
@@ -90,24 +128,36 @@ export default function Hero() {
               className="flex flex-wrap items-center justify-center lg:justify-start gap-4"
             >
               <a
-                href="https://github.com/VinaykumarvemulaCSE"
+                href={profile.githubUrl || "https://github.com/VinaykumarvemulaCSE"}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="View GitHub Profile"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all glow-sm"
               >
                 <FiGithub size={16} /> View GitHub
               </a>
               <a
-                href={resume}
+                href={profile.resumeUrl || resume}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Download Resume"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl glass border border-border/50 text-foreground font-semibold text-sm hover:border-primary/30 transition-all"
               >
                 <FiDownload size={16} /> Resume
               </a>
+              <button
+                type="button"
+                onClick={copyEmail}
+                aria-label="Copy Email Address"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-secondary text-secondary-foreground font-semibold text-sm hover:bg-secondary/80 transition-colors"
+              >
+                {copiedEmail ? <FiCheck size={16} className="text-emerald-500" /> : <FiCopy size={16} />}
+                {copiedEmail ? "Copied!" : "Copy Email"}
+              </button>
               <a
                 href="#contact"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-secondary text-secondary-foreground font-semibold text-sm hover:bg-secondary/80 transition-colors"
+                aria-label="Contact Me"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl border border-border/50 text-muted-foreground hover:text-foreground font-semibold text-sm hover:border-primary/30 transition-all"
               >
                 <FiMail size={16} /> Contact
               </a>
@@ -131,11 +181,13 @@ export default function Hero() {
 
               {/* Photo */}
               <div className="absolute inset-3 rounded-full overflow-hidden border-2 border-primary/30">
-                <img
-                  src={demoPhoto}
-                  alt="Vinay - Developer"
-                  className="w-full h-full object-cover"
-                  loading="eager"
+                <Image
+                  src={profile.profileImage || demoPhoto}
+                  alt={`${profile.name} - Developer`}
+                  fill
+                  sizes="(max-width: 768px) 256px, 320px"
+                  className="object-cover"
+                  priority
                 />
               </div>
 

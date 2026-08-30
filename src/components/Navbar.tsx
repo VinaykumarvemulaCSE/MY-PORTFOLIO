@@ -1,8 +1,11 @@
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenu, HiX } from "react-icons/hi";
 import { FiSun, FiMoon } from "react-icons/fi";
 import { useActiveSection } from "@/hooks/useActiveSection";
+import { useTheme } from "next-themes";
 
 const NAV_ITEMS = [
   { label: "Home", href: "#home" },
@@ -13,14 +16,18 @@ const NAV_ITEMS = [
   { label: "Contact", href: "#contact" },
 ];
 
-interface NavbarProps {
-  isDark: boolean;
-  onToggleTheme: () => void;
-}
-
-export default function Navbar({ isDark, onToggleTheme }: NavbarProps) {
+export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const active = useActiveSection();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = theme === "dark";
+  const onToggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30" role="navigation" aria-label="Main navigation">
@@ -54,22 +61,26 @@ export default function Navbar({ isDark, onToggleTheme }: NavbarProps) {
             </li>
           ))}
           <li>
-            <button
-              onClick={onToggleTheme}
-              className="ml-3 p-2.5 rounded-lg glass border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
-              aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-            >
-              <motion.div key={isDark ? "sun" : "moon"} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.2 }}>
-                {isDark ? <FiSun size={16} /> : <FiMoon size={16} />}
-              </motion.div>
-            </button>
+            {mounted && (
+              <button
+                onClick={onToggleTheme}
+                className="ml-3 p-2.5 rounded-lg glass border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
+                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+              >
+                <motion.div key={isDark ? "sun" : "moon"} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.2 }}>
+                  {isDark ? <FiSun size={16} /> : <FiMoon size={16} />}
+                </motion.div>
+              </button>
+            )}
           </li>
         </ul>
 
         <div className="flex md:hidden items-center gap-2">
-          <button onClick={onToggleTheme} className="p-2 text-muted-foreground" aria-label="Toggle theme">
-            {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
-          </button>
+          {mounted && (
+            <button onClick={onToggleTheme} className="p-2 text-muted-foreground" aria-label="Toggle theme">
+              {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
+            </button>
+          )}
           <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-foreground" aria-label="Toggle menu" aria-expanded={mobileOpen}>
             {mobileOpen ? <HiX size={22} /> : <HiMenu size={22} />}
           </button>

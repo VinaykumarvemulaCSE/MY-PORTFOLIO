@@ -1,15 +1,29 @@
-import { useMemo } from "react";
+"use client";
+
+import { useMemo, useState, useEffect } from "react";
+
+// Deterministic pseudo-random function so server and client match identically
+function seededRandom(i: number, seed: number): number {
+  const x = Math.sin(i * 9999 + seed) * 10000;
+  return x - Math.floor(x);
+}
 
 export default function ParticleField() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const particles = useMemo(() => {
     return Array.from({ length: 40 }, (_, i) => ({
       id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      size: Math.random() * 3 + 1,
-      duration: `${Math.random() * 8 + 6}s`,
-      delay: `${Math.random() * 5}s`,
-      opacity: Math.random() * 0.4 + 0.1,
+      left: `${(seededRandom(i, 1) * 100).toFixed(2)}%`,
+      top: `${(seededRandom(i, 2) * 100).toFixed(2)}%`,
+      size: (seededRandom(i, 3) * 3 + 1).toFixed(2),
+      duration: `${(seededRandom(i, 4) * 8 + 6).toFixed(2)}s`,
+      delay: `${(seededRandom(i, 5) * 5).toFixed(2)}s`,
+      opacity: (seededRandom(i, 6) * 0.4 + 0.1).toFixed(2),
     }));
   }, []);
 
@@ -21,16 +35,16 @@ export default function ParticleField() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/4 rounded-full blur-[120px] animate-float-slow" />
       
       {/* Particle dots */}
-      {particles.map((p) => (
+      {mounted && particles.map((p) => (
         <div
           key={p.id}
           className="absolute rounded-full bg-primary particle"
           style={{
             left: p.left,
             top: p.top,
-            width: p.size,
-            height: p.size,
-            opacity: p.opacity,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            opacity: Number(p.opacity),
             ["--duration" as string]: p.duration,
             ["--delay" as string]: p.delay,
           }}

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -6,11 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { toast } from "sonner";
-import { FiPlus, FiEdit, FiTrash, FiLogOut, FiX, FiUploadCloud, FiRefreshCw, FiEye, FiEyeOff, FiLock, FiMail } from "react-icons/fi";
-import { TECH_ICONS, getAllTechNames } from "../constants/techIcons";
+import { FiPlus, FiEdit, FiTrash, FiLogOut, FiX, FiUploadCloud, FiRefreshCw, FiEye, FiEyeOff, FiLock, FiMail, FiUser, FiFileText, FiCheck, FiFolder } from "react-icons/fi";
+import { TECH_ICONS, getAllTechNames } from "@/constants/techIcons";
 
-const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
-const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD;
+// Authentication is now fully handled by the backend
+// API will return a token upon successful login.
 
 // Relative API endpoint — works locally (via Vite proxy) and on Vercel
 const API_URL = "/api/github";
@@ -31,7 +33,16 @@ interface Project {
 }
 
 export default function Admin() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => localStorage.getItem("portfolio_admin_auth") === "true");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authToken, setAuthToken] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("portfolio_admin_auth");
+    if (token) {
+      setIsAuthenticated(true);
+      setAuthToken(token);
+    }
+  }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [projects, setProjects] = useState<Project[]>([]);
@@ -57,6 +68,20 @@ export default function Admin() {
   // Gallery: existing URLs (when editing a project that already has a gallery)
   const [existingGallery, setExistingGallery] = useState<string[]>([]);
 
+  const [activeTab, setActiveTab] = useState<"projects" | "profile">("projects");
+
+  // Profile Form States
+  const [profName, setProfName] = useState("");
+  const [profRoles, setProfRoles] = useState("");
+  const [profBio, setProfBio] = useState("");
+  const [profAvailable, setProfAvailable] = useState(true);
+  const [profGithub, setProfGithub] = useState("");
+  const [profPhotoFile, setProfPhotoFile] = useState<File | null>(null);
+  const [profPhotoPreview, setProfPhotoPreview] = useState("");
+  const [resumePdfFile, setResumePdfFile] = useState<File | null>(null);
+  const [resumePdfName, setResumePdfName] = useState("");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
   const loadProjects = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -71,27 +96,62 @@ export default function Admin() {
     }
   }, []);
 
-  useEffect(() => { if (isAuthenticated) loadProjects(); }, [isAuthenticated, loadProjects]);
+  const loadProfile = useCallback(async () => {
+    try {
+      const res = await fetch(`${API_URL}?type=profile&t=${Date.now()}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data) {
+        setProfName(data.name || "Vinay Kumar Vemula");
+        setProfRoles((data.roles || []).join(", "));
+        setProfBio(data.bio || "");
+        setProfAvailable(data.availableForOpportunities ?? true);
+        setProfGithub(data.githubUrl || "");
+        setProfPhotoPreview(data.profileImage || "");
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadProjects();
+      loadProfile();
+    }
+  }, [isAuthenticated, loadProjects, loadProfile]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoggingIn(true);
     
-    // Tiny delay to make the login feel "validated" and perfect
-    await new Promise(r => setTimeout(r, 800));
-
-    if (email === ADMIN_EMAIL && password === ADMIN_PASS) {
-      setIsAuthenticated(true);
-      localStorage.setItem("portfolio_admin_auth", "true");
-      toast.success("Welcome back, Vinay!");
-    } else {
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "login", email, password }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok && data.success) {
+        setIsAuthenticated(true);
+        setAuthToken(data.token);
+        localStorage.setItem("portfolio_admin_auth", data.token);
+        toast.success("Welcome back, Vinay!");
+      } else {
+        toast.error(data.error || "Invalid credentials. Please check your email and password.");
+      }
+    } catch (err) {
       toast.error("Invalid credentials. Please check your email and password.");
+    } finally {
+      setIsLoggingIn(false);
     }
-    setIsLoggingIn(false);
   };
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    setAuthToken("");
     localStorage.removeItem("portfolio_admin_auth");
   };
 
@@ -117,7 +177,10 @@ export default function Admin() {
     try {
       const res = await fetch(API_URL, {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
         body: JSON.stringify({ id }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -158,7 +221,10 @@ export default function Admin() {
         const b64 = await fileToBase64(imageFile);
         const res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
           body: JSON.stringify({
             action: "upload_image",
             projectId: isEditing ?? id,
@@ -181,7 +247,10 @@ export default function Admin() {
         const b64 = await fileToBase64(f);
         const res = await fetch(API_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
           body: JSON.stringify({
             action: "upload_image",
             projectId: isEditing ?? id,
@@ -212,7 +281,10 @@ export default function Admin() {
 
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
         body: JSON.stringify(payload),
       });
 
@@ -227,6 +299,92 @@ export default function Admin() {
       toast.error(err.message || "Something went wrong");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSavingProfile(true);
+
+    try {
+      let finalPhotoUrl = profPhotoPreview;
+      let finalResumeUrl = "";
+
+      // 1) Upload new profile photo if selected
+      if (profPhotoFile) {
+        toast.loading("Uploading new profile photo...", { id: "photo" });
+        const b64 = await fileToBase64(profPhotoFile);
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ action: "upload_profile_image", imageBase64: b64 }),
+        });
+        toast.dismiss("photo");
+        if (!res.ok) throw new Error("Failed to upload profile photo");
+        const data = await res.json();
+        finalPhotoUrl = data.url;
+      }
+
+      // 2) Upload new resume PDF if selected
+      if (resumePdfFile) {
+        toast.loading("Uploading new Resume PDF...", { id: "pdf" });
+        const b64 = await fileToBase64(resumePdfFile);
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ action: "upload_resume", pdfBase64: b64 }),
+        });
+        toast.dismiss("pdf");
+        if (!res.ok) throw new Error("Failed to upload Resume PDF");
+        const data = await res.json();
+        finalResumeUrl = data.url;
+      }
+
+      // 3) Save profile settings
+      toast.loading("Committing profile metadata to GitHub…", { id: "profsave" });
+      const rolesArray = profRoles.split(",").map((r) => r.trim()).filter(Boolean);
+
+      const payload = {
+        action: "save_profile",
+        profile: {
+          name: profName,
+          roles: rolesArray,
+          bio: profBio,
+          availableForOpportunities: profAvailable,
+          profileImage: finalPhotoUrl || "/demo.png",
+          ...(finalResumeUrl ? { resumeUrl: finalResumeUrl } : {}),
+          githubUrl: profGithub,
+        },
+      };
+
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
+        body: JSON.stringify(payload),
+      });
+
+      toast.dismiss("profsave");
+      if (!res.ok) throw new Error("Failed to save profile configuration");
+
+      toast.success("Profile & Resume updated successfully! Vercel rebuilding…");
+      setProfPhotoFile(null);
+      setResumePdfFile(null);
+      setResumePdfName("");
+      await loadProfile();
+    } catch (err: any) {
+      toast.dismiss("photo"); toast.dismiss("pdf"); toast.dismiss("profsave");
+      toast.error(err.message || "Failed to update profile");
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
@@ -342,14 +500,186 @@ export default function Admin() {
           </div>
         </div>
 
-        {/* Form */}
-        <Card className="border-primary/20 shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              {isEditing ? <FiEdit className="text-primary" /> : <FiPlus className="text-primary" />}
-              {isEditing ? `Editing: ${title}` : "Deploy New Project"}
-            </CardTitle>
-          </CardHeader>
+        {/* Navigation Tabs */}
+        <div className="flex gap-3 border-b border-border/30 pb-3">
+          <Button
+            type="button"
+            variant={activeTab === "projects" ? "default" : "ghost"}
+            onClick={() => setActiveTab("projects")}
+            className="gap-2 rounded-xl font-semibold"
+          >
+            <FiFolder size={16} /> Projects Management
+          </Button>
+          <Button
+            type="button"
+            variant={activeTab === "profile" ? "default" : "ghost"}
+            onClick={() => setActiveTab("profile")}
+            className="gap-2 rounded-xl font-semibold"
+          >
+            <FiUser size={16} /> Profile & Resume Settings
+          </Button>
+        </div>
+
+        {activeTab === "profile" ? (
+          <Card className="border-primary/20 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                <FiUser className="text-primary" /> Edit Profile & Upload Resume
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSaveProfile} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Left Column */}
+                  <div className="space-y-5">
+                    <div className="space-y-2">
+                      <Label className="font-semibold">Full Name *</Label>
+                      <Input
+                        value={profName}
+                        onChange={(e) => setProfName(e.target.value)}
+                        required
+                        className="glass"
+                        placeholder="Vinay Kumar Vemula"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-semibold">Hero Roles (comma-separated)</Label>
+                      <Input
+                        value={profRoles}
+                        onChange={(e) => setProfRoles(e.target.value)}
+                        className="glass"
+                        placeholder="AI-Augmented Full Stack Developer, Tech Enthusiast, CSE Student"
+                      />
+                      <p className="text-xs text-muted-foreground">Animated typing sequence in Hero section</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-semibold">Bio / Short Intro Paragraph</Label>
+                      <Textarea
+                        value={profBio}
+                        onChange={(e) => setProfBio(e.target.value)}
+                        rows={4}
+                        className="glass"
+                        placeholder="Computer Science student passionate about crafting..."
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label className="font-semibold">GitHub Profile URL</Label>
+                      <Input
+                        value={profGithub}
+                        onChange={(e) => setProfGithub(e.target.value)}
+                        className="glass"
+                        placeholder="https://github.com/VinaykumarvemulaCSE"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-2">
+                      <input
+                        type="checkbox"
+                        id="availableForOpportunities"
+                        checked={profAvailable}
+                        onChange={(e) => setProfAvailable(e.target.checked)}
+                        className="w-4 h-4 rounded border-border text-primary focus:ring-primary cursor-pointer"
+                      />
+                      <Label htmlFor="availableForOpportunities" className="cursor-pointer font-medium">
+                        Show "Available for opportunities" badge
+                      </Label>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Assets */}
+                  <div className="space-y-6">
+                    {/* Profile Photo Upload */}
+                    <div className="space-y-3">
+                      <Label className="font-semibold flex items-center gap-2">
+                        <FiUser size={16} /> Profile Photo
+                      </Label>
+                      <div className="flex items-center gap-4">
+                        {profPhotoPreview && (
+                          <img
+                            src={profPhotoFile ? URL.createObjectURL(profPhotoFile) : profPhotoPreview}
+                            alt="Profile Preview"
+                            className="w-20 h-20 rounded-full object-cover border-2 border-primary/30"
+                          />
+                        )}
+                        <div className="flex-1">
+                          <label className="border-2 border-dashed border-border/60 hover:border-primary/40 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer glass transition-colors">
+                            <FiUploadCloud className="text-primary mb-1" size={20} />
+                            <span className="text-xs font-semibold text-foreground">
+                              {profPhotoFile ? profPhotoFile.name : "Upload New Photo (PNG/JPG)"}
+                            </span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              className="hidden"
+                              onChange={(e) => {
+                                if (e.target.files?.[0]) setProfPhotoFile(e.target.files[0]);
+                              }}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Resume Upload */}
+                    <div className="space-y-3 pt-2 border-t border-border/30">
+                      <Label className="font-semibold flex items-center gap-2">
+                        <FiFileText size={16} /> Resume PDF Document
+                      </Label>
+                      <label className="border-2 border-dashed border-border/60 hover:border-primary/40 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer glass transition-colors">
+                        <FiFileText className="text-primary mb-2" size={24} />
+                        <span className="text-sm font-semibold text-foreground">
+                          {resumePdfFile ? resumePdfFile.name : "Upload New Resume PDF"}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-1">Replaces resume PDF on website</span>
+                        <input
+                          type="file"
+                          accept="application/pdf"
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files?.[0]) {
+                              setResumePdfFile(e.target.files[0]);
+                              setResumePdfName(e.target.files[0].name);
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-border/30 flex justify-end">
+                  <Button
+                    type="submit"
+                    disabled={isSavingProfile}
+                    className="bg-primary hover:bg-primary/90 font-bold px-8 h-11 rounded-xl"
+                  >
+                    {isSavingProfile ? (
+                      <>
+                        <FiRefreshCw className="animate-spin mr-2" size={16} /> Saving Profile...
+                      </>
+                    ) : (
+                      <>
+                        <FiCheck className="mr-2" size={16} /> Save Profile & Resume
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {/* Form */}
+            <Card className="border-primary/20 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-xl flex items-center gap-2">
+                {isEditing ? <FiEdit className="text-primary" /> : <FiPlus className="text-primary" />}
+                {isEditing ? `Editing: ${title}` : "Deploy New Project"}
+              </CardTitle>
+            </CardHeader>
           <CardContent>
             <form id="project-form" onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
@@ -609,6 +939,8 @@ export default function Admin() {
             </div>
           )}
         </div>
+      </>
+    )}
       </div>
     </div>
   );

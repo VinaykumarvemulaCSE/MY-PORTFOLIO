@@ -1,3 +1,5 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { FiMonitor, FiServer, FiLayers, FiTarget } from "react-icons/fi";
@@ -9,7 +11,7 @@ const focuses = [
   { icon: FiTarget, title: "Problem Solving", desc: "Applying DSA knowledge and systematic thinking to build efficient solutions.", gradient: "from-accent/15 to-accent/5" },
 ];
 
-export default function About() {
+export default function About({ profileData }: { profileData?: any }) {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
@@ -30,9 +32,7 @@ export default function About() {
           </h2>
           <div className="w-12 h-1 bg-primary rounded-full mx-auto mb-6" />
           <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto text-lg">
-            I'm a Computer Science student passionate about building software that matters.
-            Currently diving deep into modern web technologies, aiming to create production-quality
-            applications and contribute to open-source.
+            {profileData?.sections?.about?.description || "I'm a Computer Science student passionate about building software that matters. Currently diving deep into modern web technologies, aiming to create production-quality applications and contribute to open-source."}
           </p>
         </motion.div>
 

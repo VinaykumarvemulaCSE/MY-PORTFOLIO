@@ -15,6 +15,9 @@
     "liveLink": "https://blood-line-2007.vercel.app",
     "githubLink": "https://github.com/VinaykumarvemulaCSE/BLOOD-LINE",
     "status": "Live",
+    "featured": true,
+    "difficulty": "Production Grade",
+    "timeInvestment": "3 Weeks",
     "coverImage": "/projects/project-1774464605845/Screenshot_2026-03-26_000730.png",
     "gallery": [
       "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(5).png",
