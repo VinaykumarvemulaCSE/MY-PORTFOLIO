@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import profileData from "../../public/data/profile.json";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const config = profileData?.siteConfig as {
+  const config = (profileData as any)?.siteConfig as {
     title?: string;
     description?: string;
     url?: string;
