@@ -1,9 +1,4 @@
 {
-  "siteConfig": {
-    "title": "Vinay Kumar Vemula - Portfolio",
-    "description": "Portfolio of an AI-Augmented Full Stack Developer",
-    "url": "https://vinaykumarvemula.com"
-  },
   "name": "Vinay Kumar Vemula",
   "roles": [
     "AI-Augmented Full Stack Developer",
@@ -14,29 +9,5 @@
   "bio": "Computer Science student passionate about crafting beautiful, performant web experiences. Building the future, one component at a time.",
   "availableForOpportunities": true,
   "profileImage": "/demo.png",
-  "resumeUrl": "/RESUME.pdf",
-  "contact": {
-    "email": "kumarvinay072007@gmail.com",
-    "phone": "918019551015",
-    "location": "India"
-  },
-  "social": {
-    "github": "https://github.com/VinaykumarvemulaCSE",
-    "linkedin": "https://www.linkedin.com/in/vinaykumarvemula",
-    "twitter": "https://twitter.com/vinayvemula"
-  },
-  "sections": {
-    "hero": {
-      "title": "Hi, I'm Vinay",
-      "subtitle": "I build things for the web."
-    },
-    "projects": {
-      "title": "Featured Projects",
-      "description": "Here are some of the projects I've worked on."
-    },
-    "contact": {
-      "title": "Get In Touch",
-      "description": "I'm currently looking for new opportunities. My inbox is always open."
-    }
-  }
+  "githubUrl": ""
 }
