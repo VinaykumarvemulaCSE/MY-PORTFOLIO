@@ -20,38 +20,7 @@
     "difficulty": "Production Grade",
     "timeInvestment": "",
     "coverImage": "/projects/project-1788288199340/cover.jpg",
-    "gallery": [
-      "/projects/project-1788288199340/gallery/cover.jpg",
-      "/projects/project-1788288199340/gallery/landing.jpg",
-      "/projects/project-1788288199340/gallery/menu_full.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232050.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232112.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232133.jpg",
-      "/projects/project-1788288199340/gallery/galery_full.jpg",
-      "/projects/project-1788288199340/gallery/contact_full.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232656.jpg",
-      "/projects/project-1788288199340/gallery/reserve_full.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232345.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232418.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232440.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232519.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232541.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232716.jpg",
-      "/projects/project-1788288199340/gallery/admindash_full.jpg",
-      "/projects/project-1788288199340/gallery/orders_full.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232733.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232747.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232811.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232830.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_232913.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_233047.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_233110.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_233151.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_233313.jpg",
-      "/projects/project-1788288199340/gallery/Screenshot_2026-09-01_233339.jpg",
-      "/projects/project-1788288199340/gallery/setting_full.jpg",
-      "/projects/project-1788288199340/gallery/track_full.jpg"
-    ],
+    "gallery": [],
     "caseStudy": {
       "problem": "Local cafes often depend on multiple disconnected systems for online ordering, table reservations, and daily order management. This leads to fragmented workflows, delayed order communication, third-party platform commissions, and limited control over the customer experience. Aroma Cafe was built as a unified platform connecting the customer storefront with a real-time cafe management dashboard.",
       "architecture": "Built with Next.js (App Router) and React using Server Components, Server Actions, and hybrid rendering. Firebase Firestore provides the real-time data layer, while Firebase Authentication and custom claims handle authentication and role-based access control. Zustand manages client-side state such as carts and live order queues. React Hook Form + Zod provide validated form workflows, and Cloudinary handles optimized media storage and delivery. The customer storefront and admin dashboard operate on a shared real-time backend.",
@@ -68,7 +37,7 @@
       "metrics": []
     },
     "createdAt": "2026-09-01T18:44:25.830Z",
-    "updatedAt": "2026-09-01T19:31:13.885Z"
+    "updatedAt": "2026-09-01T19:35:20.131Z"
   },
   {
     "id": "project-1774464605845",
