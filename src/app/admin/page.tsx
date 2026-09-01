@@ -199,6 +199,36 @@ export default function Admin() {
     setTechInput("");
   };
 
+  const compressImage = (file: File, maxWidth = 1920, quality = 0.8): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = (maxWidth * height) / width;
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+
+          resolve(canvas.toDataURL("image/webp", quality));
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
   const fileToBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -218,7 +248,8 @@ export default function Admin() {
       let coverImageUrl = isEditing ? previewImage : "";
       if (imageFile) {
         toast.loading("Uploading cover image (1/1)...", { id: "img" });
-        const b64 = await fileToBase64(imageFile);
+        const b64 = await compressImage(imageFile);
+        const extReplaced = imageFile.name.replace(/\.[^/.]+$/, ".webp").replace(/\s+/g, "_");
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { 
@@ -229,8 +260,8 @@ export default function Admin() {
             action: "upload_image",
             projectId: isEditing ?? id,
             imageBase64: b64,
-            imageMime: imageFile.type,
-            imageFilename: imageFile.name.replace(/\s+/g, "_"),
+            imageMime: "image/webp",
+            imageFilename: extReplaced,
           }),
         });
         const data = await res.json();
@@ -244,7 +275,8 @@ export default function Admin() {
       let currentGalleryIdx = 1;
       for (const f of galleryFiles) {
         toast.loading(`Uploading gallery image (${currentGalleryIdx}/${galleryFiles.length})...`, { id: "gal" });
-        const b64 = await fileToBase64(f);
+        const b64 = await compressImage(f);
+        const extReplaced = f.name.replace(/\.[^/.]+$/, ".webp").replace(/\s+/g, "_");
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { 
@@ -255,8 +287,8 @@ export default function Admin() {
             action: "upload_image",
             projectId: isEditing ?? id,
             imageBase64: b64,
-            imageMime: f.type,
-            imageFilename: `gallery/${f.name.replace(/\s+/g, "_")}`,
+            imageMime: "image/webp",
+            imageFilename: `gallery/${extReplaced}`,
           }),
         });
         const data = await res.json();
@@ -313,7 +345,7 @@ export default function Admin() {
       // 1) Upload new profile photo if selected
       if (profPhotoFile) {
         toast.loading("Uploading new profile photo...", { id: "photo" });
-        const b64 = await fileToBase64(profPhotoFile);
+        const b64 = await compressImage(profPhotoFile, 800, 0.9);
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { 
