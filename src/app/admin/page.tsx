@@ -199,7 +199,7 @@ export default function Admin() {
     setTechInput("");
   };
 
-  const compressImage = (file: File, maxWidth = 1920, quality = 0.8): Promise<string> =>
+  const compressImage = (file: File, maxWidth = 1280, quality = 0.5): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -210,18 +210,32 @@ export default function Admin() {
           let width = img.width;
           let height = img.height;
 
+          // Limit width
           if (width > maxWidth) {
-            height = (maxWidth * height) / width;
+            height = Math.round((maxWidth * height) / width);
             width = maxWidth;
+          }
+
+          // Limit height for extremely tall screenshots (like full page captures)
+          const maxHeight = 4000;
+          if (height > maxHeight) {
+            width = Math.round((maxHeight * width) / height);
+            height = maxHeight;
           }
 
           canvas.width = width;
           canvas.height = height;
 
           const ctx = canvas.getContext("2d");
-          ctx?.drawImage(img, 0, 0, width, height);
+          // Fill with white background in case of transparency to jpeg conversion
+          if (ctx) {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+            ctx.drawImage(img, 0, 0, width, height);
+          }
 
-          resolve(canvas.toDataURL("image/webp", quality));
+          // Use JPEG format which compresses better for large screenshots than WebP in some cases
+          resolve(canvas.toDataURL("image/jpeg", quality));
         };
         img.onerror = reject;
       };
@@ -249,7 +263,7 @@ export default function Admin() {
       if (imageFile) {
         toast.loading("Uploading cover image (1/1)...", { id: "img" });
         const b64 = await compressImage(imageFile);
-        const extReplaced = imageFile.name.replace(/\.[^/.]+$/, ".webp").replace(/\s+/g, "_");
+        const extReplaced = imageFile.name.replace(/\.[^/.]+$/, ".jpg").replace(/\s+/g, "_");
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { 
@@ -260,7 +274,7 @@ export default function Admin() {
             action: "upload_image",
             projectId: isEditing ?? id,
             imageBase64: b64,
-            imageMime: "image/webp",
+            imageMime: "image/jpeg",
             imageFilename: extReplaced,
           }),
         });
@@ -276,7 +290,7 @@ export default function Admin() {
       for (const f of galleryFiles) {
         toast.loading(`Uploading gallery image (${currentGalleryIdx}/${galleryFiles.length})...`, { id: "gal" });
         const b64 = await compressImage(f);
-        const extReplaced = f.name.replace(/\.[^/.]+$/, ".webp").replace(/\s+/g, "_");
+        const extReplaced = f.name.replace(/\.[^/.]+$/, ".jpg").replace(/\s+/g, "_");
         const res = await fetch(API_URL, {
           method: "POST",
           headers: { 
@@ -287,7 +301,7 @@ export default function Admin() {
             action: "upload_image",
             projectId: isEditing ?? id,
             imageBase64: b64,
-            imageMime: "image/webp",
+            imageMime: "image/jpeg",
             imageFilename: `gallery/${extReplaced}`,
           }),
         });
