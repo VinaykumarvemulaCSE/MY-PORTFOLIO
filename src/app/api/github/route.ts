@@ -30,18 +30,37 @@ async function getFile(path: string) {
   return null;
 }
 
-async function commitFile(path: string, content: string, message: string, sha?: string) {
+async function commitFile(path: string, content: string, message: string, sha?: string): Promise<void> {
   const octokit = getOctokit();
   if (!OWNER || !REPO || !octokit) throw new Error("Missing GitHub credentials");
-  await octokit.repos.createOrUpdateFileContents({
-    owner: OWNER,
-    repo: REPO,
-    path,
-    message,
-    content: Buffer.from(content).toString("base64"),
-    branch: BRANCH,
-    ...(sha ? { sha } : {}),
-  });
+  
+  // Retry up to 3 times on SHA conflicts (409)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      let currentSha = sha;
+      if (attempt > 0) {
+        // Re-fetch the latest SHA on retry
+        const latest = await getFile(path);
+        currentSha = latest?.sha;
+      }
+      await octokit.repos.createOrUpdateFileContents({
+        owner: OWNER,
+        repo: REPO,
+        path,
+        message,
+        content: Buffer.from(content).toString("base64"),
+        branch: BRANCH,
+        ...(currentSha ? { sha: currentSha } : {}),
+      });
+      return; // success
+    } catch (err: any) {
+      if (err.status === 409 && attempt < 2) {
+        console.warn(`[github api] SHA conflict on ${path}, retrying (attempt ${attempt + 1})...`);
+        continue;
+      }
+      throw err;
+    }
+  }
 }
 
 async function uploadImage(base64Data: string, mimeType: string, projectId: string, filename: string) {
@@ -144,7 +163,7 @@ export async function POST(request: Request) {
       let existingProfile = {};
       if (file && file.content) {
         try {
-          existingProfile = JSON.parse(Buffer.from(file.content, "base64").toString("utf-8"));
+          existingProfile = JSON.parse(file.content);
         } catch (e) {}
       }
       
