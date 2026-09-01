@@ -30,6 +30,12 @@ interface Project {
   gallery: string[];
   createdAt: string;
   updatedAt: string;
+  caseStudy?: {
+    problem?: string;
+    architecture?: string;
+    challenges?: string[];
+    metrics?: { label: string; value: string }[];
+  };
 }
 
 export default function Admin() {
@@ -67,6 +73,12 @@ export default function Admin() {
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   // Gallery: existing URLs (when editing a project that already has a gallery)
   const [existingGallery, setExistingGallery] = useState<string[]>([]);
+  
+  // Case Study states
+  const [csProblem, setCsProblem] = useState("");
+  const [csArchitecture, setCsArchitecture] = useState("");
+  const [csChallenges, setCsChallenges] = useState("");
+  const [csMetrics, setCsMetrics] = useState("");
 
   const [activeTab, setActiveTab] = useState<"projects" | "profile">("projects");
 
@@ -159,6 +171,7 @@ export default function Admin() {
     setTitle(""); setDescription(""); setStatus("Live"); setTech([]);
     setTechInput(""); setLiveLink(""); setGithubLink(""); setLive(false);
     setImageFile(null); setPreviewImage(""); setGalleryFiles([]); setExistingGallery([]);
+    setCsProblem(""); setCsArchitecture(""); setCsChallenges(""); setCsMetrics("");
     setIsEditing(null);
   };
 
@@ -169,6 +182,10 @@ export default function Admin() {
     setGithubLink(p.githubLink || ""); setLive(p.live);
     setImageFile(null); setPreviewImage(p.coverImage || "");
     setGalleryFiles([]); setExistingGallery(p.gallery || []);
+    setCsProblem(p.caseStudy?.problem || "");
+    setCsArchitecture(p.caseStudy?.architecture || "");
+    setCsChallenges(p.caseStudy?.challenges?.join("\n") || "");
+    setCsMetrics(p.caseStudy?.metrics?.map(m => `${m.label}:${m.value}`).join("\n") || "");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -323,6 +340,15 @@ export default function Admin() {
         title, description, tech, live, liveLink, githubLink, status,
         coverImage: coverImageUrl,
         gallery: finalGallery,
+        caseStudy: (csProblem || csArchitecture || csChallenges || csMetrics) ? {
+          problem: csProblem,
+          architecture: csArchitecture,
+          challenges: csChallenges.split("\n").map(s => s.trim()).filter(Boolean),
+          metrics: csMetrics.split("\n").map(line => {
+            const parts = line.split(":");
+            return { label: (parts[0] || "").trim(), value: (parts.slice(1).join(":") || "").trim() };
+          }).filter(m => m.label && m.value)
+        } : undefined,
       };
 
       const res = await fetch(API_URL, {
@@ -914,6 +940,30 @@ export default function Admin() {
                   <div className="space-y-2">
                     <Label className="font-semibold">GitHub Repo URL</Label>
                     <Input placeholder="https://github.com/..." value={githubLink} onChange={(e) => setGithubLink(e.target.value)} className="glass" />
+                  </div>
+                </div>
+              </div>
+
+              {/* BOTTOM: Case Study Section */}
+              <div className="space-y-4 pt-4 border-t border-border/30">
+                <Label className="font-semibold text-lg text-primary">Case Study (Optional)</Label>
+                <p className="text-xs text-muted-foreground mt-0">Fill this to unlock the "Case Study" tab for this project.</p>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label className="font-semibold text-sm">Problem Statement</Label>
+                    <Textarea value={csProblem} onChange={e => setCsProblem(e.target.value)} rows={3} className="glass text-sm" placeholder="e.g. In emergency situations, finding compatible blood donors..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-semibold text-sm">Technical Architecture</Label>
+                    <Textarea value={csArchitecture} onChange={e => setCsArchitecture(e.target.value)} rows={3} className="glass text-sm" placeholder="e.g. Built on React with Tailwind CSS..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-semibold text-sm">Challenges (One per line)</Label>
+                    <Textarea value={csChallenges} onChange={e => setCsChallenges(e.target.value)} rows={3} className="glass text-sm" placeholder="Preventing race conditions...&#10;Optimizing mobile viewport..." />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="font-semibold text-sm">Metrics (Format: Label:Value - One per line)</Label>
+                    <Textarea value={csMetrics} onChange={e => setCsMetrics(e.target.value)} rows={3} className="glass text-sm" placeholder="Request Latency: < 250ms&#10;Real-Time Sync: Firestore" />
                   </div>
                 </div>
               </div>

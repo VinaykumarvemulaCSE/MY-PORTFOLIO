@@ -365,13 +365,15 @@ export default function ProjectsPage() {
                     >
                       Details
                     </button>
-                    <button 
-                      onClick={() => setModalView("case_study")}
-                      className={`text-xs font-semibold uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${modalView === "case_study" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-secondary/50 text-muted-foreground hover:bg-secondary"}`}
-                    >
-                      <span>Case Study</span>
-                      <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-500/80 text-white font-mono">Deep Dive</span>
-                    </button>
+                    {selectedProject.caseStudy && (
+                      <button 
+                        onClick={() => setModalView("case_study")}
+                        className={`text-xs font-semibold uppercase tracking-wider px-3.5 py-1.5 rounded-full transition-all flex items-center gap-1.5 ${modalView === "case_study" ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-secondary/50 text-muted-foreground hover:bg-secondary"}`}
+                      >
+                        <span>Case Study</span>
+                        <span className="text-[9px] px-1.5 py-0.2 rounded-full bg-amber-500/80 text-white font-mono">Deep Dive</span>
+                      </button>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -517,69 +519,57 @@ export default function ProjectsPage() {
                       className="max-w-4xl mx-auto px-6 py-10 md:py-16 space-y-10"
                     >
                       {/* Key Metrics Banner */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {(selectedProject.caseStudy?.metrics || [
-                          { label: "Request Latency", value: "< 250ms" },
-                          { label: "User Dashboards", value: "2 Dual Roles" },
-                          { label: "Real-Time Sync", value: "Firestore" },
-                          { label: "Payment Sandbox", value: "Razorpay" }
-                        ]).map((m, i) => (
-                          <div key={i} className="p-4 rounded-2xl glass border border-primary/20 text-center">
-                            <span className="text-xl md:text-2xl font-bold font-mono text-primary block">{m.value}</span>
-                            <span className="text-[11px] font-mono text-muted-foreground uppercase">{m.label}</span>
-                          </div>
-                        ))}
-                      </div>
+                      {selectedProject.caseStudy?.metrics && selectedProject.caseStudy.metrics.length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {selectedProject.caseStudy.metrics.map((m, i) => (
+                            <div key={i} className="p-4 rounded-2xl glass border border-primary/20 text-center">
+                              <span className="text-xl md:text-2xl font-bold font-mono text-primary block">{m.value}</span>
+                              <span className="text-[11px] font-mono text-muted-foreground uppercase">{m.label}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Problem Statement */}
-                      <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
-                        <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-500 uppercase tracking-wider">
-                          <span>01</span> • Problem Statement
+                      {selectedProject.caseStudy?.problem && (
+                        <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-500 uppercase tracking-wider">
+                            <span>01</span> • Problem Statement
+                          </div>
+                          <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                            {selectedProject.caseStudy.problem}
+                          </p>
                         </div>
-                        <h4 className="text-xl font-heading font-bold text-foreground">
-                          Emergency Bottlenecks in Blood Donation
-                        </h4>
-                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                          {selectedProject.caseStudy?.problem || 
-                            "In emergency situations, finding compatible blood donors quickly is hindered by fragmented phone calls, unverified donor registries, and lack of real-time location mapping. Every minute of delay introduces severe risk to patient survival."}
-                        </p>
-                      </div>
+                      )}
 
                       {/* Technical Architecture */}
-                      <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
-                        <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                          <span>02</span> • Technical Architecture
+                      {selectedProject.caseStudy?.architecture && (
+                        <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
+                            <span>02</span> • Technical Architecture
+                          </div>
+                          <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                            {selectedProject.caseStudy.architecture}
+                          </p>
                         </div>
-                        <h4 className="text-xl font-heading font-bold text-foreground">
-                          Dual-Dashboard Real-Time Synchronization
-                        </h4>
-                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                          {selectedProject.caseStudy?.architecture || 
-                            "Built on React with Tailwind CSS and backed by Firebase Firestore real-time listeners (`onSnapshot`). Separates concerns into a Receiver Dashboard (urgent blood requests & status tracker) and a Donor Dashboard (geolocation-based request discovery & quick dispatch)."}
-                        </p>
-                      </div>
+                      )}
 
                       {/* Engineering Challenges & Overcoming */}
-                      <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
-                        <div className="flex items-center gap-2 text-xs font-mono font-bold text-indigo-500 uppercase tracking-wider">
-                          <span>03</span> • Challenges Overcome
+                      {selectedProject.caseStudy?.challenges && selectedProject.caseStudy.challenges.length > 0 && (
+                        <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-indigo-500 uppercase tracking-wider">
+                            <span>03</span> • Challenges Overcome
+                          </div>
+                          <ul className="space-y-2.5 text-sm text-muted-foreground">
+                            {selectedProject.caseStudy.challenges.map((ch, idx) => (
+                              <li key={idx} className="flex items-start gap-2.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                                <span>{ch}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
-                        <h4 className="text-xl font-heading font-bold text-foreground">
-                          Key Technical Hurdles
-                        </h4>
-                        <ul className="space-y-2.5 text-sm text-muted-foreground">
-                          {(selectedProject.caseStudy?.challenges || [
-                            "Preventing race conditions when multiple donors accept the same urgent request concurrently via Firestore transactions.",
-                            "Optimizing mobile viewport responsiveness for high-stress emergency workflows with zero confusing clutter.",
-                            "Simulating transactional integrity with Razorpay test mode payment hooks."
-                          ]).map((ch, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                              <span>{ch}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                      )}
 
                       {/* Links CTA */}
                       <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border/30">

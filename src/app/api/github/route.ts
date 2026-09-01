@@ -186,6 +186,7 @@ export async function POST(request: Request) {
         timeInvestment: body.timeInvestment || (isUpdate !== -1 ? projects[isUpdate].timeInvestment : ""),
         coverImage: body.coverImage || (isUpdate !== -1 ? projects[isUpdate].coverImage : ""),
         gallery: body.gallery || (isUpdate !== -1 ? projects[isUpdate].gallery : []),
+        caseStudy: body.caseStudy || (isUpdate !== -1 ? projects[isUpdate].caseStudy : undefined),
         createdAt: isUpdate !== -1 ? projects[isUpdate].createdAt : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };
