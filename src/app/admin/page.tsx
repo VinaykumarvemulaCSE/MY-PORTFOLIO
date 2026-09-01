@@ -208,6 +208,45 @@ export default function Admin() {
     }
   };
 
+  const moveProject = async (id: string, direction: "up" | "down") => {
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${authToken}`
+        },
+        body: JSON.stringify({ action: "reorder_project", id, direction }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      setProjects(data.projects);
+      toast.success("Project reordered!");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to reorder");
+    }
+  };
+
+  const moveExistingGallery = (index: number, dir: -1 | 1) => {
+    const newIdx = index + dir;
+    if (newIdx < 0 || newIdx >= existingGallery.length) return;
+    const newGallery = [...existingGallery];
+    const temp = newGallery[index];
+    newGallery[index] = newGallery[newIdx];
+    newGallery[newIdx] = temp;
+    setExistingGallery(newGallery);
+  };
+
+  const moveGalleryFile = (index: number, dir: -1 | 1) => {
+    const newIdx = index + dir;
+    if (newIdx < 0 || newIdx >= galleryFiles.length) return;
+    const newFiles = [...galleryFiles];
+    const temp = newFiles[index];
+    newFiles[index] = newFiles[newIdx];
+    newFiles[newIdx] = temp;
+    setGalleryFiles(newFiles);
+  };
+
   const handleAddTech = (e: React.KeyboardEvent<HTMLInputElement> | React.FocusEvent) => {
     if ("key" in e && e.key !== "Enter") return;
     e.preventDefault();
@@ -875,11 +914,24 @@ export default function Admin() {
                           {existingGallery.map((url, i) => (
                             <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden group">
                               <img src={url} className="w-full h-full object-cover" />
-                              <button type="button"
-                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                                onClick={(e) => { e.stopPropagation(); setExistingGallery(existingGallery.filter((_, j) => j !== i)); }}>
-                                <FiX className="text-white" size={14} />
-                              </button>
+                              <div className="absolute top-0.5 left-0.5 bg-black/80 text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold z-10">{i + 1}</div>
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity gap-1">
+                                <div className="flex gap-1">
+                                  {i > 0 && (
+                                    <button type="button" className="p-1 hover:bg-white/20 rounded text-white" onClick={(e) => { e.stopPropagation(); moveExistingGallery(i, -1); }}>
+                                      <span className="text-[8px]">◀</span>
+                                    </button>
+                                  )}
+                                  {i < existingGallery.length - 1 && (
+                                    <button type="button" className="p-1 hover:bg-white/20 rounded text-white" onClick={(e) => { e.stopPropagation(); moveExistingGallery(i, 1); }}>
+                                      <span className="text-[8px]">▶</span>
+                                    </button>
+                                  )}
+                                </div>
+                                <button type="button" className="p-1 hover:bg-destructive/80 rounded text-white" onClick={(e) => { e.stopPropagation(); setExistingGallery(existingGallery.filter((_, j) => j !== i)); }}>
+                                  <FiX size={12} />
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -890,11 +942,24 @@ export default function Admin() {
                           {galleryFiles.map((f, i) => (
                             <div key={i} className="relative w-16 h-16 rounded-lg overflow-hidden group">
                               <img src={URL.createObjectURL(f)} className="w-full h-full object-cover" />
-                              <button type="button"
-                                className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity"
-                                onClick={(e) => { e.stopPropagation(); setGalleryFiles(galleryFiles.filter((_, j) => j !== i)); }}>
-                                <FiX className="text-white" size={14} />
-                              </button>
+                              <div className="absolute top-0.5 left-0.5 bg-primary text-white text-[9px] w-4 h-4 flex items-center justify-center rounded-full font-bold z-10">{existingGallery.length + i + 1}</div>
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-opacity gap-1">
+                                <div className="flex gap-1">
+                                  {i > 0 && (
+                                    <button type="button" className="p-1 hover:bg-white/20 rounded text-white" onClick={(e) => { e.stopPropagation(); moveGalleryFile(i, -1); }}>
+                                      <span className="text-[8px]">◀</span>
+                                    </button>
+                                  )}
+                                  {i < galleryFiles.length - 1 && (
+                                    <button type="button" className="p-1 hover:bg-white/20 rounded text-white" onClick={(e) => { e.stopPropagation(); moveGalleryFile(i, 1); }}>
+                                      <span className="text-[8px]">▶</span>
+                                    </button>
+                                  )}
+                                </div>
+                                <button type="button" className="p-1 hover:bg-destructive/80 rounded text-white" onClick={(e) => { e.stopPropagation(); setGalleryFiles(galleryFiles.filter((_, j) => j !== i)); }}>
+                                  <FiX size={12} />
+                                </button>
+                              </div>
                             </div>
                           ))}
                           <div className="w-16 h-16 rounded-lg border-2 border-dashed border-border/50 flex items-center justify-center text-muted-foreground">
@@ -990,8 +1055,27 @@ export default function Admin() {
             <div className="flex justify-center py-12"><div className="w-7 h-7 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {projects.map((p) => (
-                <Card key={p.id} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-colors">
+              {projects.map((p, index) => (
+                <Card key={p.id} className="group overflow-hidden border-border/50 hover:border-primary/30 transition-colors relative">
+                  {/* Reorder Buttons */}
+                  <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => moveProject(p.id, "up")} 
+                      disabled={index === 0}
+                      className="bg-black/70 hover:bg-black text-white p-1.5 rounded disabled:opacity-30 transition-colors"
+                      title="Move Up"
+                    >
+                      <span className="text-[10px]">▲</span>
+                    </button>
+                    <button 
+                      onClick={() => moveProject(p.id, "down")} 
+                      disabled={index === projects.length - 1}
+                      className="bg-black/70 hover:bg-black text-white p-1.5 rounded disabled:opacity-30 transition-colors"
+                      title="Move Down"
+                    >
+                      <span className="text-[10px]">▼</span>
+                    </button>
+                  </div>
                   {p.coverImage ? (
                     <div className="w-full h-36 overflow-hidden relative">
                       <img src={p.coverImage} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />

@@ -165,6 +165,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, url });
     }
 
+    // Reorder project route
+    if (body.action === "reorder_project") {
+      const file = await getFile(DATA_PATH);
+      if (!file) return NextResponse.json({ error: "projects.json not found" }, { status: 404 });
+      
+      let projects: any[] = JSON.parse(file.content);
+      const { id, direction } = body;
+      
+      const idx = projects.findIndex((p: any) => p.id === id);
+      if (idx === -1) return NextResponse.json({ error: "project not found" }, { status: 404 });
+      
+      if (direction === "up" && idx > 0) {
+        const temp = projects[idx];
+        projects[idx] = projects[idx - 1];
+        projects[idx - 1] = temp;
+      } else if (direction === "down" && idx < projects.length - 1) {
+        const temp = projects[idx];
+        projects[idx] = projects[idx + 1];
+        projects[idx + 1] = temp;
+      }
+
+      await commitFile(
+        DATA_PATH,
+        JSON.stringify(projects, null, 2),
+        `feat: reorder project "${id}" ${direction}`,
+        file.sha
+      );
+
+      return NextResponse.json({ success: true, projects });
+    }
+
     // Project saving route
     if (body.action === "save_project") {
       const id = body.id;
