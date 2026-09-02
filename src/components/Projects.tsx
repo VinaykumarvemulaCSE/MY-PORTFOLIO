@@ -24,8 +24,11 @@ interface Project {
   difficulty?: "Beginner" | "Intermediate" | "Advanced" | "Production Grade";
   timeInvestment?: string;
   caseStudy?: {
+    problemTitle?: string;
     problem?: string;
+    architectureTitle?: string;
     architecture?: string;
+    challengesTitle?: string;
     challenges?: string[];
     metrics?: { label: string; value: string }[];
   };
@@ -503,7 +506,7 @@ export default function Projects() {
                           <span>01</span> • Problem Statement
                         </div>
                         <h4 className="text-xl font-heading font-bold text-foreground">
-                          Emergency Bottlenecks in Blood Donation
+                          {selectedProject.caseStudy?.problemTitle || "Problem Statement"}
                         </h4>
                         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                           {selectedProject.caseStudy?.problem || 
@@ -517,7 +520,7 @@ export default function Projects() {
                           <span>02</span> • Technical Architecture
                         </div>
                         <h4 className="text-xl font-heading font-bold text-foreground">
-                          Dual-Dashboard Real-Time Synchronization
+                          {selectedProject.caseStudy?.architectureTitle || "Technical Architecture"}
                         </h4>
                         <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
                           {selectedProject.caseStudy?.architecture || 
@@ -531,7 +534,7 @@ export default function Projects() {
                           <span>03</span> • Challenges Overcome
                         </div>
                         <h4 className="text-xl font-heading font-bold text-foreground">
-                          Key Technical Hurdles
+                          {selectedProject.caseStudy?.challengesTitle || "Challenges Overcome"}
                         </h4>
                         <ul className="space-y-2.5 text-sm text-muted-foreground">
                           {(selectedProject.caseStudy?.challenges || [

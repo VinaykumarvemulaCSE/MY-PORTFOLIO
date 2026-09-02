@@ -52,8 +52,11 @@
       "/projects/project-1788288199340/gallery/track_full.jpg"
     ],
     "caseStudy": {
+      "problemTitle": "Fragmented Cafe Operations & High Platform Fees",
       "problem": "Local cafes often depend on multiple disconnected systems for online ordering, table reservations, and daily order management. This leads to fragmented workflows, delayed order communication, third-party platform commissions, and limited control over the customer experience. Aroma Cafe was built as a unified platform connecting the customer storefront with a real-time cafe management dashboard.",
+      "architectureTitle": "Unified Real-Time Cafe Ecosystem",
       "architecture": "Built with Next.js (App Router) and React using Server Components, Server Actions, and hybrid rendering. Firebase Firestore provides the real-time data layer, while Firebase Authentication and custom claims handle authentication and role-based access control. Zustand manages client-side state such as carts and live order queues. React Hook Form + Zod provide validated form workflows, and Cloudinary handles optimized media storage and delivery. The customer storefront and admin dashboard operate on a shared real-time backend.",
+      "challengesTitle": "Key Engineering Challenges",
       "challenges": [
         "Designing a real-time order workflow between customers and cafe staff",
         "Synchronizing order status changes without page refreshes",
@@ -134,6 +137,18 @@
       "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(24).png",
       "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(25).png"
     ],
+    "caseStudy": {
+      "problemTitle": "Emergency Bottlenecks in Blood Donation",
+      "problem": "In critical situations, accessing blood quickly is hindered by fragmented communication, unverified donor information, and the absence of a real-time coordination system—leading to dangerous delays.",
+      "architectureTitle": "Dual-Dashboard Real-Time Synchronization",
+      "architecture": "Built on React with Tailwind CSS and backed by Firebase Firestore real-time listeners. Separates concerns into a Receiver Dashboard (urgent blood requests & status tracker) and a Donor Dashboard (geolocation-based request discovery & quick dispatch).",
+      "challengesTitle": "Key Technical Hurdles",
+      "challenges": [
+        "Preventing race conditions when multiple donors accept the same urgent request concurrently via Firestore transactions",
+        "Optimizing mobile viewport responsiveness for high-stress emergency workflows with zero confusing clutter",
+        "Simulating transactional integrity with Razorpay test mode payment hooks"
+      ]
+    },
     "createdAt": "2026-03-25T18:50:06.967Z",
     "updatedAt": "2026-03-25T19:19:47.761Z"
   }
