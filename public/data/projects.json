@@ -52,11 +52,8 @@
       "/projects/project-1788288199340/gallery/track_full.jpg"
     ],
     "caseStudy": {
-      "problemTitle": "Fragmented Cafe Operations & High Platform Fees",
       "problem": "Local cafes often depend on multiple disconnected systems for online ordering, table reservations, and daily order management. This leads to fragmented workflows, delayed order communication, third-party platform commissions, and limited control over the customer experience. Aroma Cafe was built as a unified platform connecting the customer storefront with a real-time cafe management dashboard.",
-      "architectureTitle": "Unified Real-Time Cafe Ecosystem",
       "architecture": "Built with Next.js (App Router) and React using Server Components, Server Actions, and hybrid rendering. Firebase Firestore provides the real-time data layer, while Firebase Authentication and custom claims handle authentication and role-based access control. Zustand manages client-side state such as carts and live order queues. React Hook Form + Zod provide validated form workflows, and Cloudinary handles optimized media storage and delivery. The customer storefront and admin dashboard operate on a shared real-time backend.",
-      "challengesTitle": "Key Engineering Challenges",
       "challenges": [
         "Designing a real-time order workflow between customers and cafe staff",
         "Synchronizing order status changes without page refreshes",
@@ -95,7 +92,7 @@
       ]
     },
     "createdAt": "2026-09-01T18:44:25.830Z",
-    "updatedAt": "2026-09-02T13:26:58.881Z"
+    "updatedAt": "2026-09-02T13:39:58.863Z"
   },
   {
     "id": "project-1774464605845",
