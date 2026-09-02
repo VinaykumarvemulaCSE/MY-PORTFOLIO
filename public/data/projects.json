@@ -70,13 +70,29 @@
           "value": "< 250ms"
         },
         {
-          "label": "User Dashboards",
-          "value": "2 Roles"
+          "label": "User Roles",
+          "value": "2"
+        },
+        {
+          "label": "Real-Time Sync",
+          "value": "Firestore"
+        },
+        {
+          "label": "Authentication",
+          "value": "Firebase Auth"
+        },
+        {
+          "label": "Media Optimization",
+          "value": "Cloudinary"
+        },
+        {
+          "label": "Order Management",
+          "value": "Live KDS"
         }
       ]
     },
     "createdAt": "2026-09-01T18:44:25.830Z",
-    "updatedAt": "2026-09-02T13:10:55.349Z"
+    "updatedAt": "2026-09-02T13:16:07.732Z"
   },
   {
     "id": "project-1774464605845",
