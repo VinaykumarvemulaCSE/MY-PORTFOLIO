@@ -384,10 +384,13 @@ export default function Admin() {
           architecture: csArchitecture,
           challenges: csChallenges.split("\n").map(s => s.trim()).filter(Boolean),
           metrics: csMetrics.split("\n").map(line => {
+            if (!line.includes(":")) {
+              return { label: line.trim(), value: "" };
+            }
             const parts = line.split(":");
             return { label: (parts[0] || "").trim(), value: (parts.slice(1).join(":") || "").trim() };
-          }).filter(m => m.label && m.value)
-        } : undefined,
+          }).filter(m => m.label)
+        } : null,
       };
 
       const res = await fetch(API_URL, {
