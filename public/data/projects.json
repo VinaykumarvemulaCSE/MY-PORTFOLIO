@@ -1,5 +1,60 @@
 [
   {
+    "id": "project-1774464605845",
+    "title": "BLOOD-LINE",
+    "description": "Blood-Line is a full-stack web application designed to streamline blood donation and request workflows by connecting donors and recipients in real time.\n\nProblem:\nIn critical situations, accessing blood quickly is hindered by fragmented communication, unverified donor information, and the absence of a real-time coordination system—leading to dangerous delays.\n\nSolution:\nBlood-Line is a real-time blood donation platform that introduces a structured, dual-dashboard system connecting donors and recipients. It enables instant request creation, live tracking, and efficient donor response, ensuring faster and more reliable access to blood during emergencies.\n\nThe platform implements a dual-dashboard system:\n\nReceiver Dashboard enables users to create and manage urgent blood requests with live status tracking.\nDonor Dashboard allows registered donors to discover nearby requests and respond efficiently.\n\nCore system features include:\n\nSecure user authentication and profile management\nReal-time blood request creation and updates using Firestore\nStructured data modeling for donors, receivers, and request lifecycle\nPayment gateway integration (Razorpay test mode) to simulate transaction flows\nResponsive UI optimized for accessibility and clarity\n\nThe project emphasizes real-world usability, focusing on reducing friction in emergency scenarios while maintaining scalable architecture and clean UI design.",
+    "tech": [
+      "React",
+      "Tailwind",
+      "Vercel",
+      "Javascript",
+      "GitHub",
+      "Firebase"
+    ],
+    "live": true,
+    "liveLink": "https://blood-line-2007.vercel.app",
+    "githubLink": "https://github.com/VinaykumarvemulaCSE/BLOOD-LINE",
+    "status": "Live",
+    "featured": true,
+    "difficulty": "Production Grade",
+    "timeInvestment": "3 Weeks",
+    "coverImage": "/projects/project-1774464605845/Screenshot_2026-03-26_000730.png",
+    "gallery": [
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(5).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(6).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(7).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(8).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(9).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(11).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(12).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(13).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(14).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(16).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(17).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(18).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(19).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(20).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(21).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(23).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(24).png",
+      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(25).png"
+    ],
+    "caseStudy": {
+      "problemTitle": "Emergency Bottlenecks in Blood Donation",
+      "problem": "In critical situations, accessing blood quickly is hindered by fragmented communication, unverified donor information, and the absence of a real-time coordination system—leading to dangerous delays.",
+      "architectureTitle": "Dual-Dashboard Real-Time Synchronization",
+      "architecture": "Built on React with Tailwind CSS and backed by Firebase Firestore real-time listeners. Separates concerns into a Receiver Dashboard (urgent blood requests & status tracker) and a Donor Dashboard (geolocation-based request discovery & quick dispatch).",
+      "challengesTitle": "Key Technical Hurdles",
+      "challenges": [
+        "Preventing race conditions when multiple donors accept the same urgent request concurrently via Firestore transactions",
+        "Optimizing mobile viewport responsiveness for high-stress emergency workflows with zero confusing clutter",
+        "Simulating transactional integrity with Razorpay test mode payment hooks"
+      ]
+    },
+    "createdAt": "2026-03-25T18:50:06.967Z",
+    "updatedAt": "2026-03-25T19:19:47.761Z"
+  },
+  {
     "id": "project-1788288199340",
     "title": "AROMA-CAFE",
     "description": "Aroma Cafe — E-Commerce & Cafe Management Platform\n📖 Overview\n\nAroma Cafe is a full-featured digital platform designed to connect a cafe's customer ordering experience with its day-to-day operations through a single, unified system.\n\nThe platform provides customers with a modern online storefront for browsing the menu, placing orders, tracking orders in real time, and reserving tables. At the same time, cafe staff can manage orders, reservations, menu items, and daily operations through a dedicated real-time admin dashboard.\n\nThe result is a complete ecosystem that brings the cafe's digital storefront, ordering workflow, and operational management into one platform.\n\n🎯 Problem & Solution\n\nLocal cafes and restaurants often rely on a combination of third-party food delivery platforms, manual order handling, messaging apps, and disconnected management tools.\n\nThis creates several challenges:\n\nHigh platform commissions reduce profit margins.\nFragmented workflows make it difficult to manage online orders, reservations, and walk-in operations together.\nDelayed communication can result in missed or incorrectly handled orders.\nLimited ownership of customer data makes it harder for businesses to build direct relationships with their customers.\nAroma Cafe's Approach\n\nAroma Cafe addresses these problems by providing a proprietary ordering and management platform built specifically around the cafe's workflow.\n\nCustomers can place orders and reserve tables through the website, while staff receive real-time updates and audio notifications whenever new orders arrive.\n\nThis creates a direct connection between the customer and the cafe while giving the business greater control over its operations, digital presence, and customer experience.\n\n🛠️ Tech Stack\nFrontend\nNext.js\nReact\nApp Router\nServer Actions\nTailwind CSS\nshadcn/ui\nBackend & Data\nFirebase Firestore for real-time database synchronization\nFirebase Authentication for secure user authentication\nFirebase Admin SDK for administrative operations and role-based access\nState & Validation\nZustand for global state management\nReact Hook Form for form handling\nZod for schema-based validation\nMedia\nCloudinary for image storage, optimization, transformation, and delivery\n🏗️ Architecture & Product Approach\n\nThe platform is organized into two primary experiences that operate on top of a shared real-time backend.\n\n1. Customer Storefront\n\nThe customer-facing application is designed around simplicity, speed, and conversion.\n\nCustomers can:\n\nBrowse an interactive digital menu\nExplore categorized food and beverages\nAdd items to a persistent cart\nCheckout as a guest or authenticated user\nTrack orders in real time\nReorder previously purchased items\nCheck table availability\nReserve tables online\n\nThe interface also uses responsive layouts, micro-interactions, and lightweight animations to create a modern and premium browsing experience.\n\n2. Admin Dashboard\n\nThe admin application is designed around operational efficiency.\n\nUsing Firestore's real-time listeners, the dashboard functions as a lightweight Point of Sale and Kitchen Display System.\n\nStaff can:\n\nMonitor incoming orders in real time\nUpdate order statuses\nReceive audio alerts for new orders\nManage menu items and categories\nUpload and manage menu images\nReview and manage reservations\nControl operational data from a centralized dashboard\n\nAdministrative routes are protected using role-based access control, ensuring that sensitive management functionality is accessible only to authorized users.\n\n🚀 Key Features\n👤 Customer Experience\n\nInteractive Digital Menu\nCustomers can explore categorized menu items with rich imagery and detailed information.\n\nSmart Cart\nCart state is persisted to provide a consistent shopping experience across sessions.\n\nFlexible Checkout\nCustomers can complete orders as guests or authenticated users.\n\nReal-Time Order Tracking\nOrder progress updates live as it moves through different stages such as:\n\nPending → Preparing → Ready\n\nNo manual page refresh is required.\n\nTable Reservations\nCustomers can view availability and reserve tables through an intuitive booking interface.\n\nReordering\nPreviously purchased items can be reordered quickly for a faster repeat-purchase experience.\n\n🧑‍💼 Admin Experience\n\nLive Kitchen Dashboard\nIncoming orders appear in real time, giving staff an immediate view of the active order queue.\n\nAudio Order Alerts\nNew orders trigger audio notifications so staff can respond quickly during busy periods.\n\nMenu Management\nAdministrators can create, update, and remove menu items and manage their associated images.\n\nReservation Management\nStaff can review, approve, reject, and manage table reservations from a centralized interface.\n\nRole-Based Access Control\nAdministrative functionality is protected through authenticated roles and server-side authorization.\n\n⚡ Performance & Engineering\n\nPerformance was considered throughout the application rather than treated as a final-stage optimization.\n\nServer-Side Rendering & Static Generation\n\nNext.js Server Components and hybrid rendering are used to minimize unnecessary client-side JavaScript while improving initial page performance and SEO.\n\nImage Optimization\n\nCloudinary handles image transformation and delivery, allowing images to be resized and served in modern formats based on the application's requirements.\n\nOptimistic UI\n\nFrequently used interactions such as cart updates and status changes use optimistic UI patterns to make the interface feel immediate while the underlying operation completes.\n\nEfficient Real-Time Updates\n\nFirestore snapshot listeners are scoped carefully to reduce unnecessary updates and prevent excessive React re-renders when application state changes.\n\n🔐 Security & Access Control\n\nAroma Cafe separates customer functionality from administrative functionality using authentication and authorization layers.\n\nFirebase Authentication handles user identity, while administrative privileges are controlled through custom claims and server-side authorization.\n\nThis ensures that sensitive operations such as menu management, order administration, and reservation management cannot be accessed simply by navigating to protected routes.\n\n📈 What Aroma Cafe Demonstrates\n\nAroma Cafe is more than a restaurant website. It demonstrates the ability to design and build a production-oriented full-stack application that combines:\n\nCustomer-facing e-commerce\nReal-time database synchronization\nAuthentication and authorization\nAdministrative workflows\nOrder management\nReservation management\nMedia management\nState management\nPerformance optimization\nResponsive UI design\n\nThe project brings these pieces together into a single product designed around a real-world business workflow.",
@@ -93,60 +148,5 @@
     },
     "createdAt": "2026-09-01T18:44:25.830Z",
     "updatedAt": "2026-09-02T13:39:58.863Z"
-  },
-  {
-    "id": "project-1774464605845",
-    "title": "BLOOD-LINE",
-    "description": "Blood-Line is a full-stack web application designed to streamline blood donation and request workflows by connecting donors and recipients in real time.\n\nProblem:\nIn critical situations, accessing blood quickly is hindered by fragmented communication, unverified donor information, and the absence of a real-time coordination system—leading to dangerous delays.\n\nSolution:\nBlood-Line is a real-time blood donation platform that introduces a structured, dual-dashboard system connecting donors and recipients. It enables instant request creation, live tracking, and efficient donor response, ensuring faster and more reliable access to blood during emergencies.\n\nThe platform implements a dual-dashboard system:\n\nReceiver Dashboard enables users to create and manage urgent blood requests with live status tracking.\nDonor Dashboard allows registered donors to discover nearby requests and respond efficiently.\n\nCore system features include:\n\nSecure user authentication and profile management\nReal-time blood request creation and updates using Firestore\nStructured data modeling for donors, receivers, and request lifecycle\nPayment gateway integration (Razorpay test mode) to simulate transaction flows\nResponsive UI optimized for accessibility and clarity\n\nThe project emphasizes real-world usability, focusing on reducing friction in emergency scenarios while maintaining scalable architecture and clean UI design.",
-    "tech": [
-      "React",
-      "Tailwind",
-      "Vercel",
-      "Javascript",
-      "GitHub",
-      "Firebase"
-    ],
-    "live": true,
-    "liveLink": "https://blood-line-2007.vercel.app",
-    "githubLink": "https://github.com/VinaykumarvemulaCSE/BLOOD-LINE",
-    "status": "Live",
-    "featured": true,
-    "difficulty": "Production Grade",
-    "timeInvestment": "3 Weeks",
-    "coverImage": "/projects/project-1774464605845/Screenshot_2026-03-26_000730.png",
-    "gallery": [
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(5).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(6).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(7).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(8).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(9).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(11).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(12).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(13).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(14).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(16).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(17).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(18).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(19).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(20).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(21).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(23).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(24).png",
-      "/projects/project-1774464605845/gallery/blood-line-2007.vercel.app__(25).png"
-    ],
-    "caseStudy": {
-      "problemTitle": "Emergency Bottlenecks in Blood Donation",
-      "problem": "In critical situations, accessing blood quickly is hindered by fragmented communication, unverified donor information, and the absence of a real-time coordination system—leading to dangerous delays.",
-      "architectureTitle": "Dual-Dashboard Real-Time Synchronization",
-      "architecture": "Built on React with Tailwind CSS and backed by Firebase Firestore real-time listeners. Separates concerns into a Receiver Dashboard (urgent blood requests & status tracker) and a Donor Dashboard (geolocation-based request discovery & quick dispatch).",
-      "challengesTitle": "Key Technical Hurdles",
-      "challenges": [
-        "Preventing race conditions when multiple donors accept the same urgent request concurrently via Firestore transactions",
-        "Optimizing mobile viewport responsiveness for high-stress emergency workflows with zero confusing clutter",
-        "Simulating transactional integrity with Razorpay test mode payment hooks"
-      ]
-    },
-    "createdAt": "2026-03-25T18:50:06.967Z",
-    "updatedAt": "2026-03-25T19:19:47.761Z"
   }
 ]
