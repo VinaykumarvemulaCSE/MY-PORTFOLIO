@@ -30,7 +30,7 @@ async function getFile(path: string) {
   return null;
 }
 
-async function commitFile(path: string, content: string, message: string, sha?: string): Promise<void> {
+async function commitFile(path: string, content: string, message: string, sha?: string, isBase64: boolean = false): Promise<void> {
   const octokit = getOctokit();
   if (!OWNER || !REPO || !octokit) throw new Error("Missing GitHub credentials");
   
@@ -48,7 +48,7 @@ async function commitFile(path: string, content: string, message: string, sha?: 
         repo: REPO,
         path,
         message,
-        content: Buffer.from(content).toString("base64"),
+        content: isBase64 ? content : Buffer.from(content).toString("base64"),
         branch: BRANCH,
         ...(currentSha ? { sha: currentSha } : {}),
       });
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
       const raw = body.imageBase64.replace(/^data:[^;]+;base64,/, "");
       const path = "public/profile.png";
       const existing = await getFile(path);
-      await commitFile(path, raw, "feat: update profile photo", existing?.sha);
+      await commitFile(path, raw, "feat: update profile photo", existing?.sha, true);
       return NextResponse.json({ success: true, url: "/profile.png" });
     }
 
@@ -153,7 +153,7 @@ export async function POST(request: Request) {
       const raw = body.pdfBase64.replace(/^data:[^;]+;base64,/, "");
       const path = "public/resume.pdf";
       const existing = await getFile(path);
-      await commitFile(path, raw, "feat: update resume PDF", existing?.sha);
+      await commitFile(path, raw, "feat: update resume PDF", existing?.sha, true);
       return NextResponse.json({ success: true, url: "/resume.pdf" });
     }
 
