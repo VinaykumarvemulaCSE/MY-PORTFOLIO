@@ -124,6 +124,7 @@ const certificateDocs = legacyCertificates.map((certificate, index) => ({
   title: certificate.title,
   slug: { _type: "slug", current: slugify(certificate.title) },
   issuer: certificate.issuer,
+  term: certificate.term,
   issueDate: certificate.issueDate ? `${certificate.issueDate}-01-01` : undefined,
   credentialId: certificate.credentialId,
   verifyUrl: certificate.verifyUrl,

@@ -131,6 +131,7 @@ export function toCertificateViewModel(
     grade: doc.grade || undefined,
     score: doc.score || undefined,
     duration: doc.duration || undefined,
+    term: doc.term || undefined,
     issueDate: doc.issueDate || undefined,
     credentialId: doc.credentialId || undefined,
     verifyUrl: doc.verifyUrl || undefined,

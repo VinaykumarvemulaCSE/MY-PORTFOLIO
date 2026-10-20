@@ -85,7 +85,8 @@ export default function Certificates({ certificates }: CertificatesProps) {
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {certificates.map((certificate, index) => {
-              const issued = formatIssued(certificate.issueDate);
+              const issued =
+                certificate.term ?? formatIssued(certificate.issueDate);
               const skills = certificate.skills ?? [];
 
               return (
@@ -255,7 +256,10 @@ export default function Certificates({ certificates }: CertificatesProps) {
 
                 <dl className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {[
-                    { label: "Issued", value: formatIssued(selected.issueDate) },
+                    {
+                      label: selected.term ? "Term" : "Issued",
+                      value: selected.term ?? formatIssued(selected.issueDate),
+                    },
                     { label: "Score", value: selected.score },
                     { label: "Grade", value: selected.grade },
                     { label: "Duration", value: selected.duration },

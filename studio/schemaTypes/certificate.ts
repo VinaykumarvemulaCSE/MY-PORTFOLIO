@@ -70,6 +70,13 @@ export default defineType({
       description: "e.g. “12 weeks”.",
     }),
     defineField({
+      name: "term",
+      title: "Term",
+      type: "string",
+      description:
+        "e.g. “JUL–SEP 2026”. Use when the certificate shows a term instead of an exact date; it is displayed in place of the issue date.",
+    }),
+    defineField({
       name: "issueDate",
       title: "Issue date",
       type: "date",
@@ -86,7 +93,7 @@ export default defineType({
       title: "Verification URL",
       type: "url",
       description:
-        "The exact archive link that displays this credential. For NPTEL this looks like archive.nptel.ac.in/noc/Ecertificate/?q=…",
+        "The exact page that displays this credential. For NPTEL that is the URL encoded in the certificate's QR code, e.g. https://nptel.ac.in/verify/NOC-XXXX-XXXX-XXXXX",
       validation: (rule) =>
         rule
           .uri({ scheme: ["https"] })

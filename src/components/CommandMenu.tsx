@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { FiHome, FiFolder, FiMail, FiDownload, FiSettings, FiMoon, FiSun } from "react-icons/fi";
-import { RxDashboard } from "react-icons/rx";
 
 export function CommandMenu() {
   const [open, setOpen] = useState(false);
@@ -66,12 +65,6 @@ export function CommandMenu() {
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
             >
               <FiFolder className="text-muted-foreground" /> Projects Archive
-            </Command.Item>
-            <Command.Item
-              onSelect={() => runCommand(() => router.push("/admin"))}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
-            >
-              <RxDashboard className="text-muted-foreground" /> Admin Dashboard
             </Command.Item>
           </Command.Group>
 

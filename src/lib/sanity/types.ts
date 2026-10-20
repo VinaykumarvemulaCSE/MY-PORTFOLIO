@@ -117,6 +117,7 @@ export interface SanityCertificateDoc {
   grade?: string;
   score?: string;
   duration?: string;
+  term?: string;
   issueDate?: string;
   credentialId?: string;
   verifyUrl?: string;
@@ -191,6 +192,7 @@ export interface CertificateViewModel {
   grade?: string;
   score?: string;
   duration?: string;
+  term?: string;
   issueDate?: string;
   credentialId?: string;
   verifyUrl?: string;

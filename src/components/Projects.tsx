@@ -146,8 +146,7 @@ export default function Projects({ initialProjects }: ProjectsProps = {}) {
           </div>
         ) : projects.length === 0 ? (
           <div className="text-center py-10 text-muted-foreground border border-dashed border-border/50 rounded-2xl">
-            No projects yet — add some in the{" "}
-            <Link href="/admin" className="text-primary underline">Admin panel</Link>.
+            No projects published yet — add them in Sanity Studio.
           </div>
         ) : (
           // Embla horizontal carousel

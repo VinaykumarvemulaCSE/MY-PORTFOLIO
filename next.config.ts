@@ -8,14 +8,6 @@ const nextConfig: NextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "raw.githubusercontent.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
         // Sanity's asset CDN. Images uploaded in the Studio are served from here.
         protocol: "https",
         hostname: "cdn.sanity.io",

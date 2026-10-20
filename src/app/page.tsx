@@ -5,7 +5,6 @@ import About from "@/components/About";
 import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
 import Certificates from "@/components/Certificates";
-import GitHubActivity from "@/components/GitHubActivity";
 import Architecture from "@/components/Architecture";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
@@ -105,7 +104,6 @@ export default async function Home() {
         <Skills />
         <Projects initialProjects={projects} />
         <Certificates certificates={certificates} />
-        <GitHubActivity username="VinaykumarvemulaCSE" />
         <Architecture />
         <Contact profileData={profile} />
       </main>

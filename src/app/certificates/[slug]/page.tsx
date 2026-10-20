@@ -108,7 +108,10 @@ export default async function CertificatePage({ params }: PageProps) {
   const siteUrl = profile.siteConfig.url || "https://vinaykumar.eu.cc";
 
   const facts: { label: string; value?: string; mono?: boolean }[] = [
-    { label: "Issued", value: issued ?? undefined },
+    {
+      label: certificate.term ? "Term" : "Issued",
+      value: certificate.term ?? issued ?? undefined,
+    },
     { label: "Score", value: certificate.score },
     { label: "Grade", value: certificate.grade },
     { label: "Duration", value: certificate.duration },
