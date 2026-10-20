@@ -209,20 +209,21 @@ export default function Hero({ profileData }: { profileData?: any }) {
             </div>
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className="text-xs text-muted-foreground font-mono">scroll</span>
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-            <FiArrowDown size={16} className="text-muted-foreground" />
-          </motion.div>
-        </motion.div>
       </div>
+
+      {/* Scroll indicator — anchored to the section, not the text block, so it
+          never overlaps the hero CTAs on short viewports. */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 hidden sm:flex flex-col items-center gap-2"
+      >
+        <span className="text-xs text-muted-foreground font-mono">scroll</span>
+        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+          <FiArrowDown size={16} className="text-muted-foreground" />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

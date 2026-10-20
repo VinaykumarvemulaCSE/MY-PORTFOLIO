@@ -86,6 +86,7 @@ export default function Certificates({ certificates }: CertificatesProps) {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {certificates.map((certificate, index) => {
               const issued = formatIssued(certificate.issueDate);
+              const skills = certificate.skills ?? [];
 
               return (
                 <motion.article
@@ -143,9 +144,9 @@ export default function Certificates({ certificates }: CertificatesProps) {
                       {certificate.awardedBy ? ` · ${certificate.awardedBy}` : ""}
                     </p>
 
-                    {certificate.skills.length > 0 && (
+                    {skills.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-4">
-                        {certificate.skills.slice(0, 3).map((skill) => (
+                        {skills.slice(0, 3).map((skill) => (
                           <span
                             key={skill}
                             className="text-[11px] font-mono px-2 py-0.5 rounded-md border border-border/50 bg-secondary/30 text-foreground"
@@ -153,9 +154,9 @@ export default function Certificates({ certificates }: CertificatesProps) {
                             {skill}
                           </span>
                         ))}
-                        {certificate.skills.length > 3 && (
+                        {skills.length > 3 && (
                           <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-border/50 bg-secondary/30 text-muted-foreground">
-                            +{certificate.skills.length - 3}
+                            +{skills.length - 3}
                           </span>
                         )}
                       </div>

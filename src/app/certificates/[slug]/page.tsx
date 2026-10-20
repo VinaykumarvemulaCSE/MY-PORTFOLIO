@@ -137,7 +137,7 @@ export default async function CertificatePage({ params }: PageProps) {
         ? `${certificate.issuer} (${certificate.awardedBy})`
         : certificate.issuer,
     },
-    about: certificate.skills,
+    about: certificate.skills ?? [],
     ...(certificate.image ? { image: certificate.image } : {}),
   };
 
@@ -230,13 +230,13 @@ export default async function CertificatePage({ params }: PageProps) {
           </div>
         )}
 
-        {certificate.skills.length > 0 && (
+        {(certificate.skills ?? []).length > 0 && (
           <div className="mt-8">
             <h2 className="text-sm uppercase tracking-widest text-muted-foreground font-bold mb-3">
               Skills covered
             </h2>
             <div className="flex flex-wrap gap-2">
-              {certificate.skills.map((skill) => (
+              {(certificate.skills ?? []).map((skill) => (
                 <span
                   key={skill}
                   className="text-xs font-mono px-3 py-1.5 rounded-lg border border-border/50 bg-secondary/30 text-foreground"

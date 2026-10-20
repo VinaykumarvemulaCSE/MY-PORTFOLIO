@@ -131,3 +131,46 @@ published documents. That is fine for a portfolio.
 
 It is **not** fine for contact form submissions. Those are sent by email through
 Resend and are never written to Sanity — keep it that way.
+
+## Publishing a certificate without opening the Studio
+
+Certificates use the same fallback rule as projects: Sanity wins as soon as the
+dataset contains at least one `certificate` document, otherwise
+`public/data/certificates.json` is used. That means you can ship the NPTEL
+credential today, before the Sanity import.
+
+1. Put the certificate scan in `public/certificates/` (for example
+   `nptel-cloud-computing.jpg`). A 1600px-wide JPG or PNG keeps the modal sharp
+   without making the page heavy.
+2. Add an entry to `public/data/certificates.json`:
+
+```json
+[
+  {
+    "id": "nptel-cloud-computing",
+    "slug": "nptel-cloud-computing",
+    "title": "Cloud Computing",
+    "issuer": "NPTEL",
+    "awardedBy": "IIT Kharagpur",
+    "grade": "Elite",
+    "score": "84%",
+    "duration": "12 weeks",
+    "issueDate": "2026-10-15",
+    "credentialId": "NPTEL26CS000000000",
+    "verifyUrl": "https://archive.nptel.ac.in/content/...",
+    "category": "Course",
+    "summary": "One or two sentences about what the course covered.",
+    "skills": ["Cloud Computing", "Virtualisation", "Distributed Systems"],
+    "image": "/certificates/nptel-cloud-computing.jpg",
+    "featured": true
+  }
+]
+```
+
+Only include fields you can prove. If the score or credential ID is unknown,
+delete those keys rather than guessing: the card and the detail page hide
+missing fields, and a wrong score is worse than no score.
+
+The section appears at `/#certificates`, and each entry gets a static,
+verifiable page at `/certificates/<slug>` that is added to the sitemap
+automatically.
