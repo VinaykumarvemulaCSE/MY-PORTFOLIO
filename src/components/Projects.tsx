@@ -455,6 +455,9 @@ export default function Projects({ initialProjects }: ProjectsProps = {}) {
 
                           {/* Quick Links Section */}
                           <div className="flex flex-col sm:flex-row gap-4 pt-10 border-t border-border/20">
+                            <Link href={`/work/${selectedProject.slug}`} className="flex-1 flex items-center justify-center gap-2.5 bg-secondary/50 hover:bg-secondary border border-border/40 text-foreground py-4 rounded-2xl text-base font-semibold transition-all hover:scale-[1.02] active:scale-[0.98]">
+                              <FiArrowRight size={20} /> Full Case Study
+                            </Link>
                             {selectedProject.liveLink && (
                               <a href={selectedProject.liveLink} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2.5 bg-primary text-primary-foreground hover:bg-primary/90 py-4 rounded-2xl text-base font-bold transition-all shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98]">
                                 <FiExternalLink size={20} /> Launch Live Demo
@@ -479,72 +482,84 @@ export default function Projects({ initialProjects }: ProjectsProps = {}) {
                       className="max-w-4xl mx-auto px-6 py-10 md:py-16 space-y-10"
                     >
                       {/* Key Metrics Banner */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {(selectedProject.caseStudy?.metrics || [
-                          { label: "Request Latency", value: "< 250ms" },
-                          { label: "User Dashboards", value: "2 Dual Roles" },
-                          { label: "Real-Time Sync", value: "Firestore" },
-                          { label: "Payment Sandbox", value: "Razorpay" }
-                        ]).map((m, i) => (
-                          <div key={i} className="p-4 rounded-2xl glass border border-primary/20 text-center">
-                            <span className="text-xl md:text-2xl font-bold font-mono text-primary block">{m.value}</span>
-                            <span className="text-[11px] font-mono text-muted-foreground uppercase">{m.label}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Problem Statement */}
-                      <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
-                        <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-500 uppercase tracking-wider">
-                          <span>01</span> • Problem Statement
-                        </div>
-                        <h4 className="text-xl font-heading font-bold text-foreground">
-                          {selectedProject.caseStudy?.problemTitle || "Problem Statement"}
-                        </h4>
-                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                          {selectedProject.caseStudy?.problem || 
-                            "In emergency situations, finding compatible blood donors quickly is hindered by fragmented phone calls, unverified donor registries, and lack of real-time location mapping. Every minute of delay introduces severe risk to patient survival."}
-                        </p>
-                      </div>
-
-                      {/* Technical Architecture */}
-                      <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
-                        <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                          <span>02</span> • Technical Architecture
-                        </div>
-                        <h4 className="text-xl font-heading font-bold text-foreground">
-                          {selectedProject.caseStudy?.architectureTitle || "Technical Architecture"}
-                        </h4>
-                        <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                          {selectedProject.caseStudy?.architecture || 
-                            "Built on React with Tailwind CSS and backed by Firebase Firestore real-time listeners (`onSnapshot`). Separates concerns into a Receiver Dashboard (urgent blood requests & status tracker) and a Donor Dashboard (geolocation-based request discovery & quick dispatch)."}
-                        </p>
-                      </div>
-
-                      {/* Engineering Challenges & Overcoming */}
-                      <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
-                        <div className="flex items-center gap-2 text-xs font-mono font-bold text-indigo-500 uppercase tracking-wider">
-                          <span>03</span> • Challenges Overcome
-                        </div>
-                        <h4 className="text-xl font-heading font-bold text-foreground">
-                          {selectedProject.caseStudy?.challengesTitle || "Challenges Overcome"}
-                        </h4>
-                        <ul className="space-y-2.5 text-sm text-muted-foreground">
-                          {(selectedProject.caseStudy?.challenges || [
-                            "Preventing race conditions when multiple donors accept the same urgent request concurrently via Firestore transactions.",
-                            "Optimizing mobile viewport responsiveness for high-stress emergency workflows with zero confusing clutter.",
-                            "Simulating transactional integrity with Razorpay test mode payment hooks."
-                          ]).map((ch, idx) => (
-                            <li key={idx} className="flex items-start gap-2.5">
-                              <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                              <span>{ch}</span>
-                            </li>
+                      {(selectedProject.caseStudy?.metrics ?? []).length > 0 && (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {selectedProject.caseStudy!.metrics!.map((m, i) => (
+                            <div key={i} className="p-4 rounded-2xl glass border border-primary/20 text-center">
+                              <span className="text-xl md:text-2xl font-bold font-mono text-primary block">{m.value}</span>
+                              <span className="text-[11px] font-mono text-muted-foreground uppercase">{m.label}</span>
+                            </div>
                           ))}
-                        </ul>
-                      </div>
+                        </div>
+                      )}
+
+                      {selectedProject.caseStudy?.problem ? (
+                        <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-500 uppercase tracking-wider">
+                            <span>01</span> • Problem Statement
+                          </div>
+                          <h4 className="text-xl font-heading font-bold text-foreground">
+                            {selectedProject.caseStudy.problemTitle || "Problem Statement"}
+                          </h4>
+                          <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
+                            {selectedProject.caseStudy.problem}
+                          </p>
+                        </div>
+                      ) : null}
+
+                      {selectedProject.caseStudy?.architecture ? (
+                        <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
+                            <span>02</span> • Technical Architecture
+                          </div>
+                          <h4 className="text-xl font-heading font-bold text-foreground">
+                            {selectedProject.caseStudy.architectureTitle || "Technical Architecture"}
+                          </h4>
+                          <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
+                            {selectedProject.caseStudy.architecture}
+                          </p>
+                        </div>
+                      ) : null}
+
+                      {(selectedProject.caseStudy?.challenges ?? []).length > 0 ? (
+                        <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold text-indigo-500 uppercase tracking-wider">
+                            <span>03</span> • Challenges Overcome
+                          </div>
+                          <h4 className="text-xl font-heading font-bold text-foreground">
+                            {selectedProject.caseStudy?.challengesTitle || "Challenges Overcome"}
+                          </h4>
+                          <ul className="space-y-2.5 text-sm text-muted-foreground">
+                            {selectedProject.caseStudy!.challenges!.map((ch, idx) => (
+                              <li key={idx} className="flex items-start gap-2.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                                <span>{ch}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : null}
+
+                      {!selectedProject.caseStudy?.problem &&
+                        !selectedProject.caseStudy?.architecture &&
+                        (selectedProject.caseStudy?.challenges ?? []).length === 0 && (
+                          <div className="p-6 md:p-8 rounded-3xl glass border border-dashed border-border/60 text-center space-y-3">
+                            <h4 className="text-lg font-heading font-bold text-foreground">
+                              Write-up in progress
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              I haven&apos;t published the full engineering breakdown for this
+                              project yet. The source code and live demo are the honest
+                              source of truth in the meantime.
+                            </p>
+                          </div>
+                        )}
 
                       {/* Links CTA */}
                       <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-border/30">
+                        <Link href={`/work/${selectedProject.slug}`} className="flex-1 flex items-center justify-center gap-2 bg-secondary/50 hover:bg-secondary border border-border/40 text-foreground py-3.5 rounded-xl font-semibold text-sm transition-all">
+                          Open Full Case Study <FiArrowRight size={15} />
+                        </Link>
                         {selectedProject.liveLink && (
                           <a href={selectedProject.liveLink} target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3.5 rounded-xl font-bold text-sm hover:opacity-90 transition-all glow-sm">
                             <FiExternalLink size={16} /> Open Live Application

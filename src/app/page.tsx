@@ -4,11 +4,12 @@ import Hero from "@/components/Hero";
 import About from "@/components/About";
 import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
+import Certificates from "@/components/Certificates";
 import GitHubActivity from "@/components/GitHubActivity";
 import Architecture from "@/components/Architecture";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import { getProfile, getProjects } from "@/lib/sanity";
+import { getCertificates, getProfile, getProjects } from "@/lib/sanity";
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await getProfile();
@@ -52,7 +53,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   // Server-rendered profile & projects with Sanity/JSON fallback
-  const [profile, projects] = await Promise.all([getProfile(), getProjects()]);
+  const [profile, projects, certificates] = await Promise.all([
+    getProfile(),
+    getProjects(),
+    getCertificates(),
+  ]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,6 +67,7 @@ export default async function Home() {
         <About profileData={profile} />
         <Skills />
         <Projects initialProjects={projects} />
+        <Certificates certificates={certificates} />
         <GitHubActivity username="VinaykumarvemulaCSE" />
         <Architecture />
         <Contact profileData={profile} />

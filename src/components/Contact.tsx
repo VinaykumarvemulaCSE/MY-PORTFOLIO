@@ -9,12 +9,13 @@ import { FaWhatsapp } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import emailjs from "@emailjs/browser";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Invalid email").max(255),
-  message: z.string().trim().min(1, "Message is required").max(1000),
+  message: z.string().trim().min(10, "Please write at least 10 characters").max(5000),
+  // Honeypot: hidden from humans, attractive to bots.
+  website: z.string().max(100).optional(),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
@@ -44,25 +45,32 @@ const onSubmit = async (data: ContactForm) => {
   setSending(true);
 
   try {
-    await emailjs.send(
-      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
-      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
-      {
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
         name: data.name,
         email: data.email,
         message: data.message,
-      },
-      process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ""
-    );
+        website: data.website ?? "",
+      }),
+    });
 
-    toast.success("Message sent!");
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      toast.error(payload?.error || "Could not send your message. Please try again.");
+      return;
+    }
+
+    toast.success("Message sent — I'll reply as soon as I can.");
     reset();
   } catch (error) {
     console.error(error);
-    toast.error("Failed to send message");
+    toast.error("Network error. Please check your connection and try again.");
+  } finally {
+    setSending(false);
   }
-
-  setSending(false);
 };
 
   const socials = [
@@ -179,6 +187,16 @@ const onSubmit = async (data: ContactForm) => {
                 {errors[field] && <p className="text-xs text-destructive mt-1">{errors[field]?.message}</p>}
               </div>
             ))}
+            <div aria-hidden="true" className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden">
+              <label htmlFor="website">Leave this field empty</label>
+              <input
+                id="website"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                {...register("website")}
+              />
+            </div>
             <button
               type="submit"
               disabled={sending}

@@ -88,7 +88,7 @@ export const contact = defineType({
   title: "Contact",
   type: "object",
   fields: [
-    defineField({ name: "email", title: "Private email", type: "string" }),
+    // defineField({ name: "email", title: "Contact email", type: "string" }),
     defineField({
       name: "customEmail",
       title: "Public email",
