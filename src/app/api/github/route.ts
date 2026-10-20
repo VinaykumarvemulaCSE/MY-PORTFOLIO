@@ -164,7 +164,9 @@ export async function POST(request: Request) {
       if (file && file.content) {
         try {
           existingProfile = JSON.parse(file.content);
-        } catch (e) {}
+        } catch (e) {
+          // Malformed JSON: start from an empty profile rather than failing the save.
+        }
       }
       
       const mergedProfile = { ...existingProfile, ...body.profile };
@@ -189,7 +191,7 @@ export async function POST(request: Request) {
       const file = await getFile(DATA_PATH);
       if (!file) return NextResponse.json({ error: "projects.json not found" }, { status: 404 });
       
-      let projects: any[] = JSON.parse(file.content);
+      const projects: any[] = JSON.parse(file.content);
       const { id, direction } = body;
       
       const idx = projects.findIndex((p: any) => p.id === id);
@@ -219,7 +221,7 @@ export async function POST(request: Request) {
     if (body.action === "save_project") {
       const id = body.id;
       const file = await getFile(DATA_PATH);
-      let projects: any[] = file ? JSON.parse(file.content) : [];
+      const projects: any[] = file ? JSON.parse(file.content) : [];
 
       const isUpdate = projects.findIndex((p: any) => p.id === id);
       const newProject = {

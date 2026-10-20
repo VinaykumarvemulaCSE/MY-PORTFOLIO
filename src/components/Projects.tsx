@@ -55,17 +55,21 @@ export default function Projects({ initialProjects }: ProjectsProps = {}) {
     document.body.style.overflow = "";
   }, []);
 
-  const prev = () => {
+  const prev = useCallback(() => {
     if (!selectedProject) return;
-    const imgs = getImages(selectedProject);
-    setGalleryIndex((i) => (i - 1 + imgs.length) % imgs.length);
-  };
+    const count =
+      (selectedProject.coverImage ? 1 : 0) + (selectedProject.gallery?.length ?? 0);
+    if (!count) return;
+    setGalleryIndex((i) => (i - 1 + count) % count);
+  }, [selectedProject]);
 
-  const next = () => {
+  const next = useCallback(() => {
     if (!selectedProject) return;
-    const imgs = getImages(selectedProject);
-    setGalleryIndex((i) => (i + 1) % imgs.length);
-  };
+    const count =
+      (selectedProject.coverImage ? 1 : 0) + (selectedProject.gallery?.length ?? 0);
+    if (!count) return;
+    setGalleryIndex((i) => (i + 1) % count);
+  }, [selectedProject]);
 
   // Close lightbox on initial layout or Escape/Arrow key press
   useEffect(() => {
@@ -76,7 +80,7 @@ export default function Projects({ initialProjects }: ProjectsProps = {}) {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [selectedProject, closeProject]);
+  }, [closeProject, prev, next]);
 
   useEffect(() => {
     if (initialProjects && initialProjects.length > 0) {

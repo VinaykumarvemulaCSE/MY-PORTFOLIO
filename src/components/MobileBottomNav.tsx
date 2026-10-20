@@ -11,7 +11,9 @@ export default function MobileBottomNav() {
     if (typeof window !== "undefined" && "vibrate" in navigator) {
       try {
         navigator.vibrate(12);
-      } catch (e) {}
+      } catch (e) {
+        // Haptics are a nice-to-have; ignore unsupported or blocked calls.
+      }
     }
   };
 
