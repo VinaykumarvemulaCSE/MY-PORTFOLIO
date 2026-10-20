@@ -36,7 +36,7 @@ export default function Sidebar({ profileData }: SidebarProps) {
   const customEmail = profileData?.contact?.customEmail || "contact@vinaykumar.eu.cc";
   const phone = profileData?.contact?.phone || "+91 80195 51015";
   const location = profileData?.contact?.location || "Hyderabad, India";
-  const resumeUrl = profileData?.resumeUrl || "/RESUME.pdf";
+  const resumeUrl = profileData?.resumeUrl || "/resume.pdf";
   const github = profileData?.social?.github || "https://github.com/VinaykumarvemulaCSE";
   const linkedin = profileData?.social?.linkedin || "https://www.linkedin.com/in/vinaykumarvemula";
   const whatsapp = profileData?.social?.whatsapp || "https://wa.me/918019551015";

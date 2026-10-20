@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import ParticleField from "./ParticleField";
 import Image from "next/image";
 const demoPhoto = "/demo.png";
-const resume = "/RESUME.pdf";
+const resume = "/resume.pdf";
 
 const defaultRoles = ["AI-Augmented Full Stack Developer", "Tech Enthusiast", "CSE Student", "Problem Solver"];
 

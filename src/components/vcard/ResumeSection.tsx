@@ -42,7 +42,7 @@ const SKILL_METRICS = [
 ];
 
 export default function ResumeSection({ profileData }: { profileData: any }) {
-  const resumeUrl = profileData?.resumeUrl || "/RESUME.pdf";
+  const resumeUrl = profileData?.resumeUrl || "/resume.pdf";
 
   return (
     <motion.section

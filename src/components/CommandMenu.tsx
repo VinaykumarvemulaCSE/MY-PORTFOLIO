@@ -77,7 +77,7 @@ export function CommandMenu() {
 
           <Command.Group heading="Actions" className="text-xs font-semibold text-muted-foreground px-2 py-2 border-t border-border/30 mt-2">
             <Command.Item
-              onSelect={() => runCommand(() => window.open("/RESUME.pdf", "_blank"))}
+              onSelect={() => runCommand(() => window.open("/resume.pdf", "_blank"))}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
             >
               <FiDownload className="text-muted-foreground" /> Download Resume

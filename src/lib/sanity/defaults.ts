@@ -21,7 +21,7 @@ export const profileDefaults: ProfileViewModel = {
   availableForOpportunities: profileJson.availableForOpportunities ?? true,
 
   profileImage: profileJson.profileImage ?? "/profile.png",
-  resumeUrl: "/RESUME.pdf",
+  resumeUrl: "/resume.pdf",
 
   education: {
     degree: "B.Tech in Computer Science & Engineering",
