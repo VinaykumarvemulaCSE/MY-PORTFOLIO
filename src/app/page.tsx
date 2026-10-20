@@ -1,55 +1,67 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import About from "@/components/About";
-import Skills from "@/components/Skills";
-import Projects from "@/components/Projects";
-import GitHubActivity from "@/components/GitHubActivity";
-import Architecture from "@/components/Architecture";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
 
-// Server-side profile data for SEO and initial render
-import profileData from "../../public/data/profile.json";
+import PortfolioShell from "@/components/vcard/PortfolioShell";
+import { getProfile, getProjects } from "@/lib/sanity";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const config = (profileData as any)?.siteConfig as {
-    title?: string;
-    description?: string;
-    url?: string;
-  } | undefined;
-
-  const title = config?.title || "Vinay Kumar Vemula | Full Stack Developer";
-  const description = config?.description || "Official portfolio of Vinay Kumar Vemula.";
-  const url = config?.url || "https://vinaykumarvemula.com";
+  const profile = await getProfile();
+  const { siteConfig } = profile;
+  const url = siteConfig.url || "https://vinaykumar.eu.cc";
 
   return {
-    title,
-    description,
+    metadataBase: new URL(url),
+    title: siteConfig.title,
+    description: siteConfig.description,
+    keywords: [
+      "Vinay Kumar Vemula",
+      "Full Stack Developer",
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Portfolio",
+      "Computer Science Student",
+      "Software Engineer Intern",
+    ],
+    authors: [{ name: profile.name, url }],
     openGraph: {
-      title,
-      description,
+      title: siteConfig.title,
+      description: siteConfig.description,
       url,
+      siteName: `${profile.name} Portfolio`,
+      locale: "en_US",
       type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: siteConfig.title,
+      description: siteConfig.description,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
 
-export default function Home() {
+export default async function Home() {
+  // Server-rendered so the content is in the HTML and so a single Sanity
+  // webhook (see /api/revalidate) refreshes the whole page.
+  const [profile, projects] = await Promise.all([getProfile(), getProjects()]);
+
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main>
-        {/* Pass server-loaded profile data to components that need it */}
-        <Hero profileData={profileData} />
-        <About profileData={profileData} />
-        <Skills />
-        <Projects />
-        <GitHubActivity username="VinaykumarvemulaCSE" />
-        <Architecture />
-        <Contact profileData={profileData} />
-      </main>
-      <Footer profileData={profileData} />
-    </div>
+    <main className="min-h-screen bg-[#0e0e10] text-[#f5f5f5] selection:bg-amber-400/20 selection:text-amber-300 antialiased font-body relative overflow-x-hidden">
+      {/* Background ambient lighting */}
+      <div
+        className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none"
+        aria-hidden="true"
+      />
+      <div
+        className="fixed bottom-0 right-1/4 w-[450px] h-[450px] bg-primary/5 rounded-full blur-[140px] pointer-events-none"
+        aria-hidden="true"
+      />
+
+      {/* Main interactive application container */}
+      <PortfolioShell profileData={profile} projects={projects} />
+    </main>
   );
 }

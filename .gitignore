@@ -34,3 +34,12 @@ dist-ssr
 # Next.js
 .next
 out
+
+# Sanity
+sanity-export
+.sanity
+studio/node_modules
+studio/dist
+
+# TypeScript incremental build info
+*.tsbuildinfo

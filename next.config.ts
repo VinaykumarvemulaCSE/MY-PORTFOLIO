@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
+      {
+        // Sanity's asset CDN. Images uploaded in the Studio are served from here.
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
     ],
   },
 };

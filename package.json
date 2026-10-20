@@ -7,9 +7,13 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "analyze": "cross-env ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "migrate:sanity": "node scripts/migrate-to-sanity.mjs",
+    "studio": "npm --prefix studio run dev",
+    "studio:deploy": "npm --prefix studio run deploy",
+    "studio:install": "npm --prefix studio install"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
