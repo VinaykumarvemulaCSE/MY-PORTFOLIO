@@ -29,9 +29,20 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://vinaykumarvemula.com"),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://vinaykumar.eu.cc",
+  ),
   title: "Vinay Kumar Vemula | Full Stack Developer",
-  description: "Official portfolio of Vinay Kumar Vemula — a Creative Full Stack Developer specializing in React, TypeScript, and modern web architecture.",
+  description:
+    "Official portfolio of Vinay Kumar Vemula — a Creative Full Stack Developer specializing in React, TypeScript, and modern web architecture.",
+  applicationName: "Vinay Kumar Vemula — Portfolio",
+  authors: [{ name: "Vinay Kumar Vemula", url: "https://vinaykumar.eu.cc" }],
+  creator: "Vinay Kumar Vemula",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
+  },
 };
 
 export default function RootLayout({

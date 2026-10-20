@@ -1,76 +1,92 @@
-const CACHE_NAME = 'vinay-portfolio-v1';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/projects',
-  '/data/profile.json',
-  '/data/projects.json',
-  '/manifest.webmanifest',
-  '/demo.png'
-];
+/**
+ * Service worker for offline support.
+ *
+ * Strategy:
+ *  - HTML navigation: network first, cached page as the offline fallback, so a
+ *    deploy or CMS edit is visible on the very next visit.
+ *  - Static build assets (/_next/static, images, fonts): cache first, because
+ *    filenames are content-hashed and immutable.
+ *  - Everything else (RSC payloads, API routes, JSON): straight to the network.
+ *    Caching those is what makes a portfolio show month-old content.
+ */
+const CACHE_NAME = "vinay-portfolio-v2";
+const PRECACHE = ["/", "/offline.html"];
 
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn('Pre-caching warning:', err);
-      });
-    })
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.all(
+        PRECACHE.map((url) =>
+          cache.add(url).catch((error) => console.warn("[sw] could not cache", url, error)),
+        ),
+      ),
+    ),
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))),
+      )
+      .then(() => self.clients.claim()),
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  // Only cache GET requests and non-API calls
-  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+function isStaticAsset(url) {
+  return (
+    url.pathname.startsWith("/_next/static/") ||
+    /\.(?:css|js|woff2?|png|jpe?g|gif|svg|webp|avif|ico)$/i.test(url.pathname)
+  );
+}
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith("/api/")) return;
+
+  const isNavigation =
+    request.mode === "navigate" ||
+    (request.headers.get("accept") || "").includes("text/html");
+
+  if (isNavigation) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(async () => {
+          const cached = await caches.match(request);
+          return cached || caches.match("/offline.html") || caches.match("/");
+        }),
+    );
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        // Return cached and update in background (Stale-While-Revalidate)
-        fetch(event.request)
-          .then((networkResponse) => {
-            if (networkResponse && networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+  if (isStaticAsset(url)) {
+    event.respondWith(
+      caches.match(request).then(
+        (cached) =>
+          cached ||
+          fetch(request).then((response) => {
+            if (response.ok) {
+              const copy = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
             }
-          })
-          .catch(() => {});
-        return cachedResponse;
-      }
-
-      return fetch(event.request)
-        .then((networkResponse) => {
-          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-            return networkResponse;
-          }
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-          return networkResponse;
-        })
-        .catch(() => {
-          // If offline and request is HTML, fallback to cache root
-          if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/');
-          }
-        });
-    })
-  );
+            return response;
+          }),
+      ),
+    );
+  }
 });

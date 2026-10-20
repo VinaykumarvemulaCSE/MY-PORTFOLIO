@@ -59,8 +59,45 @@ export default async function Home() {
     getCertificates(),
   ]);
 
+  const siteUrl = (profile.siteConfig.url || "https://vinaykumar.eu.cc").replace(/\/$/, "");
+
+  // Person schema ties the domain, the social profiles and the work together so
+  // search engines can attribute the site to one person.
+  const personJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: profile.name,
+    jobTitle: profile.roles[0],
+    description: profile.bio,
+    url: siteUrl,
+    image: profile.profileImage
+      ? profile.profileImage.startsWith("http")
+        ? profile.profileImage
+        : `${siteUrl}${profile.profileImage}`
+      : undefined,
+    email: profile.contact.email,
+    sameAs: [profile.social.github, profile.social.linkedin].filter(Boolean),
+    knowsAbout: [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "Node.js",
+      "Full Stack Development",
+    ],
+    alumniOf: profile.education.institution
+      ? {
+          "@type": "EducationalOrganization",
+          name: profile.education.institution,
+        }
+      : undefined,
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
       <Navbar />
       <main>
         <Hero profileData={profile} />

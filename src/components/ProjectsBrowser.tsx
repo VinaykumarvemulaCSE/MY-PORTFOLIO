@@ -252,7 +252,13 @@ export default function ProjectsBrowser({ projects }: ProjectsBrowserProps) {
 
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <h3 className="font-heading font-bold text-foreground text-xl group-hover:text-primary transition-colors">
-                        {project.title}
+                        <Link
+                          href={`/work/${project.slug}`}
+                          onClick={(event) => event.stopPropagation()}
+                          className="hover:underline decoration-primary/40 underline-offset-4"
+                        >
+                          {project.title}
+                        </Link>
                       </h3>
                       {project.status && (
                         <span className={`text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded-full shrink-0 ${

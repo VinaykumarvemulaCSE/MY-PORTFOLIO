@@ -1,24 +1,34 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Vinay Kumar Vemula | Portfolio",
-    short_name: "Vinay Portfolio",
-    description: "Creative Full Stack Developer Portfolio - Vinay Kumar Vemula",
+    name: "Vinay Kumar Vemula | Full Stack Developer",
+    short_name: "Vinay Vemula",
+    description:
+      "Portfolio of Vinay Kumar Vemula — full stack developer working with React, Next.js and TypeScript.",
     start_url: "/",
+    scope: "/",
     display: "standalone",
-    background_color: "#ffffff",
-    theme_color: "#0070F3",
+    background_color: "#030712",
+    theme_color: "#f59e0b",
     icons: [
       {
-        src: "/demo.png",
+        src: "/icons/icon-192.png",
         sizes: "192x192",
         type: "image/png",
+        purpose: "any",
       },
       {
-        src: "/demo.png",
+        src: "/icons/icon-512.png",
         sizes: "512x512",
         type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icons/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
       },
     ],
   };
