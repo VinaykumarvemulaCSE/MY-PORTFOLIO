@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
-
-import PortfolioShell from "@/components/vcard/PortfolioShell";
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import About from "@/components/About";
+import Skills from "@/components/Skills";
+import Projects from "@/components/Projects";
+import GitHubActivity from "@/components/GitHubActivity";
+import Architecture from "@/components/Architecture";
+import Contact from "@/components/Contact";
+import Footer from "@/components/Footer";
 import { getProfile, getProjects } from "@/lib/sanity";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -44,24 +51,22 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  // Server-rendered so the content is in the HTML and so a single Sanity
-  // webhook (see /api/revalidate) refreshes the whole page.
+  // Server-rendered profile & projects with Sanity/JSON fallback
   const [profile, projects] = await Promise.all([getProfile(), getProjects()]);
 
   return (
-    <main className="min-h-screen bg-[#0e0e10] text-[#f5f5f5] selection:bg-amber-400/20 selection:text-amber-300 antialiased font-body relative overflow-x-hidden">
-      {/* Background ambient lighting */}
-      <div
-        className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none"
-        aria-hidden="true"
-      />
-      <div
-        className="fixed bottom-0 right-1/4 w-[450px] h-[450px] bg-primary/5 rounded-full blur-[140px] pointer-events-none"
-        aria-hidden="true"
-      />
-
-      {/* Main interactive application container */}
-      <PortfolioShell profileData={profile} projects={projects} />
-    </main>
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main>
+        <Hero profileData={profile} />
+        <About profileData={profile} />
+        <Skills />
+        <Projects initialProjects={projects} />
+        <GitHubActivity username="VinaykumarvemulaCSE" />
+        <Architecture />
+        <Contact profileData={profile} />
+      </main>
+      <Footer profileData={profile} />
+    </div>
   );
 }

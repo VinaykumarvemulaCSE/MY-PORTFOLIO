@@ -32,7 +32,7 @@ export default function About({ profileData }: { profileData?: any }) {
           </h2>
           <div className="w-12 h-1 bg-primary rounded-full mx-auto mb-6" />
           <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto text-lg">
-            {profileData?.sections?.about?.description || "I'm a Computer Science student passionate about building software that matters. Currently diving deep into modern web technologies, aiming to create production-quality applications and contribute to open-source."}
+            {profileData?.sections?.about?.description || profileData?.bio || "I'm a Computer Science student passionate about building software that matters. Currently diving deep into modern web technologies, aiming to create production-quality applications and contribute to open-source."}
           </p>
         </motion.div>
 

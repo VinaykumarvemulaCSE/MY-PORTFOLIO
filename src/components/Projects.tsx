@@ -9,32 +9,15 @@ import { FiGithub, FiExternalLink, FiFolder, FiArrowRight, FiX, FiChevronLeft, F
 import useEmblaCarousel from "embla-carousel-react";
 import { TECH_ICONS } from "../constants/techIcons";
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  tech: string[];
-  live: boolean;
-  liveLink?: string;
-  githubLink?: string;
-  status: string;
-  coverImage?: string;
-  gallery?: string[];
-  featured?: boolean;
-  difficulty?: "Beginner" | "Intermediate" | "Advanced" | "Production Grade";
-  timeInvestment?: string;
-  caseStudy?: {
-    problemTitle?: string;
-    problem?: string;
-    architectureTitle?: string;
-    architecture?: string;
-    challengesTitle?: string;
-    challenges?: string[];
-    metrics?: { label: string; value: string }[];
-  };
+import type { ProjectViewModel } from "@/lib/sanity/types";
+
+type Project = ProjectViewModel;
+
+interface ProjectsProps {
+  initialProjects?: Project[];
 }
 
-export default function Projects() {
+export default function Projects({ initialProjects }: ProjectsProps = {}) {
   const { ref, isVisible } = useScrollAnimation();
   const [emblaRef] = useEmblaCarousel({
     align: "start",
@@ -42,8 +25,12 @@ export default function Projects() {
     containScroll: "trimSnaps",
   });
 
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState<Project[]>(
+    initialProjects && initialProjects.length > 0 ? initialProjects.slice(0, 5) : []
+  );
+  const [loading, setLoading] = useState(
+    !(initialProjects && initialProjects.length > 0)
+  );
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [modalView, setModalView] = useState<"gallery" | "details" | "case_study">("gallery");
   const [galleryIndex, setGalleryIndex] = useState(0);
@@ -92,6 +79,12 @@ export default function Projects() {
   }, [selectedProject, closeProject]);
 
   useEffect(() => {
+    if (initialProjects && initialProjects.length > 0) {
+      setProjects(initialProjects.slice(0, 5));
+      setLoading(false);
+      return;
+    }
+
     // Fetch from static JSON — served directly by Vite/Vercel, no backend needed
     fetch(`/data/projects.json?t=${Date.now()}`)
       .then((r) => r.json())
@@ -101,7 +94,7 @@ export default function Projects() {
       })
       .catch((err) => console.error("Failed to load projects", err))
       .finally(() => setLoading(false));
-  }, []);
+  }, [initialProjects]);
 
   return (
     <section id="projects" className="section-padding relative overflow-hidden">
