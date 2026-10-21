@@ -2,8 +2,9 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect } from "react";
-import { FiExternalLink, FiHash, FiX } from "react-icons/fi";
+import { FiArrowUpRight, FiExternalLink, FiHash, FiX } from "react-icons/fi";
 
 import type { CertificateViewModel } from "@/lib/types";
 
@@ -134,19 +135,20 @@ export default function CertificateModal({ certificate, onClose }: CertificateMo
                   href={certificate.verifyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20"
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-secondary/50 hover:bg-secondary border border-border/40 text-foreground py-3 rounded-xl text-sm font-semibold transition-all"
                 >
                   <FiExternalLink size={16} />
                   Verify at {certificate.issuer}
                 </a>
               )}
-              <button
-                type="button"
+              <Link
+                href="/#contact"
                 onClick={onClose}
-                className="flex-1 inline-flex items-center justify-center gap-2 bg-secondary/50 hover:bg-secondary border border-border/40 text-foreground py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer"
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20 cursor-pointer"
               >
-                Close
-              </button>
+                Work with me
+                <FiArrowUpRight size={15} />
+              </Link>
             </div>
           </div>
         </motion.div>
