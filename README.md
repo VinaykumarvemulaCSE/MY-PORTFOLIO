@@ -13,7 +13,7 @@ The site is a Next.js App Router application with a small built-in CMS. Public c
 ### Public site
 
 - Single-page home with hero, about, skills, featured projects, certificates, and contact sections.
-- Featured projects are ordered from the CMS and capped at five. If no project is featured, all published projects are shown.
+- Featured projects are ordered from the CMS and capped at five. If no project is featured, published projects fill the same five slots.
 - Project archive with text search, category filters, and an interactive project modal.
 - Project case-study pages with galleries, technical notes, links, and schema.org structured data.
 - Certificate archive and detail pages with credential metadata and verification links.
@@ -226,7 +226,7 @@ Notes:
 2. Enable **Authentication → Sign-in method → Email/Password**.
 3. Add the admin user under **Authentication → Users**.
 4. Create Firestore in production mode.
-5. Create the content collections:
+5. Seed the content documents (Firestore creates each collection automatically):
    - `profile/main`
    - `projects/{slug}`
    - `certificates/{slug}`
@@ -273,7 +273,7 @@ The contact rate limiter writes an `expiresAt` timestamp. Create a Firestore TTL
 
 ## CMS notes
 
-The home page displays featured projects first, sorted by `order`, capped at five. If no project is marked featured, all published projects are used as the fallback pool. The home carousel is used when more than three projects are shown; otherwise a grid is used.
+The home page displays featured projects first, sorted by `order`, capped at five. If no project is marked featured, published projects are used as the fallback pool, still capped at five. The home carousel is used when more than three projects are shown; otherwise a grid is used.
 
 Unchecking **Published** hides an item from public reads without deleting it. Admin saves call `revalidatePath`, so static pages and metadata routes are refreshed without a redeploy. New project/certificate slugs are rendered on demand and cached afterward.
 
