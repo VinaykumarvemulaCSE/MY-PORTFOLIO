@@ -1,10 +1,13 @@
 import type { MetadataRoute } from "next";
 
-import { getProjectSlugs } from "@/lib/content";
+import { getCertificateSlugs, getProjectSlugs } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const projectSlugs = await getProjectSlugs();
+  const [projectSlugs, certificateSlugs] = await Promise.all([
+    getProjectSlugs(),
+    getCertificateSlugs(),
+  ]);
   const baseUrl = getSiteUrl();
 
   const now = new Date();
@@ -27,6 +30,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    {
+      url: `${baseUrl}/certificates`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    ...certificateSlugs.map((slug) => ({
+      url: `${baseUrl}/certificates/${slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
     })),
   ];
 }

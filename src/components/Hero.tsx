@@ -8,26 +8,15 @@ import { toast } from "sonner";
 import type { ProfileViewModel } from "@/lib/types";
 import ParticleField from "./ParticleField";
 
-const demoPhoto = "/profile.png";
-const resume = "/resume.pdf";
-
-const defaultRoles = [
-  "Full Stack Developer",
-  "Computer Science Student",
-  "React & TypeScript Builder",
-];
-
-export default function Hero({ profileData }: { profileData?: ProfileViewModel }) {
+export default function Hero({ profileData }: { profileData: ProfileViewModel }) {
   const profile = {
-    name: profileData?.name || "Vinay Kumar Vemula",
-    roles: profileData?.roles || defaultRoles,
-    bio:
-      profileData?.bio ||
-      "Computer Science student building full-stack applications with React, TypeScript, and Firebase.",
-    availableForOpportunities: profileData?.availableForOpportunities ?? true,
-    profileImage: profileData?.profileImage || demoPhoto,
-    resumeUrl: profileData?.resumeUrl || resume,
-    githubUrl: profileData?.social?.github || "https://github.com/VinaykumarvemulaCSE",
+    name: profileData.name,
+    roles: profileData.roles,
+    bio: profileData.bio,
+    availableForOpportunities: profileData.availableForOpportunities,
+    profileImage: profileData.profileImage,
+    resumeUrl: profileData.resumeUrl,
+    githubUrl: profileData.social.github,
   };
 
   const [roleIdx, setRoleIdx] = useState(0);
@@ -35,7 +24,7 @@ export default function Hero({ profileData }: { profileData?: ProfileViewModel }
   const [typing, setTyping] = useState(true);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
-  const email = profileData?.contact?.email || "kumarvinay072007@gmail.com";
+  const email = profileData.contact.email;
 
   const copyEmail = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,7 +34,7 @@ export default function Hero({ profileData }: { profileData?: ProfileViewModel }
     setTimeout(() => setCopiedEmail(false), 2500);
   };
 
-  const roles = profile.roles && profile.roles.length > 0 ? profile.roles : defaultRoles;
+  const roles = profile.roles.length > 0 ? profile.roles : [""];
 
   useEffect(() => {
     const role = roles[roleIdx % roles.length];
@@ -130,7 +119,7 @@ export default function Hero({ profileData }: { profileData?: ProfileViewModel }
               className="flex flex-wrap items-center justify-center lg:justify-start gap-4"
             >
               <a
-                href={profile.githubUrl || "https://github.com/VinaykumarvemulaCSE"}
+                href={profile.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="View GitHub Profile"
@@ -139,7 +128,7 @@ export default function Hero({ profileData }: { profileData?: ProfileViewModel }
                 <FiGithub size={16} /> View GitHub
               </a>
               <a
-                href={profile.resumeUrl || resume}
+                href={profile.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Download Resume"
@@ -191,7 +180,7 @@ export default function Hero({ profileData }: { profileData?: ProfileViewModel }
               {/* Photo */}
               <div className="absolute inset-3 rounded-full overflow-hidden border-2 border-primary/30">
                 <Image
-                  src={profile.profileImage || demoPhoto}
+                  src={profile.profileImage}
                   alt={`${profile.name} - Developer`}
                   fill
                   sizes="(max-width: 768px) 256px, 320px"

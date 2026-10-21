@@ -14,9 +14,10 @@ const NAV_ITEMS = [
   { label: "Contact", href: "#contact" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ name }: { name: string }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const active = useActiveSection();
+  const [firstWord, ...rest] = name.split(" ");
 
   return (
     <nav
@@ -25,7 +26,7 @@ export default function Navbar() {
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 md:px-8 h-16">
         <a href="#home" className="font-heading font-bold text-xl text-foreground group">
-          <span className="text-gradient">Vinay</span> Kumar Vemula
+          <span className="text-gradient">{firstWord}</span> {rest.join(" ")}
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary ml-0.5 mb-2 group-hover:animate-pulse" />
         </a>
 

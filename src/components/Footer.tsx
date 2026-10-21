@@ -17,25 +17,29 @@ const links = [
 
 export default function Footer({ profileData }: { profileData?: ProfileViewModel }) {
   const socialInfo = {
-    github: profileData?.social.github ?? "https://github.com/VinaykumarvemulaCSE",
-    linkedin: profileData?.social.linkedin ?? "https://www.linkedin.com/in/vinaykumarvemula",
+    github: profileData?.social.github ?? "",
+    linkedin: profileData?.social.linkedin ?? "",
   };
   const contactInfo = {
-    email: profileData?.contact.email ?? "kumarvinay072007@gmail.com",
-    phone: profileData?.contact.phone ?? "+91 80195 51015",
+    email: profileData?.contact.email ?? "",
+    phone: profileData?.contact.phone ?? "",
   };
-  const name = profileData?.name || "Vinay Kumar Vemula";
+  const name = profileData?.name ?? "";
 
   const socials = [
     { icon: FiGithub, href: socialInfo.github, label: "GitHub" },
     { icon: FiLinkedin, href: socialInfo.linkedin, label: "LinkedIn" },
-    { icon: FiMail, href: `mailto:${contactInfo.email}`, label: "Email" },
-    {
-      icon: FaWhatsapp,
-      href: `https://wa.me/${contactInfo.phone.replace(/[^0-9]/g, "")}`,
-      label: "WhatsApp",
-    },
-  ];
+    contactInfo.email
+      ? { icon: FiMail, href: `mailto:${contactInfo.email}`, label: "Email" }
+      : null,
+    contactInfo.phone
+      ? {
+          icon: FaWhatsapp,
+          href: `https://wa.me/${contactInfo.phone.replace(/[^0-9]/g, "")}`,
+          label: "WhatsApp",
+        }
+      : null,
+  ].filter((social) => social !== null);
 
   return (
     <footer

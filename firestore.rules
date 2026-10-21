@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// The public site reads through the Admin SDK, which bypasses these rules.
+// These rules protect against any browser-side access with a Firebase client:
+// published content is readable, everything else requires an admin document.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    match /profile/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /projects/{document} {
+      allow read: if resource.data.published != false;
+      allow write: if isAdmin();
+    }
+
+    match /certificates/{document} {
+      allow read: if resource.data.published != false;
+      allow write: if isAdmin();
+    }
+
+    match /skills/{document} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admin allowlist. Create a document with the UID of each admin user.
+    // Writes are denied here on purpose: add admins from the Firebase console.
+    match /admins/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

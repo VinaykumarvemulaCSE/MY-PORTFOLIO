@@ -1,8 +1,10 @@
 ﻿import { ImageResponse } from "next/og";
 
+import { getProfile, getSkillGroups } from "@/lib/content";
+
 export const runtime = "nodejs";
 
-export const alt = "Vinay Kumar Vemula - Full Stack Developer";
+export const alt = "Portfolio";
 export const size = {
   width: 1200,
   height: 630,
@@ -11,6 +13,11 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image() {
+  const [profile, groups] = await Promise.all([getProfile(), getSkillGroups()]);
+  const name = profile?.name ?? "Portfolio";
+  const role = profile?.roles[0] ?? "";
+  const tech = groups.flatMap((group) => group.skills).slice(0, 5);
+
   return new ImageResponse(
     <div
       style={{
@@ -86,37 +93,41 @@ export default async function Image() {
             letterSpacing: "-0.02em",
           }}
         >
-          Vinay Kumar Vemula
+          {name}
         </h1>
-        <p
-          style={{
-            fontSize: "48px",
-            color: "#C2A38F",
-            margin: 0,
-            fontWeight: 500,
-            textAlign: "center",
-          }}
-        >
-          Full Stack Developer
-        </p>
+        {role ? (
+          <p
+            style={{
+              fontSize: "48px",
+              color: "#C2A38F",
+              margin: 0,
+              fontWeight: 500,
+              textAlign: "center",
+            }}
+          >
+            {role}
+          </p>
+        ) : null}
 
-        <div style={{ display: "flex", gap: "24px", marginTop: "48px" }}>
-          {["React", "Next.js", "TypeScript", "Tailwind CSS", "Firebase"].map((tech) => (
-            <div
-              key={tech}
-              style={{
-                fontSize: "24px",
-                color: "#E6D0BA",
-                background: "rgba(0, 0, 0, 0.3)",
-                padding: "12px 24px",
-                borderRadius: "16px",
-                border: "1px solid rgba(226, 167, 111, 0.2)",
-              }}
-            >
-              {tech}
-            </div>
-          ))}
-        </div>
+        {tech.length > 0 ? (
+          <div style={{ display: "flex", gap: "24px", marginTop: "48px" }}>
+            {tech.map((skill) => (
+              <div
+                key={skill.name}
+                style={{
+                  fontSize: "24px",
+                  color: "#E6D0BA",
+                  background: "rgba(0, 0, 0, 0.3)",
+                  padding: "12px 24px",
+                  borderRadius: "16px",
+                  border: "1px solid rgba(226, 167, 111, 0.2)",
+                }}
+              >
+                {skill.name}
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>,
     {

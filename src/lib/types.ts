@@ -46,6 +46,9 @@ export interface ProjectViewModel {
   timeInvestment?: string;
   demoCredentials?: ProjectDemoCredentials;
   caseStudy?: ProjectCaseStudy;
+  /** CMS-only flags. Public pages ignore `published`; the content layer filters on it. */
+  published?: boolean;
+  order?: number;
 }
 
 export interface EducationViewModel {
@@ -53,6 +56,7 @@ export interface EducationViewModel {
   institution: string;
   period: string;
   status: string;
+  cgpa?: string;
   highlights: string[];
 }
 
@@ -92,6 +96,7 @@ export interface SkillGroupViewModel {
   id: string;
   title: string;
   skills: SkillViewModel[];
+  order?: number;
 }
 
 export interface CertificateViewModel {
@@ -112,4 +117,6 @@ export interface CertificateViewModel {
   skills: string[];
   image?: string;
   featured?: boolean;
+  published?: boolean;
+  order?: number;
 }

@@ -23,23 +23,20 @@ const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Invalid email").max(255),
   message: z.string().trim().min(10, "Please write at least 10 characters").max(5000),
+  company: z.string().optional(),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
 
-export default function Contact({ profileData }: { profileData?: ProfileViewModel }) {
+export default function Contact({ profileData }: { profileData: ProfileViewModel }) {
   const { ref, isVisible } = useScrollAnimation();
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [sending, setSending] = useState(false);
 
-  const contactInfo = {
-    email: profileData?.contact.email ?? "kumarvinay072007@gmail.com",
-    phone: profileData?.contact.phone ?? "+91 80195 51015",
-  };
-  const socialInfo = {
-    github: profileData?.social.github ?? "https://github.com/VinaykumarvemulaCSE",
-    linkedin: profileData?.social.linkedin ?? "https://www.linkedin.com/in/vinaykumarvemula",
-  };
-  const recipientEmail = contactInfo.email;
+  const recipientEmail = profileData.contact.email;
+  const whatsapp =
+    profileData.social.whatsapp ||
+    `https://wa.me/${profileData.contact.phone.replace(/[^0-9]/g, "")}`;
 
   const copyEmail = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -56,41 +53,71 @@ export default function Contact({ profileData }: { profileData?: ProfileViewMode
     formState: { errors },
   } = useForm<ContactForm>({ resolver: zodResolver(contactSchema) });
 
-  /**
-   * No backend and no email-provider key. The form opens the visitor's mail
-   * client with a pre-filled draft, which works on a static Vercel deploy and
-   * cannot silently fail behind an unset API key.
-   */
-  const onSubmit = (data: ContactForm) => {
-    const subject = encodeURIComponent(`Portfolio inquiry from ${data.name}`);
-    const body = encodeURIComponent(`Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`);
+  const onSubmit = async (data: ContactForm) => {
+    // Honeypot: bots fill hidden fields, humans never see this one.
+    if (data.company) return;
 
-    window.location.href = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
-    toast.info("Opening your email app — review the draft and hit send.");
-    reset();
+    setSending(true);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          message: data.message,
+          company: data.company,
+        }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Could not send your message.");
+      }
+
+      toast.success("Message sent — thanks for reaching out!");
+      reset();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Could not send your message. Try again."
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   const socials = [
+    profileData.social.github
+      ? {
+          icon: FiGithub,
+          label: "GitHub",
+          href: profileData.social.github,
+          handle: "GitHub Profile",
+        }
+      : null,
+    profileData.social.linkedin
+      ? {
+          icon: FiLinkedin,
+          label: "LinkedIn",
+          href: profileData.social.linkedin,
+          handle: "LinkedIn Profile",
+        }
+      : null,
     {
-      icon: FiGithub,
-      label: "GitHub",
-      href: socialInfo.github || "https://github.com/VinaykumarvemulaCSE",
-      handle: "GitHub Profile",
+      icon: FiMail,
+      label: "Email",
+      href: `mailto:${recipientEmail}`,
+      handle: recipientEmail,
     },
-    {
-      icon: FiLinkedin,
-      label: "LinkedIn",
-      href: socialInfo.linkedin || "https://www.linkedin.com/in/vinaykumarvemula",
-      handle: "LinkedIn Profile",
-    },
-    { icon: FiMail, label: "Email", href: `mailto:${recipientEmail}`, handle: recipientEmail },
-    {
-      icon: FaWhatsapp,
-      label: "WhatsApp",
-      href: `https://wa.me/${(contactInfo.phone || "918019551015").replace(/[^0-9]/g, "")}`,
-      handle: contactInfo.phone || "+91 80195 51015",
-    },
-  ];
+    whatsapp
+      ? {
+          icon: FaWhatsapp,
+          label: "WhatsApp",
+          href: whatsapp,
+          handle: profileData.contact.phone,
+        }
+      : null,
+  ].filter((social) => social !== null);
 
   return (
     <section id="contact" className="section-padding relative overflow-hidden">
@@ -175,6 +202,14 @@ export default function Contact({ profileData }: { profileData?: ProfileViewMode
             className="space-y-4"
             noValidate
           >
+            <input
+              type="text"
+              {...register("company")}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
+            />
             {(["name", "email", "message"] as const).map((field) => (
               <div key={field}>
                 <label
@@ -208,14 +243,14 @@ export default function Contact({ profileData }: { profileData?: ProfileViewMode
             <div className="space-y-2">
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all glow-sm"
+                disabled={sending}
+                className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all glow-sm disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <FiSend size={14} />
-                Send via email
+                {sending ? "Sending…" : "Send message"}
               </button>
               <p className="text-[11px] text-muted-foreground">
-                This opens your default email app with the message pre-filled. You can also copy the
-                address from the contact card.
+                Delivered straight to my inbox. You can also copy the address from the contact card.
               </p>
             </div>
           </motion.form>

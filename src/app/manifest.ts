@@ -1,11 +1,15 @@
 import type { MetadataRoute } from "next";
 
-export default function manifest(): MetadataRoute.Manifest {
+import { getProfile } from "@/lib/content";
+
+export default async function manifest(): Promise<MetadataRoute.Manifest> {
+  const profile = await getProfile();
+  const name = profile?.siteConfig.title || profile?.name || "Portfolio";
+
   return {
-    name: "Vinay Kumar Vemula | Full Stack Developer",
-    short_name: "Vinay Vemula",
-    description:
-      "Portfolio of Vinay Kumar Vemula — full stack developer working with React, Next.js and TypeScript.",
+    name,
+    short_name: profile?.name || "Portfolio",
+    description: profile?.siteConfig.description ?? "",
     start_url: "/",
     scope: "/",
     display: "standalone",
