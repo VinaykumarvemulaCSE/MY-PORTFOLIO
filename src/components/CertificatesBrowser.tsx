@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { FiAward, FiSearch } from "react-icons/fi";
 
 import type { CertificateViewModel } from "@/lib/types";
@@ -24,8 +24,8 @@ export default function CertificatesBrowser({ certificates }: CertificatesBrowse
       new Set(
         certificates
           .map((certificate) => certificate.category?.trim())
-          .filter((value): value is string => Boolean(value)),
-      ),
+          .filter((value): value is string => Boolean(value))
+      )
     ).sort();
 
     return ["All", ...unique];
@@ -43,8 +43,7 @@ export default function CertificatesBrowser({ certificates }: CertificatesBrowse
         (certificate.summary ?? "").toLowerCase().includes(query) ||
         certificate.skills.some((skill) => skill.toLowerCase().includes(query));
 
-      const matchesCategory =
-        activeCategory === "All" || certificate.category === activeCategory;
+      const matchesCategory = activeCategory === "All" || certificate.category === activeCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -81,7 +80,8 @@ export default function CertificatesBrowser({ certificates }: CertificatesBrowse
             transition={{ delay: 0.1 }}
             className="text-muted-foreground text-lg max-w-2xl"
           >
-            Every credential in one place, with the issuer&apos;s verification link where one exists.
+            Every credential in one place, with the issuer&apos;s verification link where one
+            exists.
           </motion.p>
         </div>
 

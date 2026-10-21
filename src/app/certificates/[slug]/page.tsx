@@ -41,7 +41,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${certificate.title} — ${certificate.issuer}`;
-  const description = certificate.summary ?? `${certificate.title} issued by ${certificate.issuer}.`;
+  const description =
+    certificate.summary ?? `${certificate.title} issued by ${certificate.issuer}.`;
 
   return {
     title,
@@ -106,10 +107,7 @@ export default async function CertificatePage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: toJsonLd(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: toJsonLd(jsonLd) }} />
 
       <header className="border-b border-border/30">
         <div className="max-w-4xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
