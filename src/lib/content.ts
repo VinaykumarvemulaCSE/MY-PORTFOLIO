@@ -34,7 +34,7 @@ export async function getSiteSettings(): Promise<{
 }
 
 export const getProjects = cache(async (): Promise<ProjectViewModel[]> => {
-  return publishedOnly((await readProjects()) ?? []);
+  return publishedOnly((await readProjects({ publishedOnly: true })) ?? []);
 });
 
 export async function getProjectBySlug(slug: string): Promise<ProjectViewModel | null> {
@@ -47,7 +47,7 @@ export async function getProjectSlugs(): Promise<string[]> {
 }
 
 export const getCertificates = cache(async (): Promise<CertificateViewModel[]> => {
-  return publishedOnly((await readCertificates()) ?? []);
+  return publishedOnly((await readCertificates({ publishedOnly: true })) ?? []);
 });
 
 export async function getCertificateBySlug(slug: string): Promise<CertificateViewModel | null> {

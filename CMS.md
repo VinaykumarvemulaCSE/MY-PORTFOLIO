@@ -57,6 +57,10 @@ Vercel's ~4.5 MB function request-body limit. Images and PDFs up to 10 MB
 Existing project, certificate and profile images were migrated to Cloudinary
 and the Firestore documents now point at `res.cloudinary.com` URLs.
 
+Deleting or replacing project/certificate/profile media also deletes the old
+Cloudinary asset, but only when no other document still references it. Cleanup
+is limited to the `portfolio/` folder on this Cloudinary account.
+
 PDF delivery is enabled on this account (Settings → Security → Allow delivery of
 PDF and ZIP files), so a new résumé PDF can be uploaded from the dashboard. The
 current résumé is still served from `/resume.pdf`.
@@ -65,13 +69,17 @@ current résumé is still served from `/resume.pdf`.
 
 - `/admin/profile` — hero, bio, education, contact, socials, site metadata.
 - `/admin/projects` — create/edit/delete projects, cover + gallery images
-  (drag and drop, multi-file), case study sections, demo credentials,
-  publish/featured flags, ordering.
-- `/admin/certificates` — certificates archive entries and their images.
+  (drag and drop, multi-file, reorder, set cover), case study sections, demo
+  credentials, publish/featured flags, display order.
+- `/admin/certificates` — certificates archive entries, their images and
+  display order.
 - `/admin/skills` — skill groups and the icon keys the public site renders.
 
 Every successful save shows a toast and revalidates the public routes. Unchecking
-**Published** hides an item without deleting it.
+**Published** hides an item without deleting it. On the home page, only
+**Featured** projects appear (up to five, lowest display order first); if none
+are featured, all published projects are shown. A carousel becomes a grid when
+there are three or fewer projects.
 
 ## 6. Production (Vercel)
 
@@ -91,9 +99,12 @@ Operational notes:
 - Admin saves call `revalidatePath`, so Vercel's cache is purged without a
   redeploy. New project/certificate slugs render on demand and are cached after
   the first request.
-- The contact rate limit is per serverless instance. It stops casual abuse but
-  is not a global quota; add a shared store (e.g. Upstash) if spam becomes a
-  problem.
+- Public project and certificate reads filter drafts in Firestore; only the CMS
+  reads unpublished documents.
+- The contact rate limit is stored in Firestore (`rateLimits/{sha256(ip)}`) so it
+  is shared across serverless instances. Add a Firestore TTL policy on
+  `rateLimits.expiresAt` so expired counters are cleaned up automatically. The
+  in-memory fallback only runs when Firestore is unavailable.
 - `public/sw.js` never caches `/admin` or `/api` responses. Bump `CACHE_NAME`
   whenever its strategy changes.
 - Only `res.cloudinary.com` is allowed through `next/image`. Upload media to
@@ -101,10 +112,10 @@ Operational notes:
 
 ## 7. Contact form
 
-`POST /api/contact` validates the submission, applies a small in-memory rate
-limit (5 messages / 10 minutes / IP), and sends it with Nodemailer over SMTP.
-The visitor's address is set as `Reply-To`. A hidden honeypot field filters
-basic bots.
+`POST /api/contact` validates the submission, applies a shared Firestore rate
+limit (5 messages / 10 minutes / IP), and sends it with Nodemailer over SMTP. The
+visitor's address is set as `Reply-To`. A hidden honeypot field filters basic
+bots.
 
 ## Architecture
 
@@ -114,6 +125,8 @@ basic bots.
 | `src/lib/firebase/store.ts`   | Firestore reads/writes used by the content layer and CMS. |
 | `src/lib/firebase/session.ts` | Session-cookie verification and `requireAdmin()`.         |
 | `src/lib/firebase/admin.ts`   | Firebase Admin SDK singleton.                             |
+| `src/lib/cloudinary.ts`       | Safe cleanup of unreferenced `portfolio/` media.          |
+| `src/lib/rate-limit.ts`       | Shared Firestore contact rate limiter.                    |
 | `src/lib/schemas.ts`          | Zod validation for every CMS write.                       |
 | `src/app/api/admin/session`   | Exchanges an ID token for an httpOnly cookie; sign-out.   |
 | `src/app/api/admin/upload`    | Signature for direct browser → Cloudinary uploads.        |
@@ -122,5 +135,5 @@ basic bots.
 | `src/app/(site)`              | Public pages (share the portfolio chrome).                |
 
 Firestore layout: `profile/main`, `projects/{slug}`, `certificates/{slug}`,
-`skills/{id}`. Documents store the same shape as the view models in
-`src/lib/types.ts` plus `published` and `order`.
+`skills/{id}`, `rateLimits/{sha256(ip)}`. Documents store the same shape as the
+view models in `src/lib/types.ts` plus `published` and `order`.

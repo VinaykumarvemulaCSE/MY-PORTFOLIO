@@ -25,7 +25,6 @@ export function CertificateForm({
 
       <input type="hidden" name="id" value={certificate.id} />
       <input type="hidden" name="originalSlug" value={certificate.slug} />
-      <input type="hidden" name="order" value={certificate.order ?? 0} />
 
       <AdminCard title="Certificate">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -63,6 +62,16 @@ export function CertificateForm({
           </Field>
           <Field label="Score">
             <input name="score" defaultValue={certificate.score} className={inputClass} />
+          </Field>
+          <Field label="Display order" hint="Lower numbers appear first.">
+            <input
+              name="order"
+              type="number"
+              min={0}
+              step={1}
+              defaultValue={certificate.order ?? 0}
+              className={inputClass}
+            />
           </Field>
           <Field label="Credential ID">
             <input

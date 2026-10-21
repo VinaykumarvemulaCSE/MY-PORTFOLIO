@@ -13,6 +13,8 @@ import {
   FiGithub,
   FiImage,
   FiKey,
+  FiMaximize2,
+  FiMinimize2,
   FiX,
 } from "react-icons/fi";
 
@@ -95,6 +97,7 @@ export default function ProjectModal({
 }: ProjectModalProps) {
   const [view, setView] = useState<ModalView>(initialView);
   const [galleryIndex, setGalleryIndex] = useState(0);
+  const [fill, setFill] = useState(false);
 
   const images = getProjectImages(project);
   const imageCount = images.length;
@@ -243,10 +246,25 @@ export default function ProjectModal({
                       src={images[galleryIndex]}
                       alt={`${project.title} screenshot ${galleryIndex + 1}`}
                       fill
-                      className="object-contain drop-shadow-2xl"
+                      className={fill ? "object-cover" : "object-contain drop-shadow-2xl"}
                       sizes="(max-width: 1200px) 100vw, 1200px"
                       priority
                     />
+                    <button
+                      type="button"
+                      onClick={() => setFill((value) => !value)}
+                      aria-pressed={fill}
+                      aria-label={
+                        fill
+                          ? "Fit screenshot inside the frame"
+                          : "Fill the frame with the screenshot"
+                      }
+                      title={fill ? "Fit screenshot" : "Fill frame"}
+                      className="absolute right-2 top-2 inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-background/80 px-3 py-1.5 text-[11px] font-medium text-muted-foreground shadow-lg backdrop-blur-sm transition hover:text-foreground"
+                    >
+                      {fill ? <FiMinimize2 size={13} /> : <FiMaximize2 size={13} />}
+                      {fill ? "Fit" : "Fill"}
+                    </button>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4 text-muted-foreground opacity-50">

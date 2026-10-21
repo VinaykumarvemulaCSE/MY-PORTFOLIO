@@ -99,8 +99,10 @@ export default function ProjectsBrowser({ projects }: ProjectsBrowserProps) {
             transition={{ delay: 0.1 }}
             className="text-muted-foreground text-lg max-w-2xl"
           >
-            Full-stack applications and experiments. Two projects are published so far; more are on
-            the way.
+            Full-stack applications and experiments.{" "}
+            {projects.length === 0
+              ? "No projects are published yet."
+              : `${projects.length} published project${projects.length === 1 ? "" : "s"} so far; more are on the way.`}
           </motion.p>
         </div>
 

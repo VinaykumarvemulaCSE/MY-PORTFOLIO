@@ -24,7 +24,12 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
     containScroll: "trimSnaps",
   });
 
-  const projects = initialProjects.slice(0, 5);
+  const projects = (() => {
+    const featured = initialProjects.filter((project) => project.featured);
+    const pool = featured.length > 0 ? featured : initialProjects;
+    return [...pool].sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).slice(0, 5);
+  })();
+  const useCarousel = projects.length > 3;
   const [selectedProject, setSelectedProject] = useState<ProjectViewModel | null>(null);
   const [modalView, setModalView] = useState<ProjectOpenView>("gallery");
 
@@ -51,7 +56,7 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
             </h2>
             <div className="w-12 h-1 bg-primary rounded-full mb-4" />
             <p className="text-muted-foreground max-w-md">
-              What I&apos;ve been building lately — swipe to explore.
+              What I&apos;ve been building lately{useCarousel ? " — swipe to explore." : "."}
             </p>
           </motion.div>
 
@@ -79,7 +84,7 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
           <div className="text-center py-10 text-muted-foreground border border-dashed border-border/50 rounded-2xl">
             No projects published yet.
           </div>
-        ) : (
+        ) : useCarousel ? (
           <div
             className="overflow-hidden cursor-grab active:cursor-grabbing -mx-4 md:-mx-8 px-4 md:px-8 pb-10"
             ref={emblaRef}
@@ -87,7 +92,7 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
             <div className="flex gap-6">
               {projects.map((project, index) => (
                 <motion.div
-                  key={project.id}
+                  key={project.slug}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={isVisible ? { opacity: 1, scale: 1 } : {}}
                   transition={{ delay: 0.08 * (index + 1), duration: 0.45 }}
@@ -97,6 +102,27 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
                 </motion.div>
               ))}
             </div>
+          </div>
+        ) : (
+          <div
+            className={`grid gap-6 ${
+              projects.length === 1
+                ? "max-w-md mx-auto"
+                : projects.length === 2
+                  ? "sm:grid-cols-2 max-w-3xl mx-auto"
+                  : "sm:grid-cols-2 lg:grid-cols-3"
+            }`}
+          >
+            {projects.map((project, index) => (
+              <motion.div
+                key={project.slug}
+                initial={{ opacity: 0, y: 20 }}
+                animate={isVisible ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: 0.08 * (index + 1), duration: 0.45 }}
+              >
+                <ProjectCard project={project} onOpen={openProject} variant="carousel" />
+              </motion.div>
+            ))}
           </div>
         )}
       </div>

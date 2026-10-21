@@ -3,6 +3,7 @@ import nodemailer from "nodemailer";
 import { z } from "zod";
 
 import { readProfile } from "@/lib/firebase/store";
+import { isRateLimited } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -12,26 +13,6 @@ const contactSchema = z.object({
   message: z.string().trim().min(10).max(5000),
   company: z.string().optional(),
 });
-
-const RATE_LIMIT = 5;
-const WINDOW_MS = 10 * 60 * 1000;
-const attempts = new Map<string, number[]>();
-
-function isRateLimited(ip: string): boolean {
-  const now = Date.now();
-
-  // Drop IPs whose window has fully expired so the map cannot grow forever.
-  if (attempts.size > 5000) {
-    for (const [key, times] of attempts) {
-      if (!times.some((time) => now - time < WINDOW_MS)) attempts.delete(key);
-    }
-  }
-
-  const recent = (attempts.get(ip) ?? []).filter((time) => now - time < WINDOW_MS);
-  recent.push(now);
-  attempts.set(ip, recent);
-  return recent.length > RATE_LIMIT;
-}
 
 function escapeHtml(value: string): string {
   return value
@@ -48,7 +29,7 @@ export async function POST(request: Request) {
     request.headers.get("x-real-ip") ??
     "unknown";
 
-  if (isRateLimited(ip)) {
+  if (await isRateLimited(ip)) {
     return NextResponse.json(
       { error: "Too many messages. Please try again in a few minutes." },
       { status: 429 }

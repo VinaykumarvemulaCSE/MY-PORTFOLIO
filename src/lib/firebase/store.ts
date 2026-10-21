@@ -23,12 +23,23 @@ export const COLLECTIONS = {
   skills: "skills",
 } as const;
 
-async function readDocs(collection: string): Promise<Record<string, unknown>[] | null> {
+async function readDocs(
+  collection: string,
+  options: { publishedOnly?: boolean } = {}
+): Promise<Record<string, unknown>[] | null> {
   if (!isFirebaseAdminConfigured()) return null;
 
   const db = getDb();
   if (!db) return null;
-  const snapshot = await db.collection(collection).get();
+
+  // Filter drafts in Firestore rather than downloading them and filtering in
+  // memory. Sorting stays in memory because an equality filter plus orderBy
+  // needs a composite index, which is not worth it at this collection size.
+  const snapshot = await (options.publishedOnly
+    ? db.collection(collection).where("published", "==", true)
+    : db.collection(collection)
+  ).get();
+
   return snapshot.docs.map((doc) => ({ ...doc.data(), _docId: doc.id }));
 }
 
@@ -51,8 +62,10 @@ export async function readProfile(): Promise<ProfileViewModel | null> {
   return parsed.data;
 }
 
-export async function readProjects(): Promise<ProjectViewModel[] | null> {
-  const docs = await readDocs(COLLECTIONS.projects);
+export async function readProjects(
+  options: { publishedOnly?: boolean } = {}
+): Promise<ProjectViewModel[] | null> {
+  const docs = await readDocs(COLLECTIONS.projects, options);
   if (!docs) return null;
 
   return docs
@@ -70,8 +83,10 @@ export async function readProjects(): Promise<ProjectViewModel[] | null> {
     .sort(byOrder);
 }
 
-export async function readCertificates(): Promise<CertificateViewModel[] | null> {
-  const docs = await readDocs(COLLECTIONS.certificates);
+export async function readCertificates(
+  options: { publishedOnly?: boolean } = {}
+): Promise<CertificateViewModel[] | null> {
+  const docs = await readDocs(COLLECTIONS.certificates, options);
   if (!docs) return null;
 
   return docs

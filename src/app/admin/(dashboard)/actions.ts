@@ -4,12 +4,14 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import type { ActionState } from "@/lib/action-state";
+import { deleteCloudinaryAssets } from "@/lib/cloudinary";
 import { isFirebaseAdminConfigured } from "@/lib/firebase/config";
 import { requireAdmin } from "@/lib/firebase/session";
 import {
   COLLECTIONS,
   deleteDoc,
   readCertificates,
+  readProfile,
   readProjects,
   readSkillGroups,
   saveCertificate,
@@ -68,6 +70,45 @@ function refresh() {
   revalidatePath("/opengraph-image");
 }
 
+function projectImageUrls(project: ProjectViewModel): string[] {
+  return [project.coverImage, ...(project.gallery ?? [])].filter((url): url is string => !!url);
+}
+
+/**
+ * Deletes media that is no longer referenced by any project, certificate or the
+ * profile. Checking every document first means a reused image is never removed
+ * just because one project stopped using it.
+ */
+async function cleanupImages(candidates: string[]): Promise<void> {
+  if (candidates.length === 0) return;
+
+  try {
+    const [projects, certificates, profile] = await Promise.all([
+      readProjects(),
+      readCertificates(),
+      readProfile(),
+    ]);
+
+    const referenced = new Set<string>();
+    for (const project of projects ?? []) {
+      for (const url of projectImageUrls(project)) referenced.add(url);
+    }
+    for (const certificate of certificates ?? []) {
+      if (certificate.image) referenced.add(certificate.image);
+    }
+    if (profile?.profileImage) referenced.add(profile.profileImage);
+    if (profile?.resumeUrl) referenced.add(profile.resumeUrl);
+
+    // If either public collection could not be read, skip deletion rather than
+    // risk removing media that is still referenced somewhere.
+    if (!projects || !certificates) return;
+
+    await deleteCloudinaryAssets([...new Set(candidates)].filter((url) => !referenced.has(url)));
+  } catch (error) {
+    console.error("[admin] image cleanup failed", error);
+  }
+}
+
 function errorMessage(error: unknown): ActionState {
   if (error instanceof z.ZodError) {
     const first = error.issues[0];
@@ -124,7 +165,16 @@ export async function saveProfileAction(
 
   try {
     const parsed = profileSchema.parse(candidate);
+    const previous = await readProfile();
     await saveProfile(parsed);
+
+    if (previous) {
+      const removed = [previous.profileImage, previous.resumeUrl].filter(
+        (url) => url !== parsed.profileImage && url !== parsed.resumeUrl
+      );
+      await cleanupImages(removed);
+    }
+
     refresh();
     return { ok: true, message: "Profile saved." };
   } catch (error) {
@@ -195,7 +245,7 @@ export async function saveProjectAction(
     demoCredentials: readDemoCredentials(formData),
     caseStudy: readCaseStudy(formData),
     published: checkbox(formData, "published"),
-    order: Number(text(formData, "order")) || 0,
+    order: Math.max(0, Math.trunc(Number(text(formData, "order")) || 0)),
   };
 
   try {
@@ -205,9 +255,16 @@ export async function saveProjectAction(
       return { ok: false, message: "A project with that slug already exists." };
     }
 
+    const previous = existing.find((project) => project.slug === originalSlug) ?? null;
+
     await saveProject(parsed);
     if (originalSlug && originalSlug !== parsed.slug) {
       await deleteDoc(COLLECTIONS.projects, originalSlug);
+    }
+
+    if (previous) {
+      const currentImages = new Set(projectImageUrls(parsed));
+      await cleanupImages(projectImageUrls(previous).filter((url) => !currentImages.has(url)));
     }
 
     refresh();
@@ -221,7 +278,11 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
   await requireAdmin();
   const slug = text(formData, "slug");
   if (slug && isFirebaseAdminConfigured()) {
+    const projects = await readProjects();
+    const target = projects?.find((project) => project.slug === slug) ?? null;
+
     await deleteDoc(COLLECTIONS.projects, slug);
+    if (target) await cleanupImages(projectImageUrls(target));
     refresh();
   }
   revalidatePath("/admin/projects");
@@ -257,7 +318,7 @@ export async function saveCertificateAction(
     image: optional(text(formData, "image")),
     featured: checkbox(formData, "featured"),
     published: checkbox(formData, "published"),
-    order: Number(text(formData, "order")) || 0,
+    order: Math.max(0, Math.trunc(Number(text(formData, "order")) || 0)),
   };
 
   try {
@@ -271,9 +332,15 @@ export async function saveCertificateAction(
       return { ok: false, message: "A certificate with that slug already exists." };
     }
 
+    const previous = existing.find((certificate) => certificate.slug === originalSlug) ?? null;
+
     await saveCertificate(parsed);
     if (originalSlug && originalSlug !== parsed.slug) {
       await deleteDoc(COLLECTIONS.certificates, originalSlug);
+    }
+
+    if (previous?.image && previous.image !== parsed.image) {
+      await cleanupImages([previous.image]);
     }
 
     refresh();
@@ -287,7 +354,11 @@ export async function deleteCertificateAction(formData: FormData): Promise<void>
   await requireAdmin();
   const slug = text(formData, "slug");
   if (slug && isFirebaseAdminConfigured()) {
+    const certificates = await readCertificates();
+    const target = certificates?.find((certificate) => certificate.slug === slug) ?? null;
+
     await deleteDoc(COLLECTIONS.certificates, slug);
+    if (target?.image) await cleanupImages([target.image]);
     refresh();
   }
   revalidatePath("/admin/certificates");

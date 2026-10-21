@@ -29,7 +29,6 @@ export function ProjectForm({
 
       <input type="hidden" name="id" value={project.id} />
       <input type="hidden" name="originalSlug" value={project.slug} />
-      <input type="hidden" name="order" value={project.order ?? 0} />
 
       <AdminCard title="Basics">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -56,6 +55,16 @@ export function ProjectForm({
           </Field>
           <Field label="Status" hint="Live, In progress, Archived…">
             <input name="status" defaultValue={project.status} required className={inputClass} />
+          </Field>
+          <Field label="Display order" hint="Lower numbers appear first.">
+            <input
+              name="order"
+              type="number"
+              min={0}
+              step={1}
+              defaultValue={project.order ?? 0}
+              className={inputClass}
+            />
           </Field>
           <Field label="Difficulty / type">
             <input name="difficulty" defaultValue={project.difficulty} className={inputClass} />
@@ -104,12 +113,22 @@ export function ProjectForm({
             Featured
           </label>
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Featured projects appear on the home page. Lower display order wins when several are
+          featured.
+        </p>
       </AdminCard>
 
       <AdminCard title="Images">
         <div className="flex flex-col gap-6">
           <ImageField name="coverImage" label="Cover image" defaultValue={project.coverImage} />
-          <GalleryField name="gallery" label="Gallery" defaultValue={project.gallery} />
+          <GalleryField
+            name="gallery"
+            label="Gallery"
+            defaultValue={project.gallery}
+            coverFieldName="coverImage"
+            coverImage={project.coverImage}
+          />
         </div>
       </AdminCard>
 

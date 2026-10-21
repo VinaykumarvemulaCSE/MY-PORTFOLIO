@@ -19,6 +19,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project, onOpen, variant = "grid" }: ProjectCardProps) {
   const images = getProjectImages(project);
+  const cover = images[0];
   const summary = getProjectSummary(project);
   const isCarousel = variant === "carousel";
 
@@ -32,10 +33,10 @@ export default function ProjectCard({ project, onOpen, variant = "grid" }: Proje
         }`}
         aria-label={`Open ${project.title} screenshots`}
       >
-        {project.coverImage ? (
+        {cover ? (
           <>
             <Image
-              src={project.coverImage}
+              src={cover}
               alt={`${project.title} preview`}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-500"
