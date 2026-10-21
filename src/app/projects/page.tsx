@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 import ProjectsBrowser from "@/components/ProjectsBrowser";
-import { getProfile, getProjects } from "@/lib/sanity";
+import { getProfile, getProjects } from "@/lib/content";
 
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await getProfile();

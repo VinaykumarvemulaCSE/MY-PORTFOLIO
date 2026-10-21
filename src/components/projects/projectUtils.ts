@@ -1,8 +1,8 @@
-import type { ProjectViewModel } from "@/lib/sanity/types";
+import type { ProjectViewModel } from "@/lib/types";
 
 export function getProjectImages(project: ProjectViewModel): string[] {
-  return [project.coverImage, ...(project.gallery ?? [])].filter(
-    (image): image is string => Boolean(image),
+  return [project.coverImage, ...(project.gallery ?? [])].filter((image): image is string =>
+    Boolean(image)
   );
 }
 

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import {
   FiArrowRight,
   FiChevronDown,
@@ -17,7 +17,7 @@ import {
 } from "react-icons/fi";
 
 import { TECH_ICONS } from "@/constants/techIcons";
-import type { ProjectViewModel } from "@/lib/sanity/types";
+import type { ProjectViewModel } from "@/lib/types";
 
 import { getProjectImages, getProjectSummary } from "./projectUtils";
 
@@ -106,10 +106,10 @@ export default function ProjectModal({
         caseStudy.architecture ||
         caseStudy.whatBroke ||
         (caseStudy.challenges?.length ?? 0) > 0 ||
-        (caseStudy.metrics?.length ?? 0) > 0),
+        (caseStudy.metrics?.length ?? 0) > 0)
   );
   const hasNotes = Boolean(
-    project.description.trim() && project.description.trim() !== summary.trim(),
+    project.description.trim() && project.description.trim() !== summary.trim()
   );
 
   useEffect(() => {
@@ -225,10 +225,7 @@ export default function ProjectModal({
         </div>
       </div>
 
-      <div
-        className="flex-1 overflow-y-auto"
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className="flex-1 overflow-y-auto" onClick={(event) => event.stopPropagation()}>
         <AnimatePresence mode="wait">
           {view === "gallery" && (
             <motion.div
@@ -263,9 +260,7 @@ export default function ProjectModal({
                     <button
                       type="button"
                       onClick={() =>
-                        setGalleryIndex(
-                          (index) => (index - 1 + imageCount) % imageCount,
-                        )
+                        setGalleryIndex((index) => (index - 1 + imageCount) % imageCount)
                       }
                       className="absolute left-4 md:left-8 p-3 md:p-4 rounded-full bg-background/80 border border-border/50 hover:border-primary/40 text-foreground hover:text-primary transition-all shadow-xl backdrop-blur-sm group"
                       aria-label="Previous screenshot"
@@ -277,9 +272,7 @@ export default function ProjectModal({
                     </button>
                     <button
                       type="button"
-                      onClick={() =>
-                        setGalleryIndex((index) => (index + 1) % imageCount)
-                      }
+                      onClick={() => setGalleryIndex((index) => (index + 1) % imageCount)}
                       className="absolute right-4 md:right-8 p-3 md:p-4 rounded-full bg-background/80 border border-border/50 hover:border-primary/40 text-foreground hover:text-primary transition-all shadow-xl backdrop-blur-sm group"
                       aria-label="Next screenshot"
                     >
@@ -340,7 +333,7 @@ export default function ProjectModal({
                   Project overview
                 </h3>
                 <div className="glass p-6 md:p-8 rounded-3xl border border-primary/30 shadow-2xl relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent pointer-events-none" />
                   <p className="text-lg md:text-xl text-foreground leading-relaxed font-light relative z-10">
                     {summary}
                   </p>
@@ -404,7 +397,7 @@ export default function ProjectModal({
             >
               {(caseStudy?.metrics?.length ?? 0) > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {caseStudy!.metrics!.map((metric, index) => (
+                  {(caseStudy?.metrics ?? []).map((metric, index) => (
                     <div
                       key={`${metric.label}-${index}`}
                       className="p-4 rounded-2xl glass border border-primary/20 text-center"
@@ -457,7 +450,7 @@ export default function ProjectModal({
                     {caseStudy?.challengesTitle || "Hardest problems"}
                   </h4>
                   <ul className="space-y-2.5 text-sm text-muted-foreground">
-                    {caseStudy!.challenges!.map((challenge, index) => (
+                    {(caseStudy?.challenges ?? []).map((challenge, index) => (
                       <li key={`${challenge}-${index}`} className="flex items-start gap-2.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                         <span>{challenge}</span>
@@ -484,9 +477,8 @@ export default function ProjectModal({
                     Write-up in progress
                   </h4>
                   <p className="text-sm text-muted-foreground">
-                    The full engineering breakdown is not published yet. The
-                    source code and live demo are the honest source of truth in
-                    the meantime.
+                    The full engineering breakdown is not published yet. The source code and live
+                    demo are the honest source of truth in the meantime.
                   </p>
                 </div>
               )}

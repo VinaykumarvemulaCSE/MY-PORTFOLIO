@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,10 +11,10 @@ import {
   FiGithub,
   FiLayers,
 } from "react-icons/fi";
-
-import { getProfile, getProjectBySlug, getProjectSlugs } from "@/lib/sanity";
-import { getSiteUrl } from "@/lib/site";
 import { TECH_ICONS } from "@/constants/techIcons";
+import { getProfile, getProjectBySlug, getProjectSlugs } from "@/lib/content";
+import { toJsonLd } from "@/lib/jsonLd";
+import { getSiteUrl } from "@/lib/site";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Project not found" };
   }
 
-  const title = `${project.title} — Case Study`;
+  const title = `${project.title} â€” Case Study`;
   const description = project.tagline || project.description.slice(0, 160);
 
   return {
@@ -55,38 +55,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-function Section({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-primary mb-3">
-        {title}
-      </h2>
-      <div className="text-muted-foreground leading-relaxed space-y-3">
-        {children}
-      </div>
+      <h2 className="text-xs font-mono uppercase tracking-[0.2em] text-primary mb-3">{title}</h2>
+      <div className="text-muted-foreground leading-relaxed space-y-3">{children}</div>
     </section>
   );
 }
 
 export default async function WorkPage({ params }: PageProps) {
   const { slug } = await params;
-  const [project, profile] = await Promise.all([
-    getProjectBySlug(slug),
-    getProfile(),
-  ]);
+  const [project, profile] = await Promise.all([getProjectBySlug(slug), getProfile()]);
 
   if (!project) notFound();
 
   const siteUrl = getSiteUrl();
   const caseStudy = project.caseStudy;
-  const images = [project.coverImage, ...(project.gallery ?? [])].filter(
-    (image): image is string => Boolean(image),
+  const images = [project.coverImage, ...(project.gallery ?? [])].filter((image): image is string =>
+    Boolean(image)
   );
 
   /*
@@ -101,9 +88,7 @@ export default async function WorkPage({ params }: PageProps) {
     .map((line) => line.trim())
     .filter(Boolean);
   const lead =
-    narrativeLines.find((line) => line.length > 140) ??
-    narrativeLines[0] ??
-    project.description;
+    narrativeLines.find((line) => line.length > 140) ?? narrativeLines[0] ?? project.description;
   const hasFullNotes = project.description.trim().length > lead.length + 120;
 
   const jsonLd = {
@@ -120,10 +105,7 @@ export default async function WorkPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: toJsonLd(jsonLd) }} />
 
       <header className="border-b border-border/30">
         <div className="max-w-4xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
@@ -134,9 +116,7 @@ export default async function WorkPage({ params }: PageProps) {
             <FiArrowLeft size={15} />
             All projects
           </Link>
-          <span className="text-xs font-mono text-muted-foreground">
-            {profile.name}
-          </span>
+          <span className="text-xs font-mono text-muted-foreground">{profile.name}</span>
         </div>
       </header>
 
@@ -238,7 +218,7 @@ export default async function WorkPage({ params }: PageProps) {
             <ul className="space-y-2">
               {caseStudy.challenges.map((challenge) => (
                 <li key={challenge} className="flex gap-2.5">
-                  <span className="text-primary mt-1.5 shrink-0">▸</span>
+                  <span className="text-primary mt-1.5 shrink-0">â–¸</span>
                   <span>{challenge}</span>
                 </li>
               ))}

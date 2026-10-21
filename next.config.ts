@@ -2,14 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  images: {
-    // Sanity's CDN is the image optimizer. See src/lib/imageLoader.ts for why
-    // we do not proxy assets through /_next/image.
-    loader: "custom",
-    loaderFile: "./src/lib/imageLoader.ts",
-    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
-    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
-  },
   async headers() {
     return [
       {

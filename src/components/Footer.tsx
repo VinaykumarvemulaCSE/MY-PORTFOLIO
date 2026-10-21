@@ -1,31 +1,47 @@
 "use client";
 
-import { FiGithub, FiLinkedin, FiMail, FiHeart, FiArrowUp } from "react-icons/fi";
+import { motion } from "motion/react";
 import { FaWhatsapp } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { FiArrowUp, FiGithub, FiHeart, FiLinkedin, FiMail } from "react-icons/fi";
+
+import type { ProfileViewModel } from "@/lib/types";
 
 const links = [
   { label: "Home", href: "#home" },
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
+  { label: "Certificates", href: "#certificates" },
   { label: "Contact", href: "#contact" },
 ];
 
-export default function Footer({ profileData }: { profileData?: any }) {
-  const socialInfo = profileData?.social || {};
-  const contactInfo = profileData?.contact || {};
+export default function Footer({ profileData }: { profileData?: ProfileViewModel }) {
+  const socialInfo = {
+    github: profileData?.social.github ?? "https://github.com/VinaykumarvemulaCSE",
+    linkedin: profileData?.social.linkedin ?? "https://www.linkedin.com/in/vinaykumarvemula",
+  };
+  const contactInfo = {
+    email: profileData?.contact.email ?? "kumarvinay072007@gmail.com",
+    phone: profileData?.contact.phone ?? "+91 80195 51015",
+  };
   const name = profileData?.name || "Vinay Kumar Vemula";
 
   const socials = [
-    { icon: FiGithub, href: socialInfo.github || "https://github.com/VinaykumarvemulaCSE", label: "GitHub" },
-    { icon: FiLinkedin, href: socialInfo.linkedin || "https://www.linkedin.com/in/vinaykumarvemula", label: "LinkedIn" },
-    { icon: FiMail, href: `mailto:${contactInfo.email || "kumarvinay072007@gmail.com"}`, label: "Email" },
-    { icon: FaWhatsapp, href: `https://wa.me/${(contactInfo.phone || "918019551015").replace(/[^0-9]/g, '')}`, label: "WhatsApp" },
+    { icon: FiGithub, href: socialInfo.github, label: "GitHub" },
+    { icon: FiLinkedin, href: socialInfo.linkedin, label: "LinkedIn" },
+    { icon: FiMail, href: `mailto:${contactInfo.email}`, label: "Email" },
+    {
+      icon: FaWhatsapp,
+      href: `https://wa.me/${contactInfo.phone.replace(/[^0-9]/g, "")}`,
+      label: "WhatsApp",
+    },
   ];
 
   return (
-    <footer className="relative border-t border-border/30 pt-14 pb-24 md:py-14 px-4 md:px-8" role="contentinfo">
+    <footer
+      className="relative border-t border-border/30 pt-14 pb-24 md:py-14 px-4 md:px-8"
+      role="contentinfo"
+    >
       <div className="max-w-5xl mx-auto">
         {/* Back to top */}
         <div className="flex justify-center -mt-20 mb-10">
@@ -41,13 +57,17 @@ export default function Footer({ profileData }: { profileData?: any }) {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10">
           <a href="#home" className="font-heading font-bold text-xl text-foreground">
-            <span className="text-gradient">{name.charAt(0)}</span>{name.slice(1)}
+            <span className="text-gradient">{name.charAt(0)}</span>
+            {name.slice(1)}
           </a>
           <nav aria-label="Footer navigation">
             <ul className="flex flex-wrap justify-center gap-5">
               {links.map((l) => (
                 <li key={l.label}>
-                  <a href={l.href} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <a
+                    href={l.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
                     {l.label}
                   </a>
                 </li>
@@ -71,7 +91,9 @@ export default function Footer({ profileData }: { profileData?: any }) {
         </div>
 
         <div className="text-center text-xs text-muted-foreground font-mono space-y-1">
-          <p>© {new Date().getFullYear()} {name}</p>
+          <p>
+            © {new Date().getFullYear()} {name}
+          </p>
           <p className="inline-flex items-center gap-1.5">
             Built with <FiHeart size={12} className="text-primary" /> Next.js & Tailwind CSS
           </p>

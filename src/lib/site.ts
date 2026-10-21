@@ -9,11 +9,9 @@
 export function getSiteUrl(): string {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
   const vercelHost =
-    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() ||
-    process.env.VERCEL_URL?.trim();
+    process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() || process.env.VERCEL_URL?.trim();
 
-  const raw =
-    configured || (vercelHost ? `https://${vercelHost}` : "http://localhost:3000");
+  const raw = configured || (vercelHost ? `https://${vercelHost}` : "http://localhost:3000");
 
   return raw.replace(/\/+$/, "");
 }

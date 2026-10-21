@@ -2,16 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FiExternalLink,
-  FiFolder,
-  FiGithub,
-  FiImage,
-  FiKey,
-} from "react-icons/fi";
+import { FiExternalLink, FiFolder, FiGithub, FiImage, FiKey } from "react-icons/fi";
 
 import { TECH_ICONS } from "@/constants/techIcons";
-import type { ProjectViewModel } from "@/lib/sanity/types";
+import type { ProjectViewModel } from "@/lib/types";
 
 import { getProjectImages, getProjectSummary } from "./projectUtils";
 
@@ -23,11 +17,7 @@ interface ProjectCardProps {
   variant?: "carousel" | "grid";
 }
 
-export default function ProjectCard({
-  project,
-  onOpen,
-  variant = "grid",
-}: ProjectCardProps) {
+export default function ProjectCard({ project, onOpen, variant = "grid" }: ProjectCardProps) {
   const images = getProjectImages(project);
   const summary = getProjectSummary(project);
   const isCarousel = variant === "carousel";
@@ -51,7 +41,7 @@ export default function ProjectCard({
               className="object-cover group-hover:scale-105 transition-transform duration-500"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent pointer-events-none" />
 
             <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
               {project.featured ? (
@@ -89,7 +79,7 @@ export default function ProjectCard({
         )}
       </button>
 
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
       <div
         className="relative flex flex-col flex-1 p-6 cursor-pointer"
@@ -139,12 +129,7 @@ export default function ProjectCard({
                   className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-md border border-border/50 bg-secondary/30 text-foreground"
                   title={tech}
                 >
-                  {Icon && (
-                    <Icon
-                      size={11}
-                      style={{ color: iconInfo.color || "currentColor" }}
-                    />
-                  )}
+                  {Icon && <Icon size={11} style={{ color: iconInfo.color || "currentColor" }} />}
                   <span>{tech}</span>
                 </span>
               );

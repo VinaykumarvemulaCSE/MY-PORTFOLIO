@@ -1,11 +1,9 @@
-"use client";
+﻿"use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
-import { FiSun, FiMoon } from "react-icons/fi";
 import { useActiveSection } from "@/hooks/useActiveSection";
-import { useTheme } from "next-themes";
 
 const NAV_ITEMS = [
   { label: "Home", href: "#home" },
@@ -19,18 +17,12 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const active = useActiveSection();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const isDark = theme === "dark";
-  const onToggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border/30" role="navigation" aria-label="Main navigation">
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border/30"
+      aria-label="Main navigation"
+    >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 md:px-8 h-16">
         <a href="#home" className="font-heading font-bold text-xl text-foreground group">
           <span className="text-gradient">Vinay</span> Kumar Vemula
@@ -60,28 +52,16 @@ export default function Navbar() {
               </a>
             </li>
           ))}
-          <li>
-            {mounted && (
-              <button
-                onClick={onToggleTheme}
-                className="ml-3 p-2.5 rounded-lg glass border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
-                aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-              >
-                <motion.div key={isDark ? "sun" : "moon"} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} transition={{ duration: 0.2 }}>
-                  {isDark ? <FiSun size={16} /> : <FiMoon size={16} />}
-                </motion.div>
-              </button>
-            )}
-          </li>
         </ul>
 
         <div className="flex md:hidden items-center gap-2">
-          {mounted && (
-            <button onClick={onToggleTheme} className="p-2 text-muted-foreground" aria-label="Toggle theme">
-              {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
-            </button>
-          )}
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="p-2 text-foreground" aria-label="Toggle menu" aria-expanded={mobileOpen}>
+          <button
+            type="button"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            className="p-2 text-foreground"
+            aria-label="Toggle menu"
+            aria-expanded={mobileOpen}
+          >
             {mobileOpen ? <HiX size={22} /> : <HiMenu size={22} />}
           </button>
         </div>

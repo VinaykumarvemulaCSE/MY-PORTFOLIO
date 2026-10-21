@@ -1,14 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { useForm } from "react-hook-form";
-import { FiGithub, FiLinkedin, FiMail, FiSend, FiArrowUpRight, FiCopy, FiCheck } from "react-icons/fi";
-import { FaWhatsapp } from "react-icons/fa";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { motion } from "motion/react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { FaWhatsapp } from "react-icons/fa";
+import {
+  FiArrowUpRight,
+  FiCheck,
+  FiCopy,
+  FiGithub,
+  FiLinkedin,
+  FiMail,
+  FiSend,
+} from "react-icons/fi";
 import { toast } from "sonner";
+import { z } from "zod";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import type { ProfileViewModel } from "@/lib/types";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
@@ -18,15 +27,19 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>;
 
-export default function Contact({ profileData }: { profileData?: any }) {
+export default function Contact({ profileData }: { profileData?: ProfileViewModel }) {
   const { ref, isVisible } = useScrollAnimation();
   const [copiedEmail, setCopiedEmail] = useState(false);
 
-  const contactInfo = profileData?.contact || {};
-  const socialInfo = profileData?.social || {};
-  const contactSection = profileData?.sections?.contact || {};
-  const recipientEmail =
-    contactInfo.email || contactInfo.customEmail || "kumarvinay072007@gmail.com";
+  const contactInfo = {
+    email: profileData?.contact.email ?? "kumarvinay072007@gmail.com",
+    phone: profileData?.contact.phone ?? "+91 80195 51015",
+  };
+  const socialInfo = {
+    github: profileData?.social.github ?? "https://github.com/VinaykumarvemulaCSE",
+    linkedin: profileData?.social.linkedin ?? "https://www.linkedin.com/in/vinaykumarvemula",
+  };
+  const recipientEmail = contactInfo.email;
 
   const copyEmail = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -36,7 +49,12 @@ export default function Contact({ profileData }: { profileData?: any }) {
     setTimeout(() => setCopiedEmail(false), 2500);
   };
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactForm>({ resolver: zodResolver(contactSchema) });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<ContactForm>({ resolver: zodResolver(contactSchema) });
 
   /**
    * No backend and no email-provider key. The form opens the visitor's mail
@@ -45,9 +63,7 @@ export default function Contact({ profileData }: { profileData?: any }) {
    */
   const onSubmit = (data: ContactForm) => {
     const subject = encodeURIComponent(`Portfolio inquiry from ${data.name}`);
-    const body = encodeURIComponent(
-      `Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`,
-    );
+    const body = encodeURIComponent(`Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`);
 
     window.location.href = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
     toast.info("Opening your email app — review the draft and hit send.");
@@ -55,10 +71,25 @@ export default function Contact({ profileData }: { profileData?: any }) {
   };
 
   const socials = [
-    { icon: FiGithub, label: "GitHub", href: socialInfo.github || "https://github.com/VinaykumarvemulaCSE", handle: "GitHub Profile" },
-    { icon: FiLinkedin, label: "LinkedIn", href: socialInfo.linkedin || "https://www.linkedin.com/in/vinaykumarvemula", handle: "LinkedIn Profile" },
+    {
+      icon: FiGithub,
+      label: "GitHub",
+      href: socialInfo.github || "https://github.com/VinaykumarvemulaCSE",
+      handle: "GitHub Profile",
+    },
+    {
+      icon: FiLinkedin,
+      label: "LinkedIn",
+      href: socialInfo.linkedin || "https://www.linkedin.com/in/vinaykumarvemula",
+      handle: "LinkedIn Profile",
+    },
     { icon: FiMail, label: "Email", href: `mailto:${recipientEmail}`, handle: recipientEmail },
-    { icon: FaWhatsapp, label: "WhatsApp", href: `https://wa.me/${(contactInfo.phone || "918019551015").replace(/[^0-9]/g, '')}`, handle: contactInfo.phone || "+91 80195 51015" },
+    {
+      icon: FaWhatsapp,
+      label: "WhatsApp",
+      href: `https://wa.me/${(contactInfo.phone || "918019551015").replace(/[^0-9]/g, "")}`,
+      handle: contactInfo.phone || "+91 80195 51015",
+    },
   ];
 
   return (
@@ -75,17 +106,11 @@ export default function Contact({ profileData }: { profileData?: any }) {
           className="text-center mb-14"
         >
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-foreground mb-3">
-            {contactSection.title ? (
-              contactSection.title.split(' ').map((word: string, i: number, arr: string[]) => 
-                i === arr.length - 1 ? <span key={i} className="text-gradient"> {word}</span> : <span key={i}>{word} </span>
-              )
-            ) : (
-              <>Let's <span className="text-gradient">Connect</span></>
-            )}
+            Let&apos;s <span className="text-gradient">Connect</span>
           </h2>
           <div className="w-12 h-1 bg-primary rounded-full mx-auto mb-4" />
           <p className="text-muted-foreground max-w-md mx-auto">
-            {contactSection.description || "Open to opportunities, collaborations, or just a friendly tech chat"}
+            Open to opportunities, collaborations, or just a friendly tech chat
           </p>
         </motion.div>
 
@@ -116,7 +141,7 @@ export default function Contact({ profileData }: { profileData?: any }) {
                     <p className="text-xs text-muted-foreground font-mono">{s.handle}</p>
                   </div>
                 </a>
-                
+
                 {s.label === "Email" ? (
                   <button
                     type="button"
@@ -124,11 +149,18 @@ export default function Contact({ profileData }: { profileData?: any }) {
                     className="p-2 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
                     title="Copy Email Address"
                   >
-                    {copiedEmail ? <FiCheck size={16} className="text-green-500" /> : <FiCopy size={16} />}
+                    {copiedEmail ? (
+                      <FiCheck size={16} className="text-green-500" />
+                    ) : (
+                      <FiCopy size={16} />
+                    )}
                   </button>
                 ) : (
                   <a href={s.href} target="_blank" rel="noopener noreferrer">
-                    <FiArrowUpRight size={16} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                    <FiArrowUpRight
+                      size={16}
+                      className="text-muted-foreground group-hover:text-primary transition-colors"
+                    />
                   </a>
                 )}
               </div>
@@ -145,7 +177,10 @@ export default function Contact({ profileData }: { profileData?: any }) {
           >
             {(["name", "email", "message"] as const).map((field) => (
               <div key={field}>
-                <label htmlFor={field} className="block text-sm font-medium text-foreground mb-1.5 capitalize">
+                <label
+                  htmlFor={field}
+                  className="block text-sm font-medium text-foreground mb-1.5 capitalize"
+                >
                   {field}
                 </label>
                 {field === "message" ? (
@@ -165,7 +200,9 @@ export default function Contact({ profileData }: { profileData?: any }) {
                     placeholder={field === "email" ? "your@email.com" : "Your name"}
                   />
                 )}
-                {errors[field] && <p className="text-xs text-destructive mt-1">{errors[field]?.message}</p>}
+                {errors[field] && (
+                  <p className="text-xs text-destructive mt-1">{errors[field]?.message}</p>
+                )}
               </div>
             ))}
             <div className="space-y-2">
@@ -177,8 +214,8 @@ export default function Contact({ profileData }: { profileData?: any }) {
                 Send via email
               </button>
               <p className="text-[11px] text-muted-foreground">
-                This opens your default email app with the message pre-filled.
-                You can also copy the address from the contact card.
+                This opens your default email app with the message pre-filled. You can also copy the
+                address from the contact card.
               </p>
             </div>
           </motion.form>

@@ -1,31 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { FiGithub, FiDownload, FiMail, FiArrowDown, FiCopy, FiCheck } from "react-icons/fi";
-import { toast } from "sonner";
-import ParticleField from "./ParticleField";
+import { motion } from "motion/react";
 import Image from "next/image";
-const demoPhoto = "/demo.png";
+import { useEffect, useState } from "react";
+import { FiArrowDown, FiCheck, FiCopy, FiDownload, FiGithub, FiMail } from "react-icons/fi";
+import { toast } from "sonner";
+import type { ProfileViewModel } from "@/lib/types";
+import ParticleField from "./ParticleField";
+
+const demoPhoto = "/profile.png";
 const resume = "/resume.pdf";
 
-const defaultRoles = ["Full Stack Developer", "Computer Science Student", "React & TypeScript Builder"];
+const defaultRoles = [
+  "Full Stack Developer",
+  "Computer Science Student",
+  "React & TypeScript Builder",
+];
 
-interface ProfileConfig {
-  name: string;
-  roles: string[];
-  bio: string;
-  availableForOpportunities: boolean;
-  profileImage: string;
-  resumeUrl: string;
-  githubUrl: string;
-}
-
-export default function Hero({ profileData }: { profileData?: any }) {
+export default function Hero({ profileData }: { profileData?: ProfileViewModel }) {
   const profile = {
     name: profileData?.name || "Vinay Kumar Vemula",
     roles: profileData?.roles || defaultRoles,
-    bio: profileData?.bio || "Computer Science student building full-stack applications with React, TypeScript, and Firebase.",
+    bio:
+      profileData?.bio ||
+      "Computer Science student building full-stack applications with React, TypeScript, and Firebase.",
     availableForOpportunities: profileData?.availableForOpportunities ?? true,
     profileImage: profileData?.profileImage || demoPhoto,
     resumeUrl: profileData?.resumeUrl || resume,
@@ -71,7 +69,10 @@ export default function Hero({ profileData }: { profileData?: any }) {
   }, [displayed, typing, roleIdx, roles]);
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center justify-center section-padding pt-24 overflow-hidden">
+    <section
+      id="home"
+      className="relative min-h-screen flex items-center justify-center section-padding pt-24 overflow-hidden"
+    >
       <ParticleField />
 
       <div className="relative max-w-6xl mx-auto w-full">
@@ -86,7 +87,9 @@ export default function Hero({ profileData }: { profileData?: any }) {
                 className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 mb-6"
               >
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                <span className="text-sm font-medium text-primary font-mono">Available for opportunities</span>
+                <span className="text-sm font-medium text-primary font-mono">
+                  Available for opportunities
+                </span>
               </motion.div>
             )}
 
@@ -96,8 +99,7 @@ export default function Hero({ profileData }: { profileData?: any }) {
               transition={{ delay: 0.2 }}
               className="text-5xl md:text-6xl lg:text-7xl font-heading font-bold text-foreground mb-4 leading-tight"
             >
-              Hi, I'm{" "}
-              <span className="text-gradient">{profile.name}</span>
+              Hi, I'm <span className="text-gradient">{profile.name}</span>
             </motion.h1>
 
             <motion.div
@@ -151,7 +153,11 @@ export default function Hero({ profileData }: { profileData?: any }) {
                 aria-label="Copy Email Address"
                 className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-secondary text-secondary-foreground font-semibold text-sm hover:bg-secondary/80 transition-colors"
               >
-                {copiedEmail ? <FiCheck size={16} className="text-emerald-500" /> : <FiCopy size={16} />}
+                {copiedEmail ? (
+                  <FiCheck size={16} className="text-emerald-500" />
+                ) : (
+                  <FiCopy size={16} />
+                )}
                 {copiedEmail ? "Copied!" : "Copy Email"}
               </button>
               <a
@@ -169,12 +175,15 @@ export default function Hero({ profileData }: { profileData?: any }) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.6, ease: "easeOut" }}
-            className="relative flex-shrink-0"
+            className="relative shrink-0"
           >
             <div className="relative w-64 h-64 md:w-80 md:h-80">
               {/* Decorative ring */}
               <div className="absolute inset-0 rounded-full border-2 border-primary/20 animate-spin-slow" />
-              <div className="absolute -inset-3 rounded-full border border-dashed border-primary/10 animate-spin-slow" style={{ animationDirection: "reverse", animationDuration: "30s" }} />
+              <div
+                className="absolute -inset-3 rounded-full border border-dashed border-primary/10 animate-spin-slow"
+                style={{ animationDirection: "reverse", animationDuration: "30s" }}
+              />
 
               {/* Glow behind photo */}
               <div className="absolute inset-4 rounded-full bg-primary/20 blur-2xl" />
@@ -197,7 +206,7 @@ export default function Hero({ profileData }: { profileData?: any }) {
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 className="absolute -right-2 top-8 px-3 py-1.5 rounded-lg glass text-xs font-mono font-medium text-primary border border-primary/20"
               >
-                {'<Web />'}
+                {"<Web />"}
               </motion.div>
               <motion.div
                 animate={{ y: [5, -5, 5] }}

@@ -1,26 +1,24 @@
-import type { Metadata } from "next";
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
+﻿import type { Metadata } from "next";
 import About from "@/components/About";
-import Skills from "@/components/Skills";
-import Projects from "@/components/Projects";
 import Certificates from "@/components/Certificates";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+import Navbar from "@/components/Navbar";
+import Projects from "@/components/Projects";
+import Skills from "@/components/Skills";
 import {
   getCertificates,
   getProfile,
   getProjects,
   getSiteSettings,
   getSkillGroups,
-} from "@/lib/sanity";
+} from "@/lib/content";
+import { toJsonLd } from "@/lib/jsonLd";
 import { getSiteUrl } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [profile, settings] = await Promise.all([
-    getProfile(),
-    getSiteSettings(),
-  ]);
+  const [profile, settings] = await Promise.all([getProfile(), getSiteSettings()]);
   const url = getSiteUrl();
 
   return {
@@ -59,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  // Server-rendered profile, skills and work with Sanity/JSON fallback
+  // Server-rendered profile, projects, skills and certificates.
   const [profile, projects, certificates, skills] = await Promise.all([
     getProfile(),
     getProjects(),
@@ -85,13 +83,7 @@ export default async function Home() {
       : undefined,
     email: profile.contact.email,
     sameAs: [profile.social.github, profile.social.linkedin].filter(Boolean),
-    knowsAbout: [
-      "React",
-      "Next.js",
-      "TypeScript",
-      "Node.js",
-      "Full Stack Development",
-    ],
+    knowsAbout: ["React", "Next.js", "TypeScript", "Node.js", "Full Stack Development"],
     alumniOf: profile.education.institution
       ? {
           "@type": "EducationalOrganization",
@@ -104,7 +96,7 @@ export default async function Home() {
     <div className="min-h-screen bg-background">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: toJsonLd(personJsonLd) }}
       />
       <Navbar />
       <main>

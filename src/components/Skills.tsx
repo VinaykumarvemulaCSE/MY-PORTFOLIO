@@ -1,11 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { FiCode } from "react-icons/fi";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { TECH_ICONS } from "@/constants/techIcons";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-import type { SkillGroupViewModel, SkillViewModel } from "@/lib/sanity/types";
+import type { SkillGroupViewModel, SkillViewModel } from "@/lib/types";
 
 interface SkillsProps {
   groups: SkillGroupViewModel[];
@@ -98,9 +98,7 @@ export default function Skills({ groups }: SkillsProps) {
                         className="transition-transform group-hover:scale-110"
                         aria-hidden="true"
                       />
-                      <span className="text-sm font-medium text-foreground">
-                        {skill.name}
-                      </span>
+                      <span className="text-sm font-medium text-foreground">{skill.name}</span>
                     </motion.div>
                   );
                 })}

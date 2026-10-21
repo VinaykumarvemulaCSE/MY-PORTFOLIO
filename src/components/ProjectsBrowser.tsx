@@ -1,11 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
-import type { ProjectViewModel } from "@/lib/sanity/types";
+import type { ProjectViewModel } from "@/lib/types";
 
 import ProjectCard, { type ProjectOpenView } from "./projects/ProjectCard";
 import ProjectModal from "./projects/ProjectModal";
@@ -37,15 +37,15 @@ export default function ProjectsBrowser({ projects }: ProjectsBrowserProps) {
       if (activeCategory === "All") return matchesSearch;
 
       const tech = project.tech.map((item) => item.toLowerCase());
-      const hasBackend = ["node.js", "node", "express", "firebase", "sql"].some(
-        (item) => tech.includes(item),
+      const hasBackend = ["node.js", "node", "express", "firebase", "sql"].some((item) =>
+        tech.includes(item)
       );
 
       if (activeCategory === "Frontend") {
         return (
           matchesSearch &&
-          ["react", "next.js", "vue", "angular", "svelte", "tailwind"].some(
-            (item) => tech.includes(item),
+          ["react", "next.js", "vue", "angular", "svelte", "tailwind"].some((item) =>
+            tech.includes(item)
           )
         );
       }
@@ -58,17 +58,12 @@ export default function ProjectsBrowser({ projects }: ProjectsBrowserProps) {
       return (
         matchesSearch &&
         hasBackend &&
-        ["react", "next.js", "vue", "angular", "svelte"].some((item) =>
-          tech.includes(item),
-        )
+        ["react", "next.js", "vue", "angular", "svelte"].some((item) => tech.includes(item))
       );
     });
   }, [projects, searchQuery, activeCategory]);
 
-  const openProject = (
-    project: ProjectViewModel,
-    view: ProjectOpenView = "gallery",
-  ) => {
+  const openProject = (project: ProjectViewModel, view: ProjectOpenView = "gallery") => {
     setSelectedProject(project);
     setModalView(view);
   };
@@ -104,8 +99,8 @@ export default function ProjectsBrowser({ projects }: ProjectsBrowserProps) {
             transition={{ delay: 0.1 }}
             className="text-muted-foreground text-lg max-w-2xl"
           >
-            Full-stack applications and experiments. Two projects are published
-            so far; more are on the way.
+            Full-stack applications and experiments. Two projects are published so far; more are on
+            the way.
           </motion.p>
         </div>
 
@@ -160,9 +155,7 @@ export default function ProjectsBrowser({ projects }: ProjectsBrowserProps) {
             <h3 className="text-xl font-heading font-semibold text-foreground mb-2">
               No projects found
             </h3>
-            <p className="text-muted-foreground">
-              Try adjusting your search or filter criteria.
-            </p>
+            <p className="text-muted-foreground">Try adjusting your search or filter criteria.</p>
             <button
               type="button"
               onClick={() => {

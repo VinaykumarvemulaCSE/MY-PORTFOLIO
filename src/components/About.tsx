@@ -1,16 +1,36 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
+import { FiBookOpen, FiCalendar, FiLayers, FiMonitor, FiServer, FiTarget } from "react-icons/fi";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import { FiMonitor, FiServer, FiLayers, FiTarget, FiBookOpen, FiCalendar } from "react-icons/fi";
 
-import type { ProfileViewModel } from "@/lib/sanity/types";
+import type { ProfileViewModel } from "@/lib/types";
 
 const focuses = [
-  { icon: FiMonitor, title: "Frontend Engineering", desc: "Building responsive, accessible UIs with React and modern CSS frameworks.", gradient: "from-primary/20 to-accent/10" },
-  { icon: FiServer, title: "Backend Development", desc: "Learning server-side programming, RESTful APIs, and database design.", gradient: "from-accent/20 to-primary/10" },
-  { icon: FiLayers, title: "Full Stack Architecture", desc: "Understanding end-to-end application design, deployment, and DevOps.", gradient: "from-primary/15 to-primary/5" },
-  { icon: FiTarget, title: "Problem Solving", desc: "Applying DSA knowledge and systematic thinking to build efficient solutions.", gradient: "from-accent/15 to-accent/5" },
+  {
+    icon: FiMonitor,
+    title: "Frontend Engineering",
+    desc: "Building responsive, accessible UIs with React and modern CSS frameworks.",
+    gradient: "from-primary/20 to-accent/10",
+  },
+  {
+    icon: FiServer,
+    title: "Backend Development",
+    desc: "Learning server-side programming, RESTful APIs, and database design.",
+    gradient: "from-accent/20 to-primary/10",
+  },
+  {
+    icon: FiLayers,
+    title: "Full Stack Architecture",
+    desc: "Understanding end-to-end application design, deployment, and DevOps.",
+    gradient: "from-primary/15 to-primary/5",
+  },
+  {
+    icon: FiTarget,
+    title: "Problem Solving",
+    desc: "Applying DSA knowledge and systematic thinking to build efficient solutions.",
+    gradient: "from-accent/15 to-accent/5",
+  },
 ];
 
 export default function About({ profileData }: { profileData?: ProfileViewModel }) {
@@ -36,7 +56,8 @@ export default function About({ profileData }: { profileData?: ProfileViewModel 
           </h2>
           <div className="w-12 h-1 bg-primary rounded-full mx-auto mb-6" />
           <p className="text-muted-foreground leading-relaxed max-w-2xl mx-auto text-lg">
-            {profileData?.bio || "I'm a Computer Science student building full-stack web applications and learning how the whole system fits together — from the interface to the data layer."}
+            {profileData?.bio ||
+              "I'm a Computer Science student building full-stack web applications and learning how the whole system fits together — from the interface to the data layer."}
           </p>
         </motion.div>
 
@@ -50,13 +71,17 @@ export default function About({ profileData }: { profileData?: ProfileViewModel 
               className={`card-hover p-6 rounded-2xl glass border border-border/50 hover:border-primary/30 group relative overflow-hidden`}
             >
               {/* Gradient bg */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${f.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-              
+              <div
+                className={`absolute inset-0 bg-linear-to-br ${f.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+              />
+
               <div className="relative">
                 <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
                   <f.icon className="text-primary" size={20} />
                 </div>
-                <h3 className="font-heading font-semibold text-foreground mb-2 text-lg">{f.title}</h3>
+                <h3 className="font-heading font-semibold text-foreground mb-2 text-lg">
+                  {f.title}
+                </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
               </div>
             </motion.div>
@@ -105,7 +130,10 @@ export default function About({ profileData }: { profileData?: ProfileViewModel 
             {education.highlights.length > 0 && (
               <ul className="mt-5 grid sm:grid-cols-2 gap-2.5">
                 {education.highlights.map((highlight) => (
-                  <li key={highlight} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  <li
+                    key={highlight}
+                    className="flex items-start gap-2 text-sm text-muted-foreground"
+                  >
                     <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                     <span>{highlight}</span>
                   </li>

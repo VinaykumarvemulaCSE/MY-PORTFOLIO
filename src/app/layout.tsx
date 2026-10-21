@@ -1,15 +1,11 @@
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { CommandMenu } from "@/components/CommandMenu";
-import ScrollProgress from "@/components/ScrollProgress";
 import FloatingActions from "@/components/FloatingActions";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
-import { getProfile } from "@/lib/sanity";
+import { Toaster } from "@/components/ui/sonner";
+import { getProfile } from "@/lib/content";
 import { getSiteUrl } from "@/lib/site";
 
 const spaceGrotesk = Space_Grotesk({
@@ -45,33 +41,25 @@ export const metadata = {
   },
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export const viewport = {
+  themeColor: "#0b0907",
+  colorScheme: "dark",
+};
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const profile = await getProfile();
 
   return (
-    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={`antialiased font-body bg-background text-foreground ${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TooltipProvider>
-            <ServiceWorkerRegister />
-            <ScrollProgress />
-            {children}
-            <CommandMenu resumeUrl={profile.resumeUrl} />
-            <FloatingActions profile={profile} />
-            <MobileBottomNav />
-            <Toaster />
-            <Sonner />
-          </TooltipProvider>
-        </ThemeProvider>
+    <html lang="en" className="dark" data-scroll-behavior="smooth">
+      <body
+        className={`antialiased font-body bg-background text-foreground ${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      >
+        <ServiceWorkerRegister />
+        {children}
+        <CommandMenu resumeUrl={profile.resumeUrl} />
+        <FloatingActions profile={profile} />
+        <MobileBottomNav />
+        <Toaster />
       </body>
     </html>
   );

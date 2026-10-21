@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
-import { FiHome, FiFolder, FiMail, FiDownload, FiSettings, FiMoon, FiSun, FiAward } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { FiAward, FiDownload, FiFolder, FiHome, FiMail } from "react-icons/fi";
 
 export function CommandMenu({ resumeUrl = "/resume.pdf" }: { resumeUrl?: string }) {
   const [open, setOpen] = useState(false);
@@ -31,19 +31,15 @@ export function CommandMenu({ resumeUrl = "/resume.pdf" }: { resumeUrl?: string 
 
   return (
     <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[20vh] bg-background/50 backdrop-blur-sm p-4">
-      <div 
-        className="fixed inset-0" 
-        onClick={() => setOpen(false)} 
-        aria-hidden="true"
-      />
-      <Command 
+      <div className="fixed inset-0" onClick={() => setOpen(false)} aria-hidden="true" />
+      <Command
         className="relative w-full max-w-lg bg-background border border-border/50 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
         label="Global Command Menu"
       >
         <div className="flex items-center px-4 border-b border-border/50">
-          <Command.Input 
+          <Command.Input
             autoFocus
-            placeholder="Type a command or search..." 
+            placeholder="Type a command or search..."
             className="w-full bg-transparent text-foreground placeholder:text-muted-foreground focus:outline-none py-4 text-sm font-medium"
           />
         </div>
@@ -53,7 +49,10 @@ export function CommandMenu({ resumeUrl = "/resume.pdf" }: { resumeUrl?: string 
             No results found.
           </Command.Empty>
 
-          <Command.Group heading="Navigation" className="text-xs font-semibold text-muted-foreground px-2 py-2">
+          <Command.Group
+            heading="Navigation"
+            className="text-xs font-semibold text-muted-foreground px-2 py-2"
+          >
             <Command.Item
               onSelect={() => runCommand(() => router.push("/"))}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
@@ -67,20 +66,26 @@ export function CommandMenu({ resumeUrl = "/resume.pdf" }: { resumeUrl?: string 
               <FiFolder className="text-muted-foreground" /> Projects Archive
             </Command.Item>
             <Command.Item
-              onSelect={() => runCommand(() => {
-                if (window.location.pathname === "/") {
-                  document.getElementById("certificates")?.scrollIntoView({ behavior: "smooth" });
-                } else {
-                  router.push("/#certificates");
-                }
-              })}
+              onSelect={() =>
+                runCommand(() => {
+                  const certSection = document.getElementById("certificates");
+                  if (certSection) {
+                    certSection.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    router.push("/#certificates");
+                  }
+                })
+              }
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
             >
               <FiAward className="text-muted-foreground" /> Certificates
             </Command.Item>
           </Command.Group>
 
-          <Command.Group heading="Actions" className="text-xs font-semibold text-muted-foreground px-2 py-2 border-t border-border/30 mt-2">
+          <Command.Group
+            heading="Actions"
+            className="text-xs font-semibold text-muted-foreground px-2 py-2 border-t border-border/30 mt-2"
+          >
             <Command.Item
               onSelect={() => runCommand(() => window.open(resumeUrl, "_blank"))}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
@@ -88,20 +93,21 @@ export function CommandMenu({ resumeUrl = "/resume.pdf" }: { resumeUrl?: string 
               <FiDownload className="text-muted-foreground" /> Download Resume
             </Command.Item>
             <Command.Item
-              onSelect={() => runCommand(() => {
-                const contactSection = document.getElementById("contact");
-                if (contactSection) {
-                  contactSection.scrollIntoView({ behavior: "smooth" });
-                } else {
-                  router.push("/#contact");
-                }
-              })}
+              onSelect={() =>
+                runCommand(() => {
+                  const contactSection = document.getElementById("contact");
+                  if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: "smooth" });
+                  } else {
+                    router.push("/#contact");
+                  }
+                })
+              }
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
             >
               <FiMail className="text-muted-foreground" /> Contact Me
             </Command.Item>
           </Command.Group>
-
         </Command.List>
       </Command>
     </div>

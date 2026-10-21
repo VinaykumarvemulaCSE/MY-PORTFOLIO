@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FiArrowUp, FiMessageSquare, FiMail, FiX } from "react-icons/fi";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
+import { FiArrowUp, FiMail, FiMessageSquare, FiX } from "react-icons/fi";
 
-import type { ProfileViewModel } from "@/lib/sanity/types";
+import type { ProfileViewModel } from "@/lib/types";
 
 export default function FloatingActions({ profile }: { profile?: ProfileViewModel }) {
   const [showScrollTop, setShowScrollTop] = useState(false);

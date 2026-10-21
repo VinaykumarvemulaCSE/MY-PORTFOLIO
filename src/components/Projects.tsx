@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
+import { AnimatePresence, motion } from "motion/react";
+import Link from "next/link";
+import { useState } from "react";
 import { FiArrowRight } from "react-icons/fi";
 
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import type { ProjectViewModel } from "@/lib/sanity/types";
+import type { ProjectViewModel } from "@/lib/types";
 
 import ProjectCard, { type ProjectOpenView } from "./projects/ProjectCard";
 import ProjectModal from "./projects/ProjectModal";
@@ -28,10 +28,7 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
   const [selectedProject, setSelectedProject] = useState<ProjectViewModel | null>(null);
   const [modalView, setModalView] = useState<ProjectOpenView>("gallery");
 
-  const openProject = (
-    project: ProjectViewModel,
-    view: ProjectOpenView = "gallery",
-  ) => {
+  const openProject = (project: ProjectViewModel, view: ProjectOpenView = "gallery") => {
     setSelectedProject(project);
     setModalView(view);
   };
@@ -80,7 +77,7 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
 
         {projects.length === 0 ? (
           <div className="text-center py-10 text-muted-foreground border border-dashed border-border/50 rounded-2xl">
-            No projects published yet — add them in Sanity Studio.
+            No projects published yet.
           </div>
         ) : (
           <div
@@ -96,11 +93,7 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
                   transition={{ delay: 0.08 * (index + 1), duration: 0.45 }}
                   className="flex-[0_0_85%] md:flex-[0_0_44%] lg:flex-[0_0_31%] min-w-0"
                 >
-                  <ProjectCard
-                    project={project}
-                    onOpen={openProject}
-                    variant="carousel"
-                  />
+                  <ProjectCard project={project} onOpen={openProject} variant="carousel" />
                 </motion.div>
               ))}
             </div>

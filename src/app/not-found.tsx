@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FiArrowLeft, FiAlertTriangle } from "react-icons/fi";
+import { FiAlertTriangle, FiArrowLeft } from "react-icons/fi";
 
 export default function NotFound() {
   return (

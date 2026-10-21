@@ -30,19 +30,10 @@ dist-ssr
 .env.local
 .env.*
 !.env.example
-studio/.env
-studio/.env.*
-!studio/.env.example
 
 # Next.js
 .next
 out
-
-# Sanity
-sanity-export
-.sanity
-studio/node_modules
-studio/dist
 
 # TypeScript incremental build info
 *.tsbuildinfo
