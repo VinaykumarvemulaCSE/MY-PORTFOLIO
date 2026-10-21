@@ -6,8 +6,9 @@ import { getProfile, getProjects } from "@/lib/content";
 export async function generateMetadata(): Promise<Metadata> {
   const profile = await getProfile();
   const title = `Projects — ${profile?.name ?? "Portfolio"}`;
-  const description =
-    "A comprehensive archive of full-stack applications, AI experiments and open-source tools built by Vinay Kumar Vemula.";
+  const description = profile
+    ? `Full-stack applications, experiments and open-source tools built by ${profile.name}.`
+    : "Projects and case studies.";
 
   return {
     title,

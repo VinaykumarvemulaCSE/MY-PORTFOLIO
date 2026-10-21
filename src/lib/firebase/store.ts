@@ -11,9 +11,9 @@ import type {
 /**
  * Firestore access for the CMS and the public content layer.
  *
- * Reads return `null` when Firestore is not configured or a document fails
- * validation. Callers (`src/lib/content.ts`) then fall back to the static
- * content in `src/content`, so the site keeps rendering before the CMS is set up.
+ * Reads return `null` only when Firestore is not configured. Once credentials
+ * exist, connection errors are thrown so a broken deployment fails at build
+ * time instead of silently publishing an empty portfolio.
  */
 
 export const COLLECTIONS = {
@@ -26,15 +26,10 @@ export const COLLECTIONS = {
 async function readDocs(collection: string): Promise<Record<string, unknown>[] | null> {
   if (!isFirebaseAdminConfigured()) return null;
 
-  try {
-    const db = getDb();
-    if (!db) return null;
-    const snapshot = await db.collection(collection).get();
-    return snapshot.docs.map((doc) => ({ ...doc.data(), _docId: doc.id }));
-  } catch (error) {
-    console.error(`[firestore] failed to read ${collection}`, error);
-    return null;
-  }
+  const db = getDb();
+  if (!db) return null;
+  const snapshot = await db.collection(collection).get();
+  return snapshot.docs.map((doc) => ({ ...doc.data(), _docId: doc.id }));
 }
 
 function byOrder(a: { order?: number }, b: { order?: number }): number {
@@ -44,17 +39,16 @@ function byOrder(a: { order?: number }, b: { order?: number }): number {
 export async function readProfile(): Promise<ProfileViewModel | null> {
   if (!isFirebaseAdminConfigured()) return null;
 
-  try {
-    const db = getDb();
-    if (!db) return null;
-    const doc = await db.collection(COLLECTIONS.profile).doc("main").get();
-    if (!doc.exists) return null;
-    const parsed = profileSchema.safeParse(doc.data());
-    return parsed.success ? parsed.data : null;
-  } catch (error) {
-    console.error("[firestore] failed to read profile", error);
+  const db = getDb();
+  if (!db) return null;
+  const doc = await db.collection(COLLECTIONS.profile).doc("main").get();
+  if (!doc.exists) return null;
+  const parsed = profileSchema.safeParse(doc.data());
+  if (!parsed.success) {
+    console.error("[firestore] profile/main failed validation", parsed.error.issues);
     return null;
   }
+  return parsed.data;
 }
 
 export async function readProjects(): Promise<ProjectViewModel[] | null> {
@@ -62,7 +56,16 @@ export async function readProjects(): Promise<ProjectViewModel[] | null> {
   if (!docs) return null;
 
   return docs
-    .map((doc) => projectSchema.safeParse(doc))
+    .map((doc) => {
+      const result = projectSchema.safeParse(doc);
+      if (!result.success) {
+        console.error(
+          `[firestore] skipped invalid project ${String(doc._docId)}`,
+          result.error.issues
+        );
+      }
+      return result;
+    })
     .flatMap((result) => (result.success ? [result.data] : []))
     .sort(byOrder);
 }
@@ -72,7 +75,16 @@ export async function readCertificates(): Promise<CertificateViewModel[] | null>
   if (!docs) return null;
 
   return docs
-    .map((doc) => certificateSchema.safeParse(doc))
+    .map((doc) => {
+      const result = certificateSchema.safeParse(doc);
+      if (!result.success) {
+        console.error(
+          `[firestore] skipped invalid certificate ${String(doc._docId)}`,
+          result.error.issues
+        );
+      }
+      return result;
+    })
     .flatMap((result) => (result.success ? [result.data] : []))
     .sort(byOrder);
 }
@@ -82,7 +94,16 @@ export async function readSkillGroups(): Promise<SkillGroupViewModel[] | null> {
   if (!docs) return null;
 
   return docs
-    .map((doc) => skillGroupSchema.safeParse(doc))
+    .map((doc) => {
+      const result = skillGroupSchema.safeParse(doc);
+      if (!result.success) {
+        console.error(
+          `[firestore] skipped invalid skill group ${String(doc._docId)}`,
+          result.error.issues
+        );
+      }
+      return result;
+    })
     .flatMap((result) => (result.success ? [result.data] : []))
     .sort(byOrder);
 }

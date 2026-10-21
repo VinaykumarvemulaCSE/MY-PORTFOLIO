@@ -9,6 +9,8 @@ import { requireAdmin } from "@/lib/firebase/session";
 import {
   COLLECTIONS,
   deleteDoc,
+  readCertificates,
+  readProjects,
   readSkillGroups,
   saveCertificate,
   saveProfile,
@@ -61,6 +63,9 @@ function optional(value: string): string | undefined {
 function refresh() {
   // Purge every cached page: content feeds the home page, archives and details.
   revalidatePath("/", "layout");
+  revalidatePath("/sitemap.xml");
+  revalidatePath("/manifest.webmanifest");
+  revalidatePath("/opengraph-image");
 }
 
 function errorMessage(error: unknown): ActionState {
@@ -171,6 +176,7 @@ export async function saveProjectAction(
   if (!isFirebaseAdminConfigured()) return NOT_CONFIGURED;
 
   const slug = text(formData, "slug");
+  const originalSlug = text(formData, "originalSlug");
   const candidate: ProjectViewModel = {
     id: text(formData, "id") || `project-${Date.now()}`,
     slug,
@@ -194,7 +200,16 @@ export async function saveProjectAction(
 
   try {
     const parsed = projectSchema.parse(candidate);
+    const existing = (await readProjects()) ?? [];
+    if (existing.some((project) => project.slug === parsed.slug && project.slug !== originalSlug)) {
+      return { ok: false, message: "A project with that slug already exists." };
+    }
+
     await saveProject(parsed);
+    if (originalSlug && originalSlug !== parsed.slug) {
+      await deleteDoc(COLLECTIONS.projects, originalSlug);
+    }
+
     refresh();
     return { ok: true, message: "Project saved." };
   } catch (error) {
@@ -222,6 +237,7 @@ export async function saveCertificateAction(
   if (!isFirebaseAdminConfigured()) return NOT_CONFIGURED;
 
   const slug = text(formData, "slug");
+  const originalSlug = text(formData, "originalSlug");
   const candidate: CertificateViewModel = {
     id: text(formData, "id") || slug,
     slug,
@@ -246,7 +262,20 @@ export async function saveCertificateAction(
 
   try {
     const parsed = certificateSchema.parse(candidate);
+    const existing = (await readCertificates()) ?? [];
+    if (
+      existing.some(
+        (certificate) => certificate.slug === parsed.slug && certificate.slug !== originalSlug
+      )
+    ) {
+      return { ok: false, message: "A certificate with that slug already exists." };
+    }
+
     await saveCertificate(parsed);
+    if (originalSlug && originalSlug !== parsed.slug) {
+      await deleteDoc(COLLECTIONS.certificates, originalSlug);
+    }
+
     refresh();
     return { ok: true, message: "Certificate saved." };
   } catch (error) {

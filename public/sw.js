@@ -9,7 +9,7 @@
  *  - Everything else (RSC payloads, API routes, JSON): straight to the network.
  *    Caching those is what makes a portfolio show month-old content.
  */
-const CACHE_NAME = "vinay-portfolio-v2";
+const CACHE_NAME = "vinay-portfolio-v3";
 const PRECACHE = ["/", "/offline.html"];
 
 self.addEventListener("install", (event) => {
@@ -51,6 +51,8 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
+  // Never cache the CMS — stale forms or private pages must not come from cache.
+  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) return;
 
   const isNavigation =
     request.mode === "navigate" ||

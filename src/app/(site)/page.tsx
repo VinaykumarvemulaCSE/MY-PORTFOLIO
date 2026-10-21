@@ -100,7 +100,7 @@ export default async function Home() {
       : undefined,
     email: profile.contact.email,
     sameAs: [profile.social.github, profile.social.linkedin].filter(Boolean),
-    knowsAbout: ["React", "Next.js", "TypeScript", "Node.js", "Full Stack Development"],
+    knowsAbout: skills.flatMap((group) => group.skills.map((skill) => skill.name)).slice(0, 12),
     alumniOf: profile.education.institution
       ? {
           "@type": "EducationalOrganization",

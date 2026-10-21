@@ -24,6 +24,7 @@ export function CertificateForm({
       <FormMessage ok={state.ok} message={state.message} />
 
       <input type="hidden" name="id" value={certificate.id} />
+      <input type="hidden" name="originalSlug" value={certificate.slug} />
       <input type="hidden" name="order" value={certificate.order ?? 0} />
 
       <AdminCard title="Certificate">

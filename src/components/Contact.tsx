@@ -34,9 +34,9 @@ export default function Contact({ profileData }: { profileData: ProfileViewModel
   const [sending, setSending] = useState(false);
 
   const recipientEmail = profileData.contact.email;
+  const phoneDigits = profileData.contact.phone.replace(/[^0-9]/g, "");
   const whatsapp =
-    profileData.social.whatsapp ||
-    `https://wa.me/${profileData.contact.phone.replace(/[^0-9]/g, "")}`;
+    profileData.social.whatsapp || (phoneDigits ? `https://wa.me/${phoneDigits}` : "");
 
   const copyEmail = (e: React.MouseEvent) => {
     e.preventDefault();

@@ -28,6 +28,7 @@ export function ProjectForm({
       <FormMessage ok={state.ok} message={state.message} />
 
       <input type="hidden" name="id" value={project.id} />
+      <input type="hidden" name="originalSlug" value={project.slug} />
       <input type="hidden" name="order" value={project.order ?? 0} />
 
       <AdminCard title="Basics">

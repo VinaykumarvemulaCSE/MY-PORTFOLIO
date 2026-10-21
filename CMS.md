@@ -48,16 +48,18 @@ or paste `firestore.rules` into **Firestore → Rules** in the console.
 
 ## 4. Cloudinary
 
-Media uploads go through `/api/admin/upload`: the browser posts the file to the
-server, the server signs it with the API secret, and Cloudinary returns a secure
-URL. Images and PDFs up to 8 MB are accepted.
+Uploads never pass through the app server: the browser asks
+`/api/admin/upload` for a short-lived signature (auth-guarded), then posts the
+file straight to Cloudinary. This keeps large images and PDFs working under
+Vercel's ~4.5 MB function request-body limit. Images and PDFs up to 10 MB
+(Cloudinary's free-plan cap) are accepted.
 
 Existing project, certificate and profile images were migrated to Cloudinary
 and the Firestore documents now point at `res.cloudinary.com` URLs.
 
-PDF delivery is disabled by default on Cloudinary accounts. To upload a résumé
-PDF through the dashboard, enable **Settings → Security → Allow delivery of PDF
-and ZIP files**. Until then, keep the résumé at `/resume.pdf`.
+PDF delivery is enabled on this account (Settings → Security → Allow delivery of
+PDF and ZIP files), so a new résumé PDF can be uploaded from the dashboard. The
+current résumé is still served from `/resume.pdf`.
 
 ## 5. Editing
 
@@ -71,7 +73,33 @@ and ZIP files**. Until then, keep the résumé at `/resume.pdf`.
 Every successful save shows a toast and revalidates the public routes. Unchecking
 **Published** hides an item without deleting it.
 
-## 6. Contact form
+## 6. Production (Vercel)
+
+Checklist before the first deploy:
+1. Add every variable from `.env.example` to Vercel (Production **and** Preview).
+   Set `NEXT_PUBLIC_SITE_URL` to the real domain.
+2. Paste `FIREBASE_PRIVATE_KEY` with its literal `\n` escapes, in one value.
+3. Deploy Firestore rules (`firebase deploy --only firestore:rules`) or paste
+   them into the console.
+4. Confirm the Cloudinary PDF toggle is on, and that the account is allowed to
+   deliver `res.cloudinary.com` assets.
+
+Operational notes:
+- Static pages are generated from Firestore at build time. If the service
+  account is misconfigured the build/render fails loudly instead of publishing
+  an empty portfolio.
+- Admin saves call `revalidatePath`, so Vercel's cache is purged without a
+  redeploy. New project/certificate slugs render on demand and are cached after
+  the first request.
+- The contact rate limit is per serverless instance. It stops casual abuse but
+  is not a global quota; add a shared store (e.g. Upstash) if spam becomes a
+  problem.
+- `public/sw.js` never caches `/admin` or `/api` responses. Bump `CACHE_NAME`
+  whenever its strategy changes.
+- Only `res.cloudinary.com` is allowed through `next/image`. Upload media to
+  Cloudinary rather than pasting URLs from other hosts.
+
+## 7. Contact form
 
 `POST /api/contact` validates the submission, applies a small in-memory rate
 limit (5 messages / 10 minutes / IP), and sends it with Nodemailer over SMTP.
@@ -88,7 +116,7 @@ basic bots.
 | `src/lib/firebase/admin.ts`   | Firebase Admin SDK singleton.                             |
 | `src/lib/schemas.ts`          | Zod validation for every CMS write.                       |
 | `src/app/api/admin/session`   | Exchanges an ID token for an httpOnly cookie; sign-out.   |
-| `src/app/api/admin/upload`    | Auth-guarded signed Cloudinary upload.                    |
+| `src/app/api/admin/upload`    | Signature for direct browser → Cloudinary uploads.        |
 | `src/app/api/contact`         | Nodemailer contact endpoint.                              |
 | `src/app/admin/(dashboard)`   | Protected CMS pages and server actions.                   |
 | `src/app/(site)`              | Public pages (share the portfolio chrome).                |

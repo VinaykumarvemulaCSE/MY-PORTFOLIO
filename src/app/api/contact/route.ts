@@ -19,6 +19,14 @@ const attempts = new Map<string, number[]>();
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
+
+  // Drop IPs whose window has fully expired so the map cannot grow forever.
+  if (attempts.size > 5000) {
+    for (const [key, times] of attempts) {
+      if (!times.some((time) => now - time < WINDOW_MS)) attempts.delete(key);
+    }
+  }
+
   const recent = (attempts.get(ip) ?? []).filter((time) => now - time < WINDOW_MS);
   recent.push(now);
   attempts.set(ip, recent);
@@ -91,11 +99,14 @@ export async function POST(request: Request) {
       auth: { user, pass },
     });
 
+    // Keep visitor-supplied text out of raw header formatting (header injection).
+    const displayName = name.replace(/[\r\n"<>]/g, " ").trim() || "Website visitor";
+
     await transporter.sendMail({
       from: `"Portfolio Contact" <${from}>`,
       to,
-      replyTo: `"${name}" <${email}>`,
-      subject: `Portfolio inquiry from ${name}`,
+      replyTo: { name: displayName, address: email },
+      subject: `Portfolio inquiry from ${displayName}`,
       text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
       html: `
         <div style="font-family:system-ui,sans-serif;line-height:1.6">
