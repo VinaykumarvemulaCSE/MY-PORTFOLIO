@@ -186,6 +186,7 @@ export default function Hero({ profileData }: { profileData: ProfileViewModel })
                   sizes="(max-width: 768px) 256px, 320px"
                   className="object-cover"
                   priority
+                  loading="eager"
                 />
               </div>
 

@@ -104,6 +104,14 @@ export function ProfileForm({ profile }: { profile: ProfileViewModel }) {
               className={inputClass}
             />
           </Field>
+          <Field label="CGPA / Grade" hint="Optional, e.g. 8.5 / 10">
+            <input
+              name="education.cgpa"
+              defaultValue={profile.education.cgpa ?? ""}
+              placeholder="e.g. 9.6 / 10"
+              className={inputClass}
+            />
+          </Field>
           <Field label="Highlights" hint="One per line." className="sm:col-span-2">
             <textarea
               name="education.highlights"

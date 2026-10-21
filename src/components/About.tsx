@@ -1,7 +1,15 @@
 "use client";
 
 import { motion } from "motion/react";
-import { FiBookOpen, FiCalendar, FiLayers, FiMonitor, FiServer, FiTarget } from "react-icons/fi";
+import {
+  FiAward,
+  FiBookOpen,
+  FiCalendar,
+  FiLayers,
+  FiMonitor,
+  FiServer,
+  FiTarget,
+} from "react-icons/fi";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 import type { ProfileViewModel } from "@/lib/types";
@@ -119,8 +127,14 @@ export default function About({ profileData }: { profileData?: ProfileViewModel 
                     {education.period}
                   </span>
                 )}
+                {education.cgpa && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 font-semibold">
+                    <FiAward size={12} />
+                    CGPA: {education.cgpa}
+                  </span>
+                )}
                 {education.status && (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary/40 border border-border/40">
                     {education.status}
                   </span>
                 )}
