@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
@@ -397,9 +397,9 @@ export default function ProjectModal({
             >
               {(caseStudy?.metrics?.length ?? 0) > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {(caseStudy?.metrics ?? []).map((metric, index) => (
+                  {(caseStudy?.metrics ?? []).map((metric) => (
                     <div
-                      key={`${metric.label}-${index}`}
+                      key={metric.label}
                       className="p-4 rounded-2xl glass border border-primary/20 text-center"
                     >
                       <span className="text-xl md:text-2xl font-bold font-mono text-primary block">
@@ -416,7 +416,7 @@ export default function ProjectModal({
               {caseStudy?.problem && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-                    <span>01</span> • Problem
+                    <span>01</span> â€¢ Problem
                   </div>
                   <h4 className="text-xl font-heading font-bold text-foreground">
                     {caseStudy.problemTitle || "Problem statement"}
@@ -430,7 +430,7 @@ export default function ProjectModal({
               {caseStudy?.architecture && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                    <span>02</span> • Architecture
+                    <span>02</span> â€¢ Architecture
                   </div>
                   <h4 className="text-xl font-heading font-bold text-foreground">
                     {caseStudy.architectureTitle || "How it works"}
@@ -444,14 +444,14 @@ export default function ProjectModal({
               {(caseStudy?.challenges?.length ?? 0) > 0 && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                    <span>03</span> • Challenges
+                    <span>03</span> â€¢ Challenges
                   </div>
                   <h4 className="text-xl font-heading font-bold text-foreground">
                     {caseStudy?.challengesTitle || "Hardest problems"}
                   </h4>
                   <ul className="space-y-2.5 text-sm text-muted-foreground">
-                    {(caseStudy?.challenges ?? []).map((challenge, index) => (
-                      <li key={`${challenge}-${index}`} className="flex items-start gap-2.5">
+                    {(caseStudy?.challenges ?? []).map((challenge) => (
+                      <li key={challenge} className="flex items-start gap-2.5">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                         <span>{challenge}</span>
                       </li>
@@ -463,7 +463,7 @@ export default function ProjectModal({
               {caseStudy?.whatBroke && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                    <span>04</span> • What broke
+                    <span>04</span> â€¢ What broke
                   </div>
                   <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                     {caseStudy.whatBroke}
