@@ -6,7 +6,15 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!**/.next", "!**/node_modules", "!**/public", "!**/.agents", "!AGENTS.md"]
+    "includes": [
+      "**",
+      "!**/.next",
+      "!**/node_modules",
+      "!**/public",
+      "!**/.agents",
+      "!AGENTS.md",
+      "!next-env.d.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
