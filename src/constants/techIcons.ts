@@ -31,7 +31,7 @@ export const TECH_ICONS: Record<string, TechIconInfo> = {
 
   // Frontend
   "React": { name: "React", icon: SiReact, color: "#61DAFB" },
-  "Next.js": { name: "Next.js", icon: SiNextdotjs, color: "#000000" },
+  "Next.js": { name: "Next.js", icon: SiNextdotjs, color: "currentColor" },
   "Vue": { name: "Vue.js", icon: SiVuedotjs, color: "#4FC08D" },
   "Angular": { name: "Angular", icon: SiAngular, color: "#DD0031" },
   "Svelte": { name: "Svelte", icon: SiSvelte, color: "#FF3E00" },
@@ -47,11 +47,19 @@ export const TECH_ICONS: Record<string, TechIconInfo> = {
   // Backend
   "Node.js": { name: "Node.js", icon: SiNodedotjs, color: "#339933" },
   "Express": { name: "Express", icon: SiExpress, color: "#888888" },
-  "Django": { name: "Django", icon: SiDjango, color: "#092E20" },
-  "Flask": { name: "Flask", icon: SiFlask, color: "#000000" },
+  "Django": { name: "Django", icon: SiDjango, color: "#44B78B" },
+  "Flask": { name: "Flask", icon: SiFlask, color: "currentColor" },
   "Spring Boot": { name: "Spring Boot", icon: SiSpringboot, color: "#6DB33F" },
   "GraphQL": { name: "GraphQL", icon: SiGraphql, color: "#E10098" },
-  "Prisma": { name: "Prisma", icon: SiPrisma, color: "#2D3748" },
+  "Prisma": { name: "Prisma", icon: SiPrisma, color: "currentColor" },
+  "REST APIs": { name: "REST APIs", icon: FiGlobe, color: "#0EA5E9" },
+  "SQL": { name: "SQL", icon: FiDatabase, color: "#4479A1" },
+
+  // Computer science fundamentals
+  "DSA": { name: "Data Structures & Algorithms", icon: FiCode, color: "#8B5CF6" },
+  "OOP": { name: "Object-Oriented Programming", icon: FiLayers, color: "#F59E0B" },
+  "DBMS": { name: "Database Management", icon: FiDatabase, color: "#10B981" },
+  "OS": { name: "Operating Systems", icon: FiCpu, color: "#EF4444" },
 
   // Database
   "MongoDB": { name: "MongoDB", icon: SiMongodb, color: "#47A248" },
@@ -66,8 +74,8 @@ export const TECH_ICONS: Record<string, TechIconInfo> = {
   "Docker": { name: "Docker", icon: SiDocker, color: "#2496ED" },
   "Kubernetes": { name: "Kubernetes", icon: SiKubernetes, color: "#326CE5" },
   "Git": { name: "Git", icon: SiGit, color: "#F05032" },
-  "GitHub": { name: "GitHub", icon: SiGithub, color: "#181717" },
-  "Vercel": { name: "Vercel", icon: SiVercel, color: "#000000" },
+  "GitHub": { name: "GitHub", icon: SiGithub, color: "currentColor" },
+  "Vercel": { name: "Vercel", icon: SiVercel, color: "currentColor" },
   "Netlify": { name: "Netlify", icon: SiNetlify, color: "#00C7B7" },
   "Google Cloud": { name: "Google Cloud", icon: SiGooglecloud, color: "#4285F4" },
   "Azure": { name: "Azure", icon: FiCloud, color: "#0089D6" },
@@ -91,3 +99,4 @@ export const CATEGORY_ICONS = {
 };
 
 export const getAllTechNames = () => Object.keys(TECH_ICONS).sort();
+

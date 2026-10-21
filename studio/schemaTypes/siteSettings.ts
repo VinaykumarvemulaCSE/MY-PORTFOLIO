@@ -4,7 +4,8 @@ import { defineField, defineType } from "sanity";
  * Singleton — always `_id: "siteSettings"`.
  *
  * Anything that should be editable without touching code or redeploying: SEO
- * metadata, canonical URL, and the availability banner.
+ * metadata and the availability banner. The canonical origin lives in the
+ * deployment environment (`NEXT_PUBLIC_SITE_URL`), not in the CMS.
  */
 export default defineType({
   name: "siteSettings",
@@ -25,12 +26,6 @@ export default defineType({
       rows: 3,
       validation: (rule) =>
         rule.max(160).warning("Search results truncate past ~160 characters."),
-    }),
-    defineField({
-      name: "url",
-      title: "Canonical site URL",
-      type: "url",
-      description: "Used for metadataBase, sitemap and OpenGraph cards.",
     }),
     defineField({
       name: "availability",

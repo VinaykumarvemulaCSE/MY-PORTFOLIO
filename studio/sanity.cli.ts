@@ -10,8 +10,8 @@ import { defineCliConfig } from "sanity/cli";
  *   SANITY_STUDIO_PROJECT_ID=xxxxxxxx
  *   SANITY_STUDIO_DATASET=production
  */
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID ?? "";
-const dataset = process.env.SANITY_STUDIO_DATASET ?? "production";
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || "0pmm1cx4";
+const dataset = process.env.SANITY_STUDIO_DATASET || "production";
 
 export default defineCliConfig({
   api: { projectId, dataset },
@@ -20,4 +20,12 @@ export default defineCliConfig({
    * It becomes https://<studioHost>.sanity.studio
    */
   studioHost: process.env.SANITY_STUDIO_HOST ?? undefined,
+  vite: (config) => ({
+    ...config,
+    css: {
+      postcss: {
+        plugins: [],
+      },
+    },
+  }),
 });

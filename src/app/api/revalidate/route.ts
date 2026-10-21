@@ -10,7 +10,7 @@ import { SANITY_CACHE_TAG } from "@/lib/sanity";
  *   manage.sanity.io → API → Webhooks → Create webhook
  *   URL:    https://<your-domain>/api/revalidate?secret=<SANITY_REVALIDATE_SECRET>
  *   Trigger: Create, Update, Delete
- *   Filter: _type in ["project", "profile", "certificate", "siteSettings"]
+ *   Filter: _type in ["project", "profile", "certificate", "siteSettings", "skillGroup"]
  *
  * Every Sanity fetch in `src/lib/sanity/client.ts` is tagged with `sanity`, so
  * one call here invalidates all CMS-driven output. `{ expire: 0 }` is used

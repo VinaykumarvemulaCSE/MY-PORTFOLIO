@@ -45,11 +45,12 @@ export default defineType({
     }),
     defineField({
       name: "description",
-      title: "Short description",
+      title: "Full project notes",
       type: "text",
-      rows: 4,
+      rows: 5,
       group: "summary",
-      description: "Two or three sentences. Plain prose, no emoji headings.",
+      description:
+        "Optional long-form notes. The work page shows the first paragraph and keeps the rest in a collapsible.",
     }),
     defineField({
       name: "tech",
@@ -76,13 +77,6 @@ export default defineType({
       initialValue: "Live",
     }),
     defineField({
-      name: "live",
-      title: "Deployed and publicly reachable?",
-      type: "boolean",
-      group: "summary",
-      initialValue: true,
-    }),
-    defineField({
       name: "liveLink",
       title: "Live URL",
       type: "url",
@@ -95,6 +89,25 @@ export default defineType({
       title: "Repository URL",
       type: "url",
       group: "summary",
+    }),
+    defineField({
+      name: "demoCredentials",
+      title: "Demo access (optional)",
+      type: "object",
+      group: "summary",
+      description:
+        "Only fill this in if the live demo actually works with these credentials. Never publish an invented login.",
+      options: { collapsible: true, collapsed: true },
+      fields: [
+        defineField({ name: "email", title: "Demo email / username", type: "string" }),
+        defineField({ name: "password", title: "Demo password", type: "string" }),
+        defineField({
+          name: "note",
+          title: "Note",
+          type: "string",
+          description: "e.g. “Recruiter demo account — read-only”.",
+        }),
+      ],
     }),
 
     /* ---------------------------- Case study ---------------------------- */
@@ -173,7 +186,7 @@ export default defineType({
       title: "Difficulty",
       type: "string",
       group: "meta",
-      description: "Free text shown as a badge, e.g. “Production Grade”.",
+      description: "Free text shown as a badge, e.g. “Full Stack System”.",
     }),
     defineField({
       name: "timeInvestment",

@@ -24,6 +24,10 @@ SANITY_API_VERSION=2025-01-01
 # Generate with:
 #   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 SANITY_REVALIDATE_SECRET=some-long-random-string
+
+# Canonical origin for metadata, sitemap and OpenGraph cards.
+# Vercel previews fall back to the deployment URL when this is empty.
+NEXT_PUBLIC_SITE_URL=https://your-domain.example
 ```
 
 And `studio/.env` (also gitignored):
@@ -42,7 +46,7 @@ npm run studio          # http://localhost:3333
 ```
 
 The first launch asks you to log in to Sanity. Your schemas are already there:
-**Profile**, **Site settings**, **Projects**, **Certificates**.
+**Profile**, **Site settings**, **Projects**, **Certificates**, **Skill groups**.
 
 Profile and Site settings are singletons — there is exactly one of each and you
 cannot accidentally create a second one.
@@ -58,22 +62,21 @@ This writes `sanity-export/*.ndjson` (gitignored). Then:
 ```bash
 npx sanity dataset import sanity-export/profile.ndjson production --replace
 npx sanity dataset import sanity-export/siteSettings.ndjson production --replace
-npx sanity dataset import sanity-export/projects.ndjson production
-npx sanity dataset import sanity-export/certificates.ndjson production
+npx sanity dataset import sanity-export/projects.ndjson production --replace
+npx sanity dataset import sanity-export/certificates.ndjson production --replace
+npx sanity dataset import sanity-export/skills.ndjson production --replace
 ```
 
-`--replace` on the two singletons is deliberate: re-running the import should
-overwrite them, not create duplicates.
-
-**Images are not imported.** You need to drag them into the Studio by hand. The
-screenshots currently live in `public/`; once they are uploaded, Sanity serves
-them from `cdn.sanity.io` and the `public/` copies can be deleted.
+`--replace` makes re-runs idempotent: documents with the same `_id` are
+overwritten instead of failing. Images referenced with `_sanityAsset` are
+uploaded by the importer, so the project covers, gallery screenshots, profile
+photo and certificate scan appear in Sanity automatically.
 
 ## 5. Point the site at Sanity
 
 With the env vars set, `npm run dev` now reads from Sanity. Check:
 
-- the home page shows your real profile
+- the home page shows your real profile and skill groups
 - `http://localhost:3000/api/revalidate?secret=<your-secret>` returns
   `{"revalidated":true,...}`
 
@@ -84,10 +87,10 @@ In <https://manage.sanity.io> → your project → **API** → **Webhooks** → 
 | Field     | Value                                                        |
 | --------- | ------------------------------------------------------------ |
 | Name      | Revalidate portfolio                                         |
-| URL       | `https://vinaykumar.eu.cc/api/revalidate?secret=<SECRET>`      |
+| URL       | `https://<your-domain>/api/revalidate?secret=<SECRET>`          |
 | Dataset   | `production`                                                 |
 | Trigger on | Create, Update, Delete                                      |
-| Filter    | `_type in ["project","profile","certificate","siteSettings"]` |
+| Filter    | `_type in ["project","profile","certificate","siteSettings","skillGroup"]` |
 | Projection| `{"_type": _type}`                                            |
 
 `SECRET` must be identical to `SANITY_REVALIDATE_SECRET`.
@@ -129,8 +132,9 @@ of UI code can leak into the public bundle.
 Free-plan datasets are **public**: anyone with your project ID can read
 published documents. That is fine for a portfolio.
 
-It is **not** fine for contact form submissions. Those are sent by email through
-Resend and are never written to Sanity — keep it that way.
+It is **not** fine for contact form submissions. The site does not collect them:
+the form opens the visitor's mail client with a pre-filled draft. Nothing is
+written to Sanity.
 
 ## Publishing a certificate without opening the Studio
 
@@ -168,9 +172,9 @@ credential today, before the Sanity import.
 ```
 
 Only include fields you can prove. If the score or credential ID is unknown,
-delete those keys rather than guessing: the card and the detail page hide
-missing fields, and a wrong score is worse than no score.
+delete those keys rather than guessing: the card and the modal hide missing
+fields, and a wrong score is worse than no score.
 
-The section appears at `/#certificates`, and each entry gets a static,
-verifiable page at `/certificates/<slug>` that is added to the sitemap
-automatically.
+The section appears at `/#certificates`. Clicking a card opens the certificate
+modal; there is no separate certificate route. When `verifyUrl` is present, the
+modal links to the issuer's verification page so a reader can check it.

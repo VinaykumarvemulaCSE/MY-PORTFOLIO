@@ -5,20 +5,28 @@ import About from "@/components/About";
 import Skills from "@/components/Skills";
 import Projects from "@/components/Projects";
 import Certificates from "@/components/Certificates";
-import Architecture from "@/components/Architecture";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
-import { getCertificates, getProfile, getProjects } from "@/lib/sanity";
+import {
+  getCertificates,
+  getProfile,
+  getProjects,
+  getSiteSettings,
+  getSkillGroups,
+} from "@/lib/sanity";
+import { getSiteUrl } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const profile = await getProfile();
-  const { siteConfig } = profile;
-  const url = siteConfig.url || "https://vinaykumar.eu.cc";
+  const [profile, settings] = await Promise.all([
+    getProfile(),
+    getSiteSettings(),
+  ]);
+  const url = getSiteUrl();
 
   return {
     metadataBase: new URL(url),
-    title: siteConfig.title,
-    description: siteConfig.description,
+    title: settings.title,
+    description: settings.description,
     keywords: [
       "Vinay Kumar Vemula",
       "Full Stack Developer",
@@ -31,8 +39,8 @@ export async function generateMetadata(): Promise<Metadata> {
     ],
     authors: [{ name: profile.name, url }],
     openGraph: {
-      title: siteConfig.title,
-      description: siteConfig.description,
+      title: settings.title,
+      description: settings.description,
       url,
       siteName: `${profile.name} Portfolio`,
       locale: "en_US",
@@ -40,8 +48,8 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: siteConfig.title,
-      description: siteConfig.description,
+      title: settings.title,
+      description: settings.description,
     },
     robots: {
       index: true,
@@ -51,14 +59,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  // Server-rendered profile & projects with Sanity/JSON fallback
-  const [profile, projects, certificates] = await Promise.all([
+  // Server-rendered profile, skills and work with Sanity/JSON fallback
+  const [profile, projects, certificates, skills] = await Promise.all([
     getProfile(),
     getProjects(),
     getCertificates(),
+    getSkillGroups(),
   ]);
 
-  const siteUrl = (profile.siteConfig.url || "https://vinaykumar.eu.cc").replace(/\/$/, "");
+  const siteUrl = getSiteUrl();
 
   // Person schema ties the domain, the social profiles and the work together so
   // search engines can attribute the site to one person.
@@ -101,10 +110,9 @@ export default async function Home() {
       <main>
         <Hero profileData={profile} />
         <About profileData={profile} />
-        <Skills />
+        <Skills groups={skills} />
         <Projects initialProjects={projects} />
         <Certificates certificates={certificates} />
-        <Architecture />
         <Contact profileData={profile} />
       </main>
       <Footer profileData={profile} />

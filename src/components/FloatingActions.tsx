@@ -5,9 +5,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FiArrowUp, FiMessageSquare, FiMail, FiX } from "react-icons/fi";
 import { FaWhatsapp } from "react-icons/fa";
 
-export default function FloatingActions() {
+import type { ProfileViewModel } from "@/lib/sanity/types";
+
+export default function FloatingActions({ profile }: { profile?: ProfileViewModel }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const email = profile?.contact?.email || profile?.contact?.customEmail;
+  const whatsapp = profile?.social?.whatsapp;
+  const hasContact = Boolean(email || whatsapp);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,7 +33,7 @@ export default function FloatingActions() {
   };
 
   return (
-    <div className="fixed bottom-20 md:bottom-6 right-5 md:right-6 z-50 flex flex-col items-end gap-3 pointer-events-auto">
+    <div className="hidden md:flex fixed bottom-6 right-6 z-50 flex-col items-end gap-3 pointer-events-auto">
       {/* Contact Quick Menu */}
       <AnimatePresence>
         {menuOpen && (
@@ -36,39 +42,45 @@ export default function FloatingActions() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 15, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className="flex flex-col gap-2 p-2 rounded-2xl glass border border-border/60 shadow-xl mb-1"
+            className="hidden md:flex flex-col gap-2 p-2 rounded-2xl glass border border-border/60 shadow-xl mb-1"
           >
-            <a
-              href="https://wa.me/918019551015"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
-              aria-label="Chat on WhatsApp"
-            >
-              <FaWhatsapp size={16} /> WhatsApp
-            </a>
-            <a
-              href="mailto:kumarvinay072007@gmail.com"
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
-              aria-label="Send Email"
-            >
-              <FiMail size={16} /> Email Me
-            </a>
+            {whatsapp && (
+              <a
+                href={whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+                aria-label="Chat on WhatsApp"
+              >
+                <FaWhatsapp size={16} /> WhatsApp
+              </a>
+            )}
+            {email && (
+              <a
+                href={`mailto:${email}`}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-primary hover:bg-primary/10 transition-colors"
+                aria-label="Send Email"
+              >
+                <FiMail size={16} /> Email Me
+              </a>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
 
       <div className="flex items-center gap-2">
         {/* Quick Contact Toggle */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Quick Contact Menu"
-          className="w-11 h-11 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/25 hover:opacity-90 transition-all glow-sm"
-        >
-          {menuOpen ? <FiX size={18} /> : <FiMessageSquare size={18} />}
-        </motion.button>
+        {hasContact && (
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Quick Contact Menu"
+            className="hidden md:flex w-11 h-11 rounded-full bg-primary text-primary-foreground items-center justify-center shadow-lg shadow-primary/25 hover:opacity-90 transition-all glow-sm"
+          >
+            {menuOpen ? <FiX size={18} /> : <FiMessageSquare size={18} />}
+          </motion.button>
+        )}
 
         {/* Back to Top */}
         <AnimatePresence>

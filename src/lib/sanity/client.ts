@@ -45,7 +45,10 @@ export function getSanityClient(): SanityClient {
       apiVersion: sanityApiVersion,
       // Only published documents are visible to the public site.
       perspective: "published",
-      useCdn: true,
+      // Next.js is the caching layer (ISR + the `sanity` tag). Asking Sanity's
+      // CDN to cache too would let a revalidation refetch the *old* document,
+      // so read from the API directly.
+      useCdn: false,
       token: sanityReadToken || undefined,
     });
   }

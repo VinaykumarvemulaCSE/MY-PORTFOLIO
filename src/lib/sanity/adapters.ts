@@ -8,6 +8,8 @@ import type {
   SanityImage,
   SanityProfileDoc,
   SanityProjectDoc,
+  SanitySkillGroupDoc,
+  SkillGroupViewModel,
 } from "./types";
 
 /**
@@ -50,9 +52,9 @@ export function toProjectViewModel(doc: SanityProjectDoc): ProjectViewModel {
     id: doc._id,
     slug: doc.slug?.current ?? doc._id,
     title: doc.title ?? "Untitled project",
+    tagline: doc.tagline || undefined,
     description: doc.description ?? doc.tagline ?? "",
     tech: doc.tech ?? [],
-    live: doc.live ?? false,
     liveLink: doc.liveLink || undefined,
     githubLink: doc.githubLink || undefined,
     status: doc.status ?? "Live",
@@ -61,6 +63,14 @@ export function toProjectViewModel(doc: SanityProjectDoc): ProjectViewModel {
     featured: doc.featured ?? false,
     difficulty: doc.difficulty || undefined,
     timeInvestment: doc.timeInvestment || undefined,
+    demoCredentials:
+      doc.demoCredentials?.email || doc.demoCredentials?.password
+        ? {
+            email: doc.demoCredentials.email || undefined,
+            password: doc.demoCredentials.password || undefined,
+            note: doc.demoCredentials.note || undefined,
+          }
+        : undefined,
     caseStudy: doc.caseStudy
       ? {
           ...doc.caseStudy,
@@ -121,8 +131,7 @@ export function toProfileViewModel(
 
 export function toCertificateViewModel(
   doc: SanityCertificateDoc,
-): CertificateViewModel {
-  return {
+): CertificateViewModel {  return {
     id: doc._id,
     slug: doc.slug?.current ?? doc._id,
     title: doc.title ?? "Untitled certificate",
@@ -140,5 +149,21 @@ export function toCertificateViewModel(
     skills: doc.skills ?? [],
     image: imageUrl(doc.image, 1600),
     featured: doc.featured ?? false,
+  };
+}
+
+export function toSkillGroupViewModel(
+  doc: SanitySkillGroupDoc,
+): SkillGroupViewModel {
+  return {
+    id: doc._id,
+    title: doc.title ?? "Skills",
+    skills: (doc.skills ?? [])
+      .filter((skill) => Boolean(skill?.name?.trim()))
+      .map((skill) => ({
+        name: skill.name!.trim(),
+        icon: skill.icon?.trim() || undefined,
+        color: skill.color?.trim() || undefined,
+      })),
   };
 }

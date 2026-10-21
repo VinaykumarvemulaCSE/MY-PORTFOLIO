@@ -14,25 +14,23 @@ const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
   email: z.string().trim().email("Invalid email").max(255),
   message: z.string().trim().min(10, "Please write at least 10 characters").max(5000),
-  // Honeypot: hidden from humans, attractive to bots.
-  website: z.string().max(100).optional(),
 });
 
 type ContactForm = z.infer<typeof contactSchema>;
 
 export default function Contact({ profileData }: { profileData?: any }) {
   const { ref, isVisible } = useScrollAnimation();
-  const [sending, setSending] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
   const contactInfo = profileData?.contact || {};
   const socialInfo = profileData?.social || {};
   const contactSection = profileData?.sections?.contact || {};
+  const recipientEmail =
+    contactInfo.email || contactInfo.customEmail || "kumarvinay072007@gmail.com";
 
   const copyEmail = (e: React.MouseEvent) => {
     e.preventDefault();
-    const email = contactInfo.email || "kumarvinay072007@gmail.com";
-    navigator.clipboard.writeText(email);
+    navigator.clipboard.writeText(recipientEmail);
     setCopiedEmail(true);
     toast.success("Email copied to clipboard!");
     setTimeout(() => setCopiedEmail(false), 2500);
@@ -40,43 +38,26 @@ export default function Contact({ profileData }: { profileData?: any }) {
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactForm>({ resolver: zodResolver(contactSchema) });
 
+  /**
+   * No backend and no email-provider key. The form opens the visitor's mail
+   * client with a pre-filled draft, which works on a static Vercel deploy and
+   * cannot silently fail behind an unset API key.
+   */
+  const onSubmit = (data: ContactForm) => {
+    const subject = encodeURIComponent(`Portfolio inquiry from ${data.name}`);
+    const body = encodeURIComponent(
+      `Name: ${data.name}\nEmail: ${data.email}\n\n${data.message}`,
+    );
 
-const onSubmit = async (data: ContactForm) => {
-  setSending(true);
-
-  try {
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: data.name,
-        email: data.email,
-        message: data.message,
-        website: data.website ?? "",
-      }),
-    });
-
-    const payload = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      toast.error(payload?.error || "Could not send your message. Please try again.");
-      return;
-    }
-
-    toast.success("Message sent — I'll reply as soon as I can.");
+    window.location.href = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+    toast.info("Opening your email app — review the draft and hit send.");
     reset();
-  } catch (error) {
-    console.error(error);
-    toast.error("Network error. Please check your connection and try again.");
-  } finally {
-    setSending(false);
-  }
-};
+  };
 
   const socials = [
     { icon: FiGithub, label: "GitHub", href: socialInfo.github || "https://github.com/VinaykumarvemulaCSE", handle: "GitHub Profile" },
     { icon: FiLinkedin, label: "LinkedIn", href: socialInfo.linkedin || "https://www.linkedin.com/in/vinaykumarvemula", handle: "LinkedIn Profile" },
-    { icon: FiMail, label: "Email", href: `mailto:${contactInfo.email || "kumarvinay072007@gmail.com"}`, handle: contactInfo.email || "kumarvinay072007@gmail.com" },
+    { icon: FiMail, label: "Email", href: `mailto:${recipientEmail}`, handle: recipientEmail },
     { icon: FaWhatsapp, label: "WhatsApp", href: `https://wa.me/${(contactInfo.phone || "918019551015").replace(/[^0-9]/g, '')}`, handle: contactInfo.phone || "+91 80195 51015" },
   ];
 
@@ -172,7 +153,7 @@ const onSubmit = async (data: ContactForm) => {
                     id={field}
                     rows={4}
                     {...register(field)}
-                    className="w-full px-4 py-2.5 rounded-xl glass border border-border/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition resize-none placeholder:text-muted-foreground/50"
+                    className="w-full px-4 py-2.5 rounded-xl glass border border-border/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition resize-none placeholder:text-muted-foreground"
                     placeholder="Your message..."
                   />
                 ) : (
@@ -180,31 +161,26 @@ const onSubmit = async (data: ContactForm) => {
                     id={field}
                     type={field === "email" ? "email" : "text"}
                     {...register(field)}
-                    className="w-full px-4 py-2.5 rounded-xl glass border border-border/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition placeholder:text-muted-foreground/50"
+                    className="w-full px-4 py-2.5 rounded-xl glass border border-border/50 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition placeholder:text-muted-foreground"
                     placeholder={field === "email" ? "your@email.com" : "Your name"}
                   />
                 )}
                 {errors[field] && <p className="text-xs text-destructive mt-1">{errors[field]?.message}</p>}
               </div>
             ))}
-            <div aria-hidden="true" className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden">
-              <label htmlFor="website">Leave this field empty</label>
-              <input
-                id="website"
-                type="text"
-                tabIndex={-1}
-                autoComplete="off"
-                {...register("website")}
-              />
+            <div className="space-y-2">
+              <button
+                type="submit"
+                className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all glow-sm"
+              >
+                <FiSend size={14} />
+                Send via email
+              </button>
+              <p className="text-[11px] text-muted-foreground">
+                This opens your default email app with the message pre-filled.
+                You can also copy the address from the contact card.
+              </p>
             </div>
-            <button
-              type="submit"
-              disabled={sending}
-              className="inline-flex items-center gap-2 px-7 py-3 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all glow-sm disabled:opacity-50"
-            >
-              <FiSend size={14} />
-              {sending ? "Sending..." : "Send Message"}
-            </button>
           </motion.form>
         </div>
       </div>

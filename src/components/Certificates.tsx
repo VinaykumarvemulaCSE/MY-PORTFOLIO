@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
 import {
   FiAward,
   FiCheckCircle,
@@ -73,8 +72,9 @@ export default function Certificates({ certificates }: CertificatesProps) {
           </h2>
           <div className="w-12 h-1 bg-primary rounded-full mb-4" />
           <p className="text-muted-foreground max-w-xl">
-            Every entry links to the issuer&apos;s own verification page. No
-            self-reported badges — open the credential and check it.
+            Open any credential to see the certificate and its details. Where
+            the issuer provides a public verification page, the link is included
+            so you can check it yourself.
           </p>
         </motion.div>
 
@@ -123,7 +123,7 @@ export default function Certificates({ certificates }: CertificatesProps) {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
 
                     {certificate.grade && (
-                      <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 bg-amber-500/90 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-sm">
+                      <span className="absolute top-2.5 left-2.5 inline-flex items-center gap-1 bg-amber-700/95 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full shadow-md backdrop-blur-sm">
                         {certificate.grade}
                       </span>
                     )}
@@ -212,7 +212,7 @@ export default function Certificates({ certificates }: CertificatesProps) {
               exit={{ opacity: 0, scale: 0.97, y: 12 }}
               transition={{ duration: 0.2 }}
               onClick={(event) => event.stopPropagation()}
-              className="w-full max-w-4xl max-h-[90vh] overflow-y-auto glass border border-border/60 rounded-3xl shadow-2xl"
+              className="w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain glass border border-border/60 rounded-3xl shadow-2xl"
             >
               <div className="flex items-start justify-between gap-4 p-5 md:p-6 border-b border-border/40">
                 <div>
@@ -236,7 +236,7 @@ export default function Certificates({ certificates }: CertificatesProps) {
 
               <div className="p-5 md:p-6 space-y-6">
                 {selected.image && (
-                  <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden border border-border/40 bg-secondary/20">
+                  <div className="relative w-full aspect-[4/3] max-h-[38vh] rounded-2xl overflow-hidden border border-border/40 bg-secondary/20">
                     <Image
                       src={selected.image}
                       alt={`${selected.title} certificate`}
@@ -306,13 +306,6 @@ export default function Certificates({ certificates }: CertificatesProps) {
                       Verify at {selected.issuer}
                     </a>
                   )}
-                  <Link
-                    href={`/certificates/${selected.slug}`}
-                    className="flex-1 inline-flex items-center justify-center gap-2 bg-secondary/40 hover:bg-secondary border border-border/50 text-foreground py-3 rounded-xl text-sm font-semibold transition-colors"
-                  >
-                    Open full page
-                    <FiChevronRight size={15} />
-                  </Link>
                 </div>
               </div>
             </motion.div>

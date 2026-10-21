@@ -17,11 +17,11 @@ const PROJECT_FIELDS = /* groq */ `
   status,
   featured,
   order,
-  live,
   liveLink,
   githubLink,
   difficulty,
   timeInvestment,
+  demoCredentials{ email, password, note },
   cover,
   gallery,
   caseStudy{
@@ -31,6 +31,7 @@ const PROJECT_FIELDS = /* groq */ `
     architecture,
     challengesTitle,
     challenges,
+    whatBroke,
     metrics[]{ label, value }
   }
 `;
@@ -91,30 +92,7 @@ export const certificatesQuery = /* groq */ `
     grade,
     score,
     duration,
-    issueDate,
-    credentialId,
-    verifyUrl,
-    category,
-    summary,
-    skills,
-    image,
-    featured,
-    order
-  }
-`;
-
-export const certificateBySlugQuery = /* groq */ `
-  *[_type == "certificate" && slug.current == $slug][0]
-  {
-    _id,
-    _type,
-    title,
-    slug,
-    issuer,
-    awardedBy,
-    grade,
-    score,
-    duration,
+    term,
     issueDate,
     credentialId,
     verifyUrl,
@@ -133,17 +111,24 @@ export const siteSettingsQuery = /* groq */ `
     _type,
     title,
     description,
-    url,
     availability,
     availableForOpportunities
+  }
+`;
+
+export const skillGroupsQuery = /* groq */ `
+  *[_type == "skillGroup"]
+  | order(coalesce(order, 9999) asc, title asc)
+  {
+    _id,
+    _type,
+    title,
+    order,
+    skills[]{ name, icon, color }
   }
 `;
 
 /** Used by `generateStaticParams` so every project gets its own static page. */
 export const projectSlugsQuery = /* groq */ `
   *[_type == "project" && defined(slug.current)][].slug.current
-`;
-
-export const certificateSlugsQuery = /* groq */ `
-  *[_type == "certificate" && defined(slug.current)][].slug.current
 `;

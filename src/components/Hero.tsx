@@ -9,7 +9,7 @@ import Image from "next/image";
 const demoPhoto = "/demo.png";
 const resume = "/resume.pdf";
 
-const defaultRoles = ["AI-Augmented Full Stack Developer", "Tech Enthusiast", "CSE Student", "Problem Solver"];
+const defaultRoles = ["Full Stack Developer", "Computer Science Student", "React & TypeScript Builder"];
 
 interface ProfileConfig {
   name: string;
@@ -25,7 +25,7 @@ export default function Hero({ profileData }: { profileData?: any }) {
   const profile = {
     name: profileData?.name || "Vinay Kumar Vemula",
     roles: profileData?.roles || defaultRoles,
-    bio: profileData?.bio || "Computer Science student passionate about crafting beautiful, performant web experiences.",
+    bio: profileData?.bio || "Computer Science student building full-stack applications with React, TypeScript, and Firebase.",
     availableForOpportunities: profileData?.availableForOpportunities ?? true,
     profileImage: profileData?.profileImage || demoPhoto,
     resumeUrl: profileData?.resumeUrl || resume,

@@ -25,11 +25,14 @@ dist-ssr
 *.sln
 *.sw?
 
-# Environment variables
+# Environment variables — never commit real values
+.env
 .env.local
 .env.*
 !.env.example
-.env
+studio/.env
+studio/.env.*
+!studio/.env.example
 
 # Next.js
 .next

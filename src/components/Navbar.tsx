@@ -13,7 +13,6 @@ const NAV_ITEMS = [
   { label: "Skills", href: "#skills" },
   { label: "Projects", href: "#projects" },
   { label: "Certificates", href: "#certificates" },
-  { label: "Architecture", href: "#architecture" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -31,7 +30,7 @@ export default function Navbar() {
   const onToggleTheme = () => setTheme(isDark ? "light" : "dark");
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/30" role="navigation" aria-label="Main navigation">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border/30" role="navigation" aria-label="Main navigation">
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 md:px-8 h-16">
         <a href="#home" className="font-heading font-bold text-xl text-foreground group">
           <span className="text-gradient">Vinay</span> Kumar Vemula

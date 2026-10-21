@@ -6,12 +6,14 @@ import {
   FiArrowLeft,
   FiArrowUpRight,
   FiCheckCircle,
+  FiChevronDown,
   FiClock,
   FiGithub,
   FiLayers,
 } from "react-icons/fi";
 
 import { getProfile, getProjectBySlug, getProjectSlugs } from "@/lib/sanity";
+import { getSiteUrl } from "@/lib/site";
 import { TECH_ICONS } from "@/constants/techIcons";
 
 interface PageProps {
@@ -32,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${project.title} — Case Study`;
-  const description = project.description;
+  const description = project.tagline || project.description.slice(0, 160);
 
   return {
     title,
@@ -81,17 +83,34 @@ export default async function WorkPage({ params }: PageProps) {
 
   if (!project) notFound();
 
-  const siteUrl = profile.siteConfig.url || "https://vinaykumar.eu.cc";
+  const siteUrl = getSiteUrl();
   const caseStudy = project.caseStudy;
   const images = [project.coverImage, ...(project.gallery ?? [])].filter(
     (image): image is string => Boolean(image),
   );
 
+  /*
+   * `description` holds the full write-up migrated from the old CMS, with its
+   * own line breaks. Showing all of it as one paragraph produced an unreadable
+   * wall of text, so the page leads with the first real paragraph and keeps the
+   * rest in a collapsible at the bottom. The structured case-study fields below
+   * still carry the scannable version.
+   */
+  const narrativeLines = project.description
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const lead =
+    narrativeLines.find((line) => line.length > 140) ??
+    narrativeLines[0] ??
+    project.description;
+  const hasFullNotes = project.description.trim().length > lead.length + 120;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
     name: project.title,
-    description: project.description,
+    description: project.tagline || project.description.slice(0, 300),
     url: `${siteUrl}/work/${project.slug}`,
     codeRepository: project.githubLink,
     programmingLanguage: project.tech,
@@ -145,7 +164,7 @@ export default async function WorkPage({ params }: PageProps) {
           {project.title}
         </h1>
         <p className="text-muted-foreground text-base md:text-lg mt-4 max-w-2xl leading-relaxed">
-          {project.description}
+          {lead}
         </p>
 
         <div className="flex flex-wrap gap-2 mt-6">
@@ -165,7 +184,7 @@ export default async function WorkPage({ params }: PageProps) {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 mt-8">
-          {project.live && project.liveLink && (
+          {project.liveLink && (
             <a
               href={project.liveLink}
               target="_blank"
@@ -270,6 +289,21 @@ export default async function WorkPage({ params }: PageProps) {
               ))}
             </div>
           </Section>
+        )}
+
+        {hasFullNotes && (
+          <details className="mt-12 group rounded-2xl border border-border/40 bg-secondary/20 p-5 md:p-6">
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-semibold text-foreground [&::-webkit-details-marker]:hidden">
+              Complete project notes
+              <FiChevronDown
+                size={16}
+                className="text-muted-foreground transition-transform group-open:rotate-180"
+              />
+            </summary>
+            <div className="mt-5 whitespace-pre-line text-sm md:text-base text-muted-foreground leading-relaxed">
+              {project.description}
+            </div>
+          </details>
         )}
 
         <div className="mt-14 pt-8 border-t border-border/30 flex flex-col sm:flex-row gap-3">

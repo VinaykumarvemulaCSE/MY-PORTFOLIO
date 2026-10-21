@@ -9,6 +9,8 @@ import ScrollProgress from "@/components/ScrollProgress";
 import FloatingActions from "@/components/FloatingActions";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import { getProfile } from "@/lib/sanity";
+import { getSiteUrl } from "@/lib/site";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -29,14 +31,12 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "https://vinaykumar.eu.cc",
-  ),
+  metadataBase: new URL(getSiteUrl()),
   title: "Vinay Kumar Vemula | Full Stack Developer",
   description:
-    "Official portfolio of Vinay Kumar Vemula — a Creative Full Stack Developer specializing in React, TypeScript, and modern web architecture.",
+    "Official portfolio of Vinay Kumar Vemula — a Full Stack Developer building with React, TypeScript, Next.js and Firebase.",
   applicationName: "Vinay Kumar Vemula — Portfolio",
-  authors: [{ name: "Vinay Kumar Vemula", url: "https://vinaykumar.eu.cc" }],
+  authors: [{ name: "Vinay Kumar Vemula", url: getSiteUrl() }],
   creator: "Vinay Kumar Vemula",
   robots: {
     index: true,
@@ -45,11 +45,13 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const profile = await getProfile();
+
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`antialiased font-body bg-background text-foreground ${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
@@ -63,8 +65,8 @@ export default function RootLayout({
             <ServiceWorkerRegister />
             <ScrollProgress />
             {children}
-            <CommandMenu />
-            <FloatingActions />
+            <CommandMenu resumeUrl={profile.resumeUrl} />
+            <FloatingActions profile={profile} />
             <MobileBottomNav />
             <Toaster />
             <Sonner />

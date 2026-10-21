@@ -1,13 +1,38 @@
 {
   "name": "Vinay Kumar Vemula",
   "roles": [
-    "AI-Augmented Full Stack Developer",
-    "Tech Enthusiast",
-    "CSE Student",
-    "Problem Solver"
+    "Full Stack Developer",
+    "Computer Science Student",
+    "React & TypeScript Builder"
   ],
-  "bio": "Computer Science student passionate about crafting beautiful, performant web experiences. Building the future, one component at a time.",
+  "bio": "Computer Science student building full-stack web applications with Next.js, TypeScript, and Firebase. I like understanding how the whole system fits together, from the UI to the data layer.",
+  "statusText": "Open to Summer 2027 software engineering internships",
   "availableForOpportunities": true,
   "profileImage": "/profile.png",
-  "githubUrl": ""
+  "resumeUrl": "/resume.pdf",
+  "education": {
+    "degree": "B.Tech in Computer Science & Engineering",
+    "institution": "Anurag University",
+    "period": "2025 – 2029 (Expected)",
+    "status": "In progress",
+    "highlights": [
+      "Coursework: Data Structures & Algorithms, OOP, Database Systems, Computer Networks",
+      "Building and shipping full-stack side projects alongside coursework"
+    ]
+  },
+  "contact": {
+    "email": "kumarvinay072007@gmail.com",
+    "customEmail": "kumarvinay072007@gmail.com",
+    "phone": "+91 80195 51015",
+    "location": "Hyderabad, India"
+  },
+  "social": {
+    "github": "https://github.com/VinaykumarvemulaCSE",
+    "linkedin": "https://www.linkedin.com/in/vinaykumarvemula",
+    "whatsapp": "https://wa.me/918019551015"
+  },
+  "siteConfig": {
+    "title": "Vinay Kumar Vemula | Full Stack Developer",
+    "description": "Computer Science student building full-stack web applications with Next.js, TypeScript and Firebase."
+  }
 }

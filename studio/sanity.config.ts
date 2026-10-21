@@ -1,11 +1,10 @@
-import { visionTool } from "@sanity/vision";
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 
 import { schemaTypes } from "./schemaTypes";
 
-const projectId = process.env.SANITY_STUDIO_PROJECT_ID ?? "";
-const dataset = process.env.SANITY_STUDIO_DATASET ?? "production";
+const projectId = process.env.SANITY_STUDIO_PROJECT_ID || "0pmm1cx4";
+const dataset = process.env.SANITY_STUDIO_DATASET || "production";
 
 /**
  * Singleton documents are created with a fixed `_id` and hidden from the normal
@@ -43,9 +42,9 @@ export default defineConfig({
             S.divider(),
             S.documentTypeListItem("project").title("Projects"),
             S.documentTypeListItem("certificate").title("Certificates"),
+            S.documentTypeListItem("skillGroup").title("Skill groups"),
           ]),
     }),
-    visionTool({ defaultApiVersion: "2025-01-01" }),
   ],
   schema: {
     types: schemaTypes,

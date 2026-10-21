@@ -7,11 +7,12 @@ export * from "./types";
 export {
   fallbackProfile,
   fallbackProjects,
-  getCertificateBySlug,
-  getCertificateSlugs,
+  fallbackSkillGroups,
   getCertificates,
   getProfile,
   getProjectBySlug,
   getProjectSlugs,
   getProjects,
+  getSiteSettings,
+  getSkillGroups,
 } from "./data";

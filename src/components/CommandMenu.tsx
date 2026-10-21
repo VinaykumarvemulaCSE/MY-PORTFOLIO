@@ -3,9 +3,9 @@
 import { useEffect, useState } from "react";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
-import { FiHome, FiFolder, FiMail, FiDownload, FiSettings, FiMoon, FiSun } from "react-icons/fi";
+import { FiHome, FiFolder, FiMail, FiDownload, FiSettings, FiMoon, FiSun, FiAward } from "react-icons/fi";
 
-export function CommandMenu() {
+export function CommandMenu({ resumeUrl = "/resume.pdf" }: { resumeUrl?: string }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -66,11 +66,23 @@ export function CommandMenu() {
             >
               <FiFolder className="text-muted-foreground" /> Projects Archive
             </Command.Item>
+            <Command.Item
+              onSelect={() => runCommand(() => {
+                if (window.location.pathname === "/") {
+                  document.getElementById("certificates")?.scrollIntoView({ behavior: "smooth" });
+                } else {
+                  router.push("/#certificates");
+                }
+              })}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
+            >
+              <FiAward className="text-muted-foreground" /> Certificates
+            </Command.Item>
           </Command.Group>
 
           <Command.Group heading="Actions" className="text-xs font-semibold text-muted-foreground px-2 py-2 border-t border-border/30 mt-2">
             <Command.Item
-              onSelect={() => runCommand(() => window.open("/resume.pdf", "_blank"))}
+              onSelect={() => runCommand(() => window.open(resumeUrl, "_blank"))}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-foreground cursor-pointer hover:bg-secondary/50 transition-colors aria-selected:bg-primary/10 aria-selected:text-primary mt-1"
             >
               <FiDownload className="text-muted-foreground" /> Download Resume

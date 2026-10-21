@@ -1,22 +1,26 @@
+import { cache } from "react";
+
 import projectsFallback from "../../../public/data/projects.json";
 import certificatesFallback from "../../../public/data/certificates.json";
+import skillsFallback from "../../../public/data/skills.json";
 
 import {
   toCertificateViewModel,
   toProfileViewModel,
   toProjectViewModel,
+  toSkillGroupViewModel,
 } from "./adapters";
 import { sanityFetch } from "./client";
 import { profileDefaults } from "./defaults";
 import { isSanityConfigured } from "./env";
 import {
-  certificateBySlugQuery,
-  certificateSlugsQuery,
   certificatesQuery,
   profileQuery,
   projectBySlugQuery,
   projectSlugsQuery,
   projectsQuery,
+  siteSettingsQuery,
+  skillGroupsQuery,
 } from "./queries";
 import type {
   CertificateViewModel,
@@ -25,6 +29,9 @@ import type {
   SanityCertificateDoc,
   SanityProfileDoc,
   SanityProjectDoc,
+  SanitySiteSettingsDoc,
+  SanitySkillGroupDoc,
+  SkillGroupViewModel,
 } from "./types";
 
 /**
@@ -45,9 +52,9 @@ export const fallbackProfile: ProfileViewModel = profileDefaults;
 interface LegacyProject {
   id: string;
   title?: string;
+  tagline?: string;
   description?: string;
   tech?: string[];
-  live?: boolean;
   liveLink?: string;
   githubLink?: string;
   status?: string;
@@ -56,6 +63,7 @@ interface LegacyProject {
   featured?: boolean;
   difficulty?: string;
   timeInvestment?: string;
+  demoCredentials?: ProjectViewModel["demoCredentials"];
   caseStudy?: ProjectViewModel["caseStudy"];
   slug?: string;
 }
@@ -76,9 +84,9 @@ function normalizeLegacyProject(project: LegacyProject): ProjectViewModel {
     // the id as a last resort. Readable slugs matter for /work/[slug] SEO.
     slug: project.slug || slugify(project.title ?? "") || project.id,
     title: project.title ?? "Untitled project",
+    tagline: project.tagline || undefined,
     description: project.description ?? "",
     tech: project.tech ?? [],
-    live: project.live ?? false,
     liveLink: project.liveLink || undefined,
     githubLink: project.githubLink || undefined,
     status: project.status ?? "Live",
@@ -87,6 +95,7 @@ function normalizeLegacyProject(project: LegacyProject): ProjectViewModel {
     featured: project.featured ?? false,
     difficulty: project.difficulty || undefined,
     timeInvestment: project.timeInvestment || undefined,
+    demoCredentials: project.demoCredentials,
     caseStudy: project.caseStudy,
   };
 }
@@ -98,11 +107,13 @@ export const fallbackProjects = (projectsFallback as unknown as LegacyProject[])
 export const fallbackCertificates =
   certificatesFallback as unknown as CertificateViewModel[];
 
+export const fallbackSkillGroups = skillsFallback as unknown as SkillGroupViewModel[];
+
 /* -------------------------------------------------------------------------- */
 /* Profile                                                                    */
 /* -------------------------------------------------------------------------- */
 
-export async function getProfile(): Promise<ProfileViewModel> {
+export const getProfile = cache(async (): Promise<ProfileViewModel> => {
   if (!isSanityConfigured) return toProfileViewModel(null, fallbackProfile);
 
   try {
@@ -111,6 +122,38 @@ export async function getProfile(): Promise<ProfileViewModel> {
   } catch (error) {
     console.warn("[sanity] profile query failed, using JSON fallback:", error);
     return toProfileViewModel(null, fallbackProfile);
+  }
+});
+
+/* -------------------------------------------------------------------------- */
+/* Site settings                                                              */
+/* -------------------------------------------------------------------------- */
+
+export interface SiteSettings {
+  title: string;
+  description: string;
+}
+
+/**
+ * The `siteSettings` singleton feeds the page title and meta description. The
+ * canonical origin is configured through `NEXT_PUBLIC_SITE_URL` so a domain
+ * change never requires a CMS edit.
+ */
+export async function getSiteSettings(): Promise<SiteSettings> {
+  const fallback = fallbackProfile.siteConfig;
+  if (!isSanityConfigured) return fallback;
+
+  try {
+    const doc = await sanityFetch<SanitySiteSettingsDoc | null>(
+      siteSettingsQuery,
+    );
+    return {
+      title: doc?.title || fallback.title,
+      description: doc?.description || fallback.description,
+    };
+  } catch (error) {
+    console.warn("[sanity] site settings query failed, using defaults:", error);
+    return fallback;
   }
 }
 
@@ -193,38 +236,28 @@ export async function getCertificates(): Promise<CertificateViewModel[]> {
   }
 }
 
-export async function getCertificateBySlug(
-  slug: string,
-): Promise<CertificateViewModel | null> {
-  if (!isSanityConfigured) {
-    return fallbackCertificates.find((certificate) => certificate.slug === slug) ?? null;
-  }
+/* -------------------------------------------------------------------------- */
+/* Skills                                                                     */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Skill groups are editable in Sanity Studio. The JSON file is only a seed for
+ * local development and for the first deploy before the dataset is populated.
+ */
+export async function getSkillGroups(): Promise<SkillGroupViewModel[]> {
+  if (!isSanityConfigured) return fallbackSkillGroups;
 
   try {
-    const doc = await sanityFetch<SanityCertificateDoc | null>(
-      certificateBySlugQuery,
-      { slug },
-    );
-    return doc
-      ? toCertificateViewModel(doc)
-      : (fallbackCertificates.find((certificate) => certificate.slug === slug) ?? null);
+    const docs = await sanityFetch<SanitySkillGroupDoc[]>(skillGroupsQuery);
+    if (!docs?.length) return fallbackSkillGroups;
+
+    const groups = docs
+      .map(toSkillGroupViewModel)
+      .filter((group) => group.skills.length > 0);
+
+    return groups.length > 0 ? groups : fallbackSkillGroups;
   } catch (error) {
-    console.warn("[sanity] certificate query failed, using JSON fallback:", error);
-    return fallbackCertificates.find((certificate) => certificate.slug === slug) ?? null;
-  }
-}
-
-export async function getCertificateSlugs(): Promise<string[]> {
-  if (!isSanityConfigured) {
-    return fallbackCertificates.map((certificate) => certificate.slug);
-  }
-
-  try {
-    const slugs = await sanityFetch<string[]>(certificateSlugsQuery);
-    return slugs?.length
-      ? slugs
-      : fallbackCertificates.map((certificate) => certificate.slug);
-  } catch {
-    return fallbackCertificates.map((certificate) => certificate.slug);
+    console.warn("[sanity] skills query failed, using JSON fallback:", error);
+    return fallbackSkillGroups;
   }
 }

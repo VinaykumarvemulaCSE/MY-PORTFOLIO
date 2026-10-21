@@ -30,7 +30,7 @@ export default defineType({
       of: [{ type: "string" }],
       group: "identity",
       description:
-        "First entry is the headline. Avoid buzzwords like “AI-Augmented” — say what you actually build.",
+        "First entry is the headline. Say what you actually build — “Full Stack Developer”, “Computer Science Student”, “React & TypeScript Builder”.",
     }),
     defineField({
       name: "bio",

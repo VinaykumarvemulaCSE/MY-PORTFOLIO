@@ -25,7 +25,7 @@ export default function Footer({ profileData }: { profileData?: any }) {
   ];
 
   return (
-    <footer className="relative border-t border-border/30 py-14 px-4 md:px-8" role="contentinfo">
+    <footer className="relative border-t border-border/30 pt-14 pb-24 md:py-14 px-4 md:px-8" role="contentinfo">
       <div className="max-w-5xl mx-auto">
         {/* Back to top */}
         <div className="flex justify-center -mt-20 mb-10">
@@ -70,8 +70,11 @@ export default function Footer({ profileData }: { profileData?: any }) {
           </div>
         </div>
 
-        <div className="text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5 font-mono">
-          © {new Date().getFullYear()} {name} — Built with <FiHeart size={12} className="text-primary" /> Next.js & Tailwind CSS
+        <div className="text-center text-xs text-muted-foreground font-mono space-y-1">
+          <p>© {new Date().getFullYear()} {name}</p>
+          <p className="inline-flex items-center gap-1.5">
+            Built with <FiHeart size={12} className="text-primary" /> Next.js & Tailwind CSS
+          </p>
         </div>
       </div>
     </footer>

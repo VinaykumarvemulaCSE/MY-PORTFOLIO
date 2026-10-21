@@ -38,8 +38,9 @@ export const profileDefaults: ProfileViewModel = {
 
   contact: {
     email: "kumarvinay072007@gmail.com",
-    // Deliberately the same address: vinaykumar.eu.cc has no MX record, so
-    // contact@vinaykumar.eu.cc would silently bounce every visitor who used it.
+    // Keep this a mailbox you actually read. The contact form opens the
+    // visitor's mail client instead of relying on a backend or a dead domain
+    // address.
     customEmail: "kumarvinay072007@gmail.com",
     phone: "+91 80195 51015",
     location: "Hyderabad, India",
@@ -55,6 +56,5 @@ export const profileDefaults: ProfileViewModel = {
     title: "Vinay Kumar Vemula | Full Stack Developer",
     description:
       "Computer Science student building full-stack web applications with Next.js, TypeScript and Firebase.",
-    url: "https://vinaykumar.eu.cc",
   },
 };

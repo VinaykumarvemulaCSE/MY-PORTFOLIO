@@ -39,6 +39,12 @@ export interface ProjectMetric {
   value?: string;
 }
 
+export interface ProjectDemoCredentials {
+  email?: string;
+  password?: string;
+  note?: string;
+}
+
 export interface ProjectCaseStudy {
   problemTitle?: string;
   problem?: string;
@@ -61,11 +67,11 @@ export interface SanityProjectDoc {
   status?: string;
   featured?: boolean;
   order?: number;
-  live?: boolean;
   liveLink?: string;
   githubLink?: string;
   difficulty?: string;
   timeInvestment?: string;
+  demoCredentials?: ProjectDemoCredentials | null;
   cover?: SanityImage | null;
   gallery?: (SanityImage | null)[] | null;
   caseStudy?: ProjectCaseStudy | null;
@@ -134,9 +140,23 @@ export interface SanitySiteSettingsDoc {
   _type: "siteSettings";
   title?: string;
   description?: string;
-  url?: string;
   availability?: string;
   availableForOpportunities?: boolean;
+}
+
+export interface SanitySkill {
+  _key?: string;
+  name?: string;
+  icon?: string;
+  color?: string;
+}
+
+export interface SanitySkillGroupDoc {
+  _id: string;
+  _type: "skillGroup";
+  title?: string;
+  order?: number;
+  skills?: SanitySkill[];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -147,9 +167,10 @@ export interface ProjectViewModel {
   id: string;
   slug: string;
   title: string;
+  /** Short, card-friendly summary. Falls back to `description` in the UI. */
+  tagline?: string;
   description: string;
   tech: string[];
-  live: boolean;
   liveLink?: string;
   githubLink?: string;
   status: string;
@@ -158,6 +179,7 @@ export interface ProjectViewModel {
   featured?: boolean;
   difficulty?: string;
   timeInvestment?: string;
+  demoCredentials?: ProjectDemoCredentials;
   caseStudy?: ProjectCaseStudy;
 }
 
@@ -180,7 +202,19 @@ export interface ProfileViewModel {
   education: EducationViewModel;
   contact: Required<SanityContact>;
   social: Required<SanitySocial>;
-  siteConfig: { title: string; description: string; url: string };
+  siteConfig: { title: string; description: string };
+}
+
+export interface SkillViewModel {
+  name: string;
+  icon?: string;
+  color?: string;
+}
+
+export interface SkillGroupViewModel {
+  id: string;
+  title: string;
+  skills: SkillViewModel[];
 }
 
 export interface CertificateViewModel {

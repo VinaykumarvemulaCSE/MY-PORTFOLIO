@@ -99,7 +99,7 @@ export default async function Image() {
               textAlign: "center",
             }}
           >
-            AI-Augmented Full Stack Developer
+            Full Stack Developer
           </p>
           
           <div style={{ display: "flex", gap: "24px", marginTop: "48px" }}>

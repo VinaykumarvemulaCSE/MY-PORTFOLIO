@@ -1,42 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
-import {
-  SiHtml5, SiCss, SiJavascript, SiReact, SiTailwindcss,
-  SiNodedotjs, SiExpress, SiFirebase, SiGit, SiGithub,
-  SiTypescript, SiVite, SiFramer,
-  SiNpm, SiVercel
-} from "react-icons/si";
 import { FiCode } from "react-icons/fi";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { TECH_ICONS } from "@/constants/techIcons";
 
-interface TechItem {
-  name: string;
-  icon: React.ElementType;
-  color: string;
-  category: string;
+import type { SkillGroupViewModel, SkillViewModel } from "@/lib/sanity/types";
+
+interface SkillsProps {
+  groups: SkillGroupViewModel[];
 }
 
-const techStack: TechItem[] = [
-  { name: "HTML5", icon: SiHtml5, color: "#E34F26", category: "Frontend" },
-  { name: "CSS3", icon: SiCss, color: "#1572B6", category: "Frontend" },
-  { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E", category: "Frontend" },
-  { name: "TypeScript", icon: SiTypescript, color: "#3178C6", category: "Frontend" },
-  { name: "React", icon: SiReact, color: "#61DAFB", category: "Frontend" },
-  { name: "Tailwind CSS", icon: SiTailwindcss, color: "#06B6D4", category: "Frontend" },
-  { name: "Node.js", icon: SiNodedotjs, color: "#339933", category: "Backend" },
-  { name: "Express", icon: SiExpress, color: "#888888", category: "Backend" },
-  { name: "Firebase", icon: SiFirebase, color: "#FFCA28", category: "Backend" },
-  { name: "Git", icon: SiGit, color: "#F05032", category: "Tools" },
-  { name: "GitHub", icon: SiGithub, color: "#aaaaaa", category: "Tools" },
-  { name: "VS Code", icon: FiCode, color: "#007ACC", category: "Tools" },
-  { name: "npm", icon: SiNpm, color: "#CB3837", category: "Tools" },
-  { name: "Vercel", icon: SiVercel, color: "#aaaaaa", category: "Tools" },
-];
+/** Friendly names in the CMS may differ from the short icon-map keys. */
+const ICON_ALIASES: Record<string, string> = {
+  HTML5: "HTML",
+  CSS3: "CSS",
+  JavaScript: "Javascript",
+  "Tailwind CSS": "Tailwind",
+  "Next.js": "Next.js",
+  "Node.js": "Node.js",
+  "Data Structures & Algorithms": "DSA",
+  "Object-Oriented Programming": "OOP",
+  "Database Management": "DBMS",
+  "Operating Systems": "OS",
+};
 
-const categories = ["Frontend", "Backend", "Tools"];
+function iconFor(skill: SkillViewModel) {
+  return (
+    (skill.icon ? TECH_ICONS[skill.icon] : undefined) ??
+    TECH_ICONS[skill.name] ??
+    (ICON_ALIASES[skill.name] ? TECH_ICONS[ICON_ALIASES[skill.name]] : undefined)
+  );
+}
 
-export default function Skills() {
+export default function Skills({ groups }: SkillsProps) {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
@@ -62,41 +59,55 @@ export default function Skills() {
           </p>
         </motion.div>
 
-        {categories.map((cat, ci) => (
-          <motion.div
-            key={cat}
-            initial={{ opacity: 0, y: 30 }}
-            animate={isVisible ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.15 * (ci + 1), duration: 0.5 }}
-            className="mb-10 last:mb-0"
-          >
-            <h3 className="text-sm font-mono font-medium text-muted-foreground uppercase tracking-widest mb-5 pl-1">
-              {` ${cat}`}
-            </h3>
-            <div className="flex flex-wrap gap-3">
-              {techStack
-                .filter((t) => t.category === cat)
-                .map((tech, i) => (
-                  <motion.button
-                    key={tech.name}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={isVisible ? { opacity: 1, scale: 1 } : {}}
-                    transition={{ delay: 0.05 * i + 0.2 * (ci + 1), duration: 0.3 }}
-                    className="tech-btn inline-flex items-center gap-2.5 px-5 py-3 rounded-xl glass border border-border/50 hover:border-primary/40 group cursor-default"
-                    type="button"
-                    aria-label={tech.name}
-                  >
-                    <tech.icon
-                      size={18}
-                      style={{ color: tech.color }}
-                      className="transition-transform group-hover:scale-110"
-                    />
-                    <span className="text-sm font-medium text-foreground">{tech.name}</span>
-                  </motion.button>
-                ))}
-            </div>
-          </motion.div>
-        ))}
+        {groups.length === 0 ? (
+          <div className="text-center py-12 rounded-2xl border border-dashed border-border/50 text-muted-foreground">
+            Skills are being updated — check back soon.
+          </div>
+        ) : (
+          groups.map((group, groupIndex) => (
+            <motion.div
+              key={group.id}
+              initial={{ opacity: 0, y: 30 }}
+              animate={isVisible ? { opacity: 1, y: 0 } : {}}
+              transition={{ delay: 0.15 * (groupIndex + 1), duration: 0.5 }}
+              className="mb-10 last:mb-0"
+            >
+              <h3 className="text-sm font-mono font-medium text-muted-foreground uppercase tracking-widest mb-5 pl-1">
+                {group.title}
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {group.skills.map((skill, index) => {
+                  const info = iconFor(skill);
+                  const Icon = info?.icon ?? FiCode;
+                  const color = skill.color || info?.color || "currentColor";
+
+                  return (
+                    <motion.div
+                      key={`${group.id}-${skill.name}`}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={isVisible ? { opacity: 1, scale: 1 } : {}}
+                      transition={{
+                        delay: 0.05 * index + 0.2 * (groupIndex + 1),
+                        duration: 0.3,
+                      }}
+                      className="tech-btn inline-flex items-center gap-2.5 px-5 py-3 rounded-xl glass border border-border/50 hover:border-primary/40 group cursor-default"
+                    >
+                      <Icon
+                        size={18}
+                        style={{ color }}
+                        className="transition-transform group-hover:scale-110"
+                        aria-hidden="true"
+                      />
+                      <span className="text-sm font-medium text-foreground">
+                        {skill.name}
+                      </span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
     </section>
   );
