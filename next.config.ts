@@ -1,5 +1,25 @@
 import type { NextConfig } from "next";
 
+// Static CSP: Next.js emits inline bootstrap styles/scripts, so unsafe-inline is
+// required without a nonce/proxy. It still blocks third-party script injection.
+// Applied in production only so the dev server's HMR websocket/eval keep working.
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.gstatic.com https://www.google.com",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' blob: data: https://res.cloudinary.com https://*.googleusercontent.com https://www.gstatic.com",
+  "font-src 'self' data:",
+  "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://api.cloudinary.com https://res.cloudinary.com https://www.google.com https://www.gstatic.com",
+  "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://www.google.com",
+  "worker-src 'self' blob:",
+  "manifest-src 'self'",
+  "media-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'self'",
+].join("; ");
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
@@ -23,6 +43,9 @@ const nextConfig: NextConfig = {
             key: "Permissions-Policy",
             value: "camera=(), microphone=(), geolocation=()",
           },
+          ...(process.env.NODE_ENV === "production"
+            ? [{ key: "Content-Security-Policy", value: contentSecurityPolicy }]
+            : []),
         ],
       },
       {

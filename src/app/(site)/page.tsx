@@ -15,7 +15,7 @@ import {
   getSkillGroups,
 } from "@/lib/content";
 import { toJsonLd } from "@/lib/jsonLd";
-import { getSiteUrl } from "@/lib/site";
+import { absoluteUrl, getSiteUrl } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [profile, settings] = await Promise.all([getProfile(), getSiteSettings()]);
@@ -28,6 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(url),
     title,
     description,
+    alternates: { canonical: "/" },
     keywords: [
       "Portfolio",
       "Full Stack Developer",
@@ -93,11 +94,7 @@ export default async function Home() {
     jobTitle: profile.roles[0],
     description: profile.bio,
     url: siteUrl,
-    image: profile.profileImage
-      ? profile.profileImage.startsWith("http")
-        ? profile.profileImage
-        : `${siteUrl}${profile.profileImage}`
-      : undefined,
+    image: profile.profileImage ? absoluteUrl(profile.profileImage) : undefined,
     email: profile.contact.email,
     sameAs: [profile.social.github, profile.social.linkedin].filter(Boolean),
     knowsAbout: skills.flatMap((group) => group.skills.map((skill) => skill.name)).slice(0, 12),

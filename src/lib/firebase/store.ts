@@ -128,7 +128,7 @@ function clean<T extends object>(data: T): T {
   return JSON.parse(JSON.stringify(data));
 }
 
-export async function saveDoc(collection: string, id: string, data: object): Promise<boolean> {
+async function saveDoc(collection: string, id: string, data: object): Promise<boolean> {
   const db = getDb();
   if (!db) return false;
   await db.collection(collection).doc(id).set(clean(data));

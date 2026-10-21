@@ -11,10 +11,11 @@ import {
   FiGithub,
   FiLayers,
 } from "react-icons/fi";
+import { getProjectImages } from "@/components/projects/projectUtils";
 import { TECH_ICONS } from "@/constants/techIcons";
 import { getProfile, getProjectBySlug, getProjectSlugs } from "@/lib/content";
 import { toJsonLd } from "@/lib/jsonLd";
-import { getSiteUrl } from "@/lib/site";
+import { absoluteUrl, getSiteUrl } from "@/lib/site";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -33,7 +34,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Project not found" };
   }
 
-  const title = `${project.title} â€” Case Study`;
+  const title = `${project.title} — Case Study`;
   const description = project.tagline || project.description.slice(0, 160);
 
   return {
@@ -44,6 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: "article",
+      url: `/work/${project.slug}`,
       images: project.coverImage ? [{ url: project.coverImage }] : undefined,
     },
     twitter: {
@@ -72,9 +74,7 @@ export default async function WorkPage({ params }: PageProps) {
 
   const siteUrl = getSiteUrl();
   const caseStudy = project.caseStudy;
-  const images = [project.coverImage, ...(project.gallery ?? [])].filter((image): image is string =>
-    Boolean(image)
-  );
+  const images = getProjectImages(project);
 
   /*
    * `description` holds the full write-up migrated from the old CMS, with its
@@ -100,7 +100,7 @@ export default async function WorkPage({ params }: PageProps) {
     codeRepository: project.githubLink,
     programmingLanguage: project.tech,
     author: { "@type": "Person", name: profile?.name ?? "Portfolio", url: siteUrl },
-    ...(project.coverImage ? { image: project.coverImage } : {}),
+    ...(project.coverImage ? { image: absoluteUrl(project.coverImage) } : {}),
   };
 
   return (
@@ -122,7 +122,7 @@ export default async function WorkPage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 md:px-8 py-12 md:py-16">
+      <main className="max-w-4xl mx-auto px-4 md:px-8 py-12 pb-28 md:py-16">
         <div className="flex flex-wrap items-center gap-2 mb-4">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-full">
             <FiCheckCircle size={12} />
@@ -220,7 +220,7 @@ export default async function WorkPage({ params }: PageProps) {
             <ul className="space-y-2">
               {caseStudy.challenges.map((challenge) => (
                 <li key={challenge} className="flex gap-2.5">
-                  <span className="text-primary mt-1.5 shrink-0">â–¸</span>
+                  <span className="text-primary mt-1.5 shrink-0">▸</span>
                   <span>{challenge}</span>
                 </li>
               ))}
@@ -264,7 +264,7 @@ export default async function WorkPage({ params }: PageProps) {
                     src={image}
                     alt={`${project.title} screenshot`}
                     fill
-                    className="object-cover object-top"
+                    className="object-contain"
                     sizes="(max-width: 640px) 100vw, 450px"
                   />
                 </div>

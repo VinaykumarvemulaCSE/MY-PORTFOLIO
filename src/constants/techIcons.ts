@@ -1,15 +1,5 @@
 import type { IconType } from "react-icons";
-import {
-  FiCloud,
-  FiCode,
-  FiCpu,
-  FiDatabase,
-  FiGlobe,
-  FiLayers,
-  FiLayout,
-  FiShield,
-  FiSmartphone,
-} from "react-icons/fi";
+import { FiCloud, FiCode, FiCpu, FiDatabase, FiGlobe, FiLayers } from "react-icons/fi";
 import {
   SiAngular,
   SiBootstrap,
@@ -132,18 +122,3 @@ export const TECH_ICONS: Record<string, TechIconInfo> = {
   Postman: { name: "Postman", icon: SiPostman, color: "#FF6C37" },
   Figma: { name: "Figma", icon: SiFigma, color: "#F24E1E" },
 };
-
-// Default icons for categories if specific tech not found
-export const CATEGORY_ICONS = {
-  frontend: FiLayout,
-  backend: FiCpu,
-  database: FiDatabase,
-  tools: FiLayers,
-  cloud: FiCloud,
-  security: FiShield,
-  mobile: FiSmartphone,
-  code: FiCode,
-  other: FiGlobe,
-};
-
-export const getAllTechNames = () => Object.keys(TECH_ICONS).sort();

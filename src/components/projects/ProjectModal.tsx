@@ -434,7 +434,7 @@ export default function ProjectModal({
               {caseStudy?.problem && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-700 dark:text-amber-400 uppercase tracking-wider">
-                    <span>01</span> â€¢ Problem
+                    <span>01</span> • Problem
                   </div>
                   <h4 className="text-xl font-heading font-bold text-foreground">
                     {caseStudy.problemTitle || "Problem statement"}
@@ -448,7 +448,7 @@ export default function ProjectModal({
               {caseStudy?.architecture && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                    <span>02</span> â€¢ Architecture
+                    <span>02</span> • Architecture
                   </div>
                   <h4 className="text-xl font-heading font-bold text-foreground">
                     {caseStudy.architectureTitle || "How it works"}
@@ -462,7 +462,7 @@ export default function ProjectModal({
               {(caseStudy?.challenges?.length ?? 0) > 0 && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                    <span>03</span> â€¢ Challenges
+                    <span>03</span> • Challenges
                   </div>
                   <h4 className="text-xl font-heading font-bold text-foreground">
                     {caseStudy?.challengesTitle || "Hardest problems"}
@@ -481,7 +481,7 @@ export default function ProjectModal({
               {caseStudy?.whatBroke && (
                 <div className="p-6 md:p-8 rounded-3xl glass border border-border/60 space-y-3">
                   <div className="flex items-center gap-2 text-xs font-mono font-bold text-primary uppercase tracking-wider">
-                    <span>04</span> â€¢ What broke
+                    <span>04</span> • What broke
                   </div>
                   <p className="text-sm md:text-base text-muted-foreground leading-relaxed whitespace-pre-line">
                     {caseStudy.whatBroke}

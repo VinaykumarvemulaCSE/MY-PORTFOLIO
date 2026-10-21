@@ -12,6 +12,16 @@ export function getSiteUrl(): string {
     process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim() || process.env.VERCEL_URL?.trim();
 
   const raw = configured || (vercelHost ? `https://${vercelHost}` : "http://localhost:3000");
+  const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
 
-  return raw.replace(/\/+$/, "");
+  return withProtocol.replace(/\/+$/, "");
+}
+
+/** Resolve a CMS-provided path or absolute URL against the canonical origin. */
+export function absoluteUrl(value: string): string {
+  try {
+    return new URL(value, getSiteUrl()).toString();
+  } catch {
+    return value;
+  }
 }

@@ -130,6 +130,7 @@ export default function Projects({ initialProjects = [] }: ProjectsProps) {
       <AnimatePresence>
         {selectedProject && (
           <ProjectModal
+            key={selectedProject.slug}
             project={selectedProject}
             initialView={modalView}
             onClose={() => setSelectedProject(null)}

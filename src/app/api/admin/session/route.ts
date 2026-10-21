@@ -9,6 +9,8 @@ import {
   sessionCookieOptions,
 } from "@/lib/firebase/session";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Exchanges a Firebase ID token for an httpOnly session cookie.
  *
@@ -70,5 +72,8 @@ export async function DELETE() {
 
 export async function GET() {
   const cookieStore = await cookies();
-  return NextResponse.json({ signedIn: Boolean(cookieStore.get(SESSION_COOKIE)?.value) });
+  return NextResponse.json(
+    { signedIn: Boolean(cookieStore.get(SESSION_COOKIE)?.value) },
+    { headers: { "Cache-Control": "no-store" } }
+  );
 }

@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import { cloudinaryConfig, isCloudinaryConfigured } from "@/lib/firebase/config";
 import { getAdminSession } from "@/lib/firebase/session";
 
+export const dynamic = "force-dynamic";
+
 /**
  * Returns a short-lived signature so the browser can upload straight to
  * Cloudinary.
@@ -32,11 +34,8 @@ export async function GET() {
     .update(`folder=${folder}&timestamp=${timestamp}${apiSecret}`)
     .digest("hex");
 
-  return NextResponse.json({
-    cloudName,
-    apiKey,
-    timestamp,
-    folder,
-    signature,
-  });
+  return NextResponse.json(
+    { cloudName, apiKey, timestamp, folder, signature },
+    { headers: { "Cache-Control": "no-store" } }
+  );
 }

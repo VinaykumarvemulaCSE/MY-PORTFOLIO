@@ -9,24 +9,24 @@ import { z } from "zod";
 const optionalText = z.string().trim().optional();
 const optionalUrl = z.union([z.literal(""), z.url()]).optional();
 
-export const slugSchema = z
+const slugSchema = z
   .string()
   .trim()
   .min(1, "Slug is required")
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens");
 
-export const projectMetricSchema = z.object({
+const projectMetricSchema = z.object({
   label: z.string().trim().min(1),
   value: z.string().trim().min(1),
 });
 
-export const projectDemoCredentialsSchema = z.object({
+const projectDemoCredentialsSchema = z.object({
   email: optionalText,
   password: optionalText,
   note: optionalText,
 });
 
-export const projectCaseStudySchema = z.object({
+const projectCaseStudySchema = z.object({
   problemTitle: optionalText,
   problem: optionalText,
   architectureTitle: optionalText,
@@ -58,7 +58,7 @@ export const projectSchema = z.object({
   order: z.number().optional(),
 });
 
-export const educationSchema = z.object({
+const educationSchema = z.object({
   degree: z.string().trim().min(1),
   institution: z.string().trim().min(1),
   period: z.string().trim().min(1),
@@ -93,7 +93,7 @@ export const profileSchema = z.object({
   }),
 });
 
-export const skillSchema = z.object({
+const skillSchema = z.object({
   name: z.string().trim().min(1),
   icon: optionalText,
   color: optionalText,
@@ -127,8 +127,3 @@ export const certificateSchema = z.object({
   published: z.boolean().optional(),
   order: z.number().optional(),
 });
-
-export type ProjectInput = z.infer<typeof projectSchema>;
-export type ProfileInput = z.infer<typeof profileSchema>;
-export type SkillGroupInput = z.infer<typeof skillGroupSchema>;
-export type CertificateInput = z.infer<typeof certificateSchema>;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { FiFileText, FiUploadCloud, FiX } from "react-icons/fi";
+import { FiExternalLink, FiFileText, FiUploadCloud, FiX } from "react-icons/fi";
 
 import { Field, inputClass } from "./ui";
 import { isPdf, uploadFile } from "./upload";
@@ -26,6 +26,7 @@ export function ImageField({
   const [url, setUrl] = useState(defaultValue ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [imgLoadError, setImgLoadError] = useState(false);
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -33,6 +34,7 @@ export function ImageField({
     if (!file) return;
     setBusy(true);
     setError("");
+    setImgLoadError(false);
 
     try {
       setUrl(await uploadFile(file));
@@ -51,14 +53,20 @@ export function ImageField({
             type="text"
             name={name}
             value={url}
-            onChange={(event) => setUrl(event.target.value)}
+            onChange={(event) => {
+              setUrl(event.target.value);
+              setImgLoadError(false);
+            }}
             placeholder="https://… or /path/from/public"
-            className={`${inputClass} pr-9`}
+            className={`${inputClass} pr-9 font-mono text-xs`}
           />
           {url ? (
             <button
               type="button"
-              onClick={() => setUrl("")}
+              onClick={() => {
+                setUrl("");
+                setImgLoadError(false);
+              }}
               aria-label={`Clear ${label}`}
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
             >
@@ -122,12 +130,36 @@ export function ImageField({
             <FiFileText size={14} /> Open uploaded PDF
           </a>
         ) : (
-          // biome-ignore lint/performance/noImgElement: arbitrary remote URLs
-          <img
-            src={url}
-            alt=""
-            className="mt-1 h-24 w-auto max-w-full rounded-lg border border-border object-cover"
-          />
+          <div className="mt-1 overflow-hidden rounded-xl border border-border bg-secondary/20">
+            <div className="relative flex max-h-72 min-h-36 w-full items-center justify-center p-3 bg-black/30">
+              {imgLoadError ? (
+                <div className="text-center p-4 text-xs text-muted-foreground">
+                  Could not load preview. Please verify the URL.
+                </div>
+              ) : (
+                // biome-ignore lint/performance/noImgElement: arbitrary remote URLs
+                <img
+                  src={url}
+                  alt={label}
+                  onError={() => setImgLoadError(true)}
+                  className="max-h-64 max-w-full rounded-lg object-contain shadow-md"
+                />
+              )}
+            </div>
+            <div className="flex items-center justify-between border-t border-border/50 bg-background/80 px-3 py-2 text-xs">
+              <span className="truncate text-muted-foreground font-mono text-[11px] max-w-[70%]">
+                {url}
+              </span>
+              <a
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline text-xs shrink-0"
+              >
+                <FiExternalLink size={13} /> View full size
+              </a>
+            </div>
+          </div>
         )
       ) : null}
     </div>

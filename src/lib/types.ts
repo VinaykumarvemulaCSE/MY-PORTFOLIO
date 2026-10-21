@@ -51,7 +51,7 @@ export interface ProjectViewModel {
   order?: number;
 }
 
-export interface EducationViewModel {
+interface EducationViewModel {
   degree: string;
   institution: string;
   period: string;

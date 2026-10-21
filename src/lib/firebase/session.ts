@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getAdminAuth } from "./admin";
-import { isFirebaseAdminConfigured } from "./config";
+import { isAdminEmail, isFirebaseAdminConfigured } from "./config";
 
 export const SESSION_COOKIE = "admin_session";
 /** Firebase allows 5 minutes to 14 days. */
@@ -28,6 +28,9 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     const auth = getAdminAuth();
     if (!auth) return null;
     const decoded = await auth.verifySessionCookie(value, true);
+    // Re-check the allowlist on every request so removing an email from
+    // ADMIN_EMAILS invalidates existing cookies immediately, not in five days.
+    if (!isAdminEmail(decoded.email)) return null;
     return { uid: decoded.uid, email: decoded.email ?? "" };
   } catch {
     return null;

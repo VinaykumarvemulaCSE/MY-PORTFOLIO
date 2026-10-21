@@ -32,7 +32,7 @@ export function isFirebaseAdminConfigured(): boolean {
 }
 
 /** Comma-separated allowlist. Only these Firebase users may open /admin. */
-export function getAdminEmails(): string[] {
+function getAdminEmails(): string[] {
   return (process.env.ADMIN_EMAILS ?? "")
     .split(",")
     .map((email) => email.trim().toLowerCase())

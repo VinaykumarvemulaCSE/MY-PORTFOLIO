@@ -14,7 +14,7 @@ import {
 
 import { getCertificateBySlug, getCertificateSlugs, getProfile } from "@/lib/content";
 import { toJsonLd } from "@/lib/jsonLd";
-import { getSiteUrl } from "@/lib/site";
+import { absoluteUrl, getSiteUrl } from "@/lib/site";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -52,6 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title,
       description,
       type: "article",
+      url: `/certificates/${certificate.slug}`,
       images: certificate.image ? [{ url: certificate.image }] : undefined,
     },
     twitter: {
@@ -86,7 +87,7 @@ export default async function CertificatePage({ params }: PageProps) {
     description: certificate.summary ?? undefined,
     url: `${siteUrl}/certificates/${certificate.slug}`,
     credentialCategory: certificate.category ?? "Certificate",
-    ...(certificate.image ? { image: `${siteUrl}${certificate.image}` } : {}),
+    ...(certificate.image ? { image: absoluteUrl(certificate.image) } : {}),
     ...(certificate.credentialId ? { identifier: certificate.credentialId } : {}),
     recognizedBy: {
       "@type": "Organization",
@@ -124,7 +125,7 @@ export default async function CertificatePage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 md:px-8 py-12 md:py-16">
+      <main className="max-w-4xl mx-auto px-4 md:px-8 py-12 pb-28 md:py-16">
         <div className="flex flex-wrap items-center gap-2 mb-4">
           {certificate.category && (
             <span className="inline-flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded-full">

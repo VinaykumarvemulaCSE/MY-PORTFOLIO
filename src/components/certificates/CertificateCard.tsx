@@ -13,7 +13,7 @@ export function formatIssued(value?: string): string | null {
   return date.toLocaleDateString("en-GB", { month: "short", year: "numeric" });
 }
 
-export function initials(value: string): string {
+function initials(value: string): string {
   return value
     .split(/\s+/)
     .filter(Boolean)
@@ -56,7 +56,7 @@ export default function CertificateCard({
             src={certificate.image}
             alt={`${certificate.title} certificate`}
             fill
-            className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
+            className="object-contain p-2 group-hover:scale-105 transition-transform duration-500"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
           />
         ) : (

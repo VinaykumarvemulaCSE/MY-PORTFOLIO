@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FiArrowDown, FiCheck, FiCopy, FiDownload, FiGithub, FiMail } from "react-icons/fi";
@@ -14,6 +14,7 @@ export default function Hero({ profileData }: { profileData: ProfileViewModel })
     roles: profileData.roles,
     bio: profileData.bio,
     availableForOpportunities: profileData.availableForOpportunities,
+    statusText: profileData.statusText,
     profileImage: profileData.profileImage,
     resumeUrl: profileData.resumeUrl,
     githubUrl: profileData.social.github,
@@ -23,6 +24,7 @@ export default function Hero({ profileData }: { profileData: ProfileViewModel })
   const [displayed, setDisplayed] = useState("");
   const [typing, setTyping] = useState(true);
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const reduceMotion = useReducedMotion();
 
   const email = profileData.contact.email;
 
@@ -37,6 +39,7 @@ export default function Hero({ profileData }: { profileData: ProfileViewModel })
   const roles = profile.roles.length > 0 ? profile.roles : [""];
 
   useEffect(() => {
+    if (reduceMotion) return;
     const role = roles[roleIdx % roles.length];
     if (typing) {
       if (displayed.length < role.length) {
@@ -55,7 +58,7 @@ export default function Hero({ profileData }: { profileData: ProfileViewModel })
         setTyping(true);
       }
     }
-  }, [displayed, typing, roleIdx, roles]);
+  }, [displayed, typing, roleIdx, roles, reduceMotion]);
 
   return (
     <section
@@ -77,7 +80,7 @@ export default function Hero({ profileData }: { profileData: ProfileViewModel })
               >
                 <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span className="text-sm font-medium text-primary font-mono">
-                  Available for opportunities
+                  {profile.statusText || "Available for opportunities"}
                 </span>
               </motion.div>
             )}
@@ -98,7 +101,7 @@ export default function Hero({ profileData }: { profileData: ProfileViewModel })
               className="h-10 mb-6 flex items-center justify-center lg:justify-start"
             >
               <span className="text-xl md:text-2xl font-heading text-muted-foreground">
-                {displayed}
+                {reduceMotion ? roles[0] : displayed}
                 <span className="inline-block w-0.5 h-6 bg-primary ml-1 animate-pulse" />
               </span>
             </motion.div>

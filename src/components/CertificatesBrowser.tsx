@@ -50,7 +50,7 @@ export default function CertificatesBrowser({ certificates }: CertificatesBrowse
   }, [certificates, searchQuery, activeCategory]);
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-16 px-4 md:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-background pt-24 pb-28 md:pb-16 px-4 md:px-8 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-[120px]" />
       </div>
@@ -97,6 +97,7 @@ export default function CertificatesBrowser({ certificates }: CertificatesBrowse
                 type="button"
                 key={category}
                 onClick={() => setActiveCategory(category)}
+                aria-pressed={activeCategory === category}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   activeCategory === category
                     ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
