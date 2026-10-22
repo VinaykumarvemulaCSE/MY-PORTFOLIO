@@ -5,7 +5,7 @@ import { useActionState, useState } from "react";
 import { saveSkillGroupsAction } from "@/app/admin/(dashboard)/actions";
 import { AdminCard, Field, FormMessage, inputClass, SubmitButton } from "@/components/admin/ui";
 import { useActionToast } from "@/components/admin/useActionToast";
-import { TECH_ICONS } from "@/constants/techIcons";
+import { resolveTechIcon, TECH_ICONS } from "@/constants/techIcons";
 import { idleState } from "@/lib/action-state";
 import type { SkillGroupViewModel } from "@/lib/types";
 
@@ -57,7 +57,7 @@ export function SkillsEditor({ initial }: { initial: SkillGroupViewModel[] }) {
         <AdminCard
           key={group.id}
           title={`Group ${groupIndex + 1}`}
-          description="Skill icons map to react-icons names used by the public site."
+          description="Pick an icon key or type a friendly name; the preview matches the public site."
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Title">
@@ -84,7 +84,7 @@ export function SkillsEditor({ initial }: { initial: SkillGroupViewModel[] }) {
 
           <div className="mt-4 flex flex-col gap-2">
             {group.skills.map((skill, skillIndex) => {
-              const iconInfo = skill.icon ? TECH_ICONS[skill.icon] : undefined;
+              const iconInfo = resolveTechIcon(skill);
               const Icon = iconInfo?.icon;
 
               return (
@@ -117,7 +117,7 @@ export function SkillsEditor({ initial }: { initial: SkillGroupViewModel[] }) {
                       onChange={(event) =>
                         updateSkill(groupIndex, skillIndex, skill.name, event.target.value)
                       }
-                      placeholder="Icon key (e.g. React)"
+                      placeholder="Icon key or name (e.g. React)"
                       list="skill-icon-keys"
                       className={inputClass}
                     />

@@ -2,35 +2,13 @@
 
 import { motion } from "motion/react";
 import { FiCode } from "react-icons/fi";
-import { TECH_ICONS } from "@/constants/techIcons";
+import { resolveTechIcon } from "@/constants/techIcons";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
-import type { SkillGroupViewModel, SkillViewModel } from "@/lib/types";
+import type { SkillGroupViewModel } from "@/lib/types";
 
 interface SkillsProps {
   groups: SkillGroupViewModel[];
-}
-
-/** Friendly names in the CMS may differ from the short icon-map keys. */
-const ICON_ALIASES: Record<string, string> = {
-  HTML5: "HTML",
-  CSS3: "CSS",
-  JavaScript: "Javascript",
-  "Tailwind CSS": "Tailwind",
-  "Next.js": "Next.js",
-  "Node.js": "Node.js",
-  "Data Structures & Algorithms": "DSA",
-  "Object-Oriented Programming": "OOP",
-  "Database Management": "DBMS",
-  "Operating Systems": "OS",
-};
-
-function iconFor(skill: SkillViewModel) {
-  return (
-    (skill.icon ? TECH_ICONS[skill.icon] : undefined) ??
-    TECH_ICONS[skill.name] ??
-    (ICON_ALIASES[skill.name] ? TECH_ICONS[ICON_ALIASES[skill.name]] : undefined)
-  );
 }
 
 export default function Skills({ groups }: SkillsProps) {
@@ -77,7 +55,7 @@ export default function Skills({ groups }: SkillsProps) {
               </h3>
               <div className="flex flex-wrap gap-3">
                 {group.skills.map((skill, index) => {
-                  const info = iconFor(skill);
+                  const info = resolveTechIcon(skill);
                   const Icon = info?.icon ?? FiCode;
                   const color = skill.color || info?.color || "currentColor";
 

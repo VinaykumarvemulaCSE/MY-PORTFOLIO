@@ -49,6 +49,8 @@ import {
   SiVuedotjs,
 } from "react-icons/si";
 
+import type { SkillViewModel } from "@/lib/types";
+
 export interface TechIconInfo {
   name: string;
   icon: IconType;
@@ -122,3 +124,39 @@ export const TECH_ICONS: Record<string, TechIconInfo> = {
   Postman: { name: "Postman", icon: SiPostman, color: "#FF6C37" },
   Figma: { name: "Figma", icon: SiFigma, color: "#F24E1E" },
 };
+
+/** Friendly names that may be stored by older CMS content. */
+const ICON_ALIASES: Record<string, string> = {
+  HTML5: "HTML",
+  CSS3: "CSS",
+  JavaScript: "Javascript",
+  JS: "Javascript",
+  TS: "TypeScript",
+  "Tailwind CSS": "Tailwind",
+  TailwindCSS: "Tailwind",
+  "Data Structures & Algorithms": "DSA",
+  "Object-Oriented Programming": "OOP",
+  "Database Management": "DBMS",
+  "Operating Systems": "OS",
+  Postgres: "PostgreSQL",
+  Node: "Node.js",
+  NextJS: "Next.js",
+};
+
+/** Resolve a stored key or friendly name to the canonical icon-map key. */
+export function normalizeTechIconKey(value?: string): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+
+  if (TECH_ICONS[trimmed]) return trimmed;
+  return ICON_ALIASES[trimmed];
+}
+
+/** Keep the public skills list and the admin preview in sync. */
+export function resolveTechIcon(
+  skill: Pick<SkillViewModel, "name" | "icon">
+): TechIconInfo | undefined {
+  const iconKey = normalizeTechIconKey(skill.icon);
+  const nameKey = normalizeTechIconKey(skill.name);
+  return (iconKey ? TECH_ICONS[iconKey] : undefined) ?? (nameKey ? TECH_ICONS[nameKey] : undefined);
+}
