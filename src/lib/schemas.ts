@@ -49,6 +49,7 @@ export const projectSchema = z.object({
   status: z.string().trim().min(1),
   coverImage: optionalText,
   gallery: z.array(z.string().trim().min(1)).optional(),
+  galleryAlt: z.array(z.string().trim()).optional(),
   featured: z.boolean().optional(),
   difficulty: optionalText,
   timeInvestment: optionalText,
@@ -56,6 +57,11 @@ export const projectSchema = z.object({
   caseStudy: projectCaseStudySchema.optional(),
   published: z.boolean().optional(),
   order: z.number().optional(),
+});
+
+const focusAreaSchema = z.object({
+  title: z.string().trim().min(1),
+  description: z.string().trim().min(1),
 });
 
 const educationSchema = z.object({
@@ -75,6 +81,7 @@ export const profileSchema = z.object({
   availableForOpportunities: z.boolean(),
   profileImage: z.string().trim().min(1),
   resumeUrl: z.string().trim().min(1),
+  focusAreas: z.array(focusAreaSchema).max(6).optional(),
   education: educationSchema,
   contact: z.object({
     email: z.email(),
@@ -90,6 +97,7 @@ export const profileSchema = z.object({
   siteConfig: z.object({
     title: z.string().trim().min(1),
     description: z.string().trim().min(1),
+    homepageProjectLimit: z.number().int().min(1).max(20).optional(),
   }),
 });
 

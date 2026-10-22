@@ -10,6 +10,11 @@ export function getProjectImages(project: ProjectViewModel): string[] {
   ];
 }
 
+export function getProjectImageAlt(project: ProjectViewModel, url: string, index: number): string {
+  const galleryIndex = project.gallery?.indexOf(url) ?? -1;
+  return project.galleryAlt?.[galleryIndex]?.trim() || `${project.title} screenshot ${index + 1}`;
+}
+
 /**
  * Cards need a short, readable hook. Older project descriptions contain full
  * README-style notes, so fall back to the first real prose paragraph instead of

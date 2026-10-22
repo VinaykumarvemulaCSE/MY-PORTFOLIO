@@ -6,6 +6,7 @@ import { saveProfileAction } from "@/app/admin/(dashboard)/actions";
 import { ImageField } from "@/components/admin/ImageField";
 import { AdminCard, Field, FormMessage, inputClass, SubmitButton } from "@/components/admin/ui";
 import { useActionToast } from "@/components/admin/useActionToast";
+import { DEFAULT_FOCUS_AREAS } from "@/constants/focusAreas";
 import { idleState } from "@/lib/action-state";
 import type { ProfileViewModel } from "@/lib/types";
 
@@ -51,6 +52,22 @@ export function ProfileForm({ profile }: { profile: ProfileViewModel }) {
             Available for opportunities
           </label>
         </div>
+      </AdminCard>
+
+      <AdminCard
+        title="Focus areas"
+        description="Cards shown in the About section. One per line as Title | Description."
+      >
+        <Field label="Focus areas" hint="Leave blank to use the default four.">
+          <textarea
+            name="focusAreas"
+            defaultValue={(profile.focusAreas ?? DEFAULT_FOCUS_AREAS)
+              .map((area) => `${area.title} | ${area.description}`)
+              .join("\n")}
+            rows={5}
+            className={inputClass}
+          />
+        </Field>
       </AdminCard>
 
       <AdminCard title="Media" description="Upload a new image or keep the local path.">
@@ -204,6 +221,21 @@ export function ProfileForm({ profile }: { profile: ProfileViewModel }) {
               name="siteConfig.description"
               defaultValue={profile.siteConfig.description}
               rows={3}
+              required
+              className={inputClass}
+            />
+          </Field>
+          <Field
+            label="Homepage project limit"
+            hint="Maximum projects shown on the home page (1–20)."
+          >
+            <input
+              name="siteConfig.homepageProjectLimit"
+              type="number"
+              min={1}
+              max={20}
+              step={1}
+              defaultValue={profile.siteConfig.homepageProjectLimit ?? 5}
               required
               className={inputClass}
             />

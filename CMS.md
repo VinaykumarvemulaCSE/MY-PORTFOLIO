@@ -67,19 +67,22 @@ current résumé is still served from `/resume.pdf`.
 
 ## 5. Editing
 
-- `/admin/profile` — hero, bio, education, contact, socials, site metadata.
+- `/admin/profile` — hero, bio, focus areas, education, contact, socials, site
+  metadata (including the homepage project limit).
 - `/admin/projects` — create/edit/delete projects, cover + gallery images
-  (drag and drop, multi-file, reorder, set cover), case study sections, demo
-  credentials, publish/featured flags, display order.
+  (drag and drop, multi-file, reorder, set cover, per-image alt text), case study
+  sections, demo credentials, publish/featured flags. Use the list arrows to
+  reorder; badges show the current order and which projects are on the homepage.
 - `/admin/certificates` — certificates archive entries, their images and
   display order.
-- `/admin/skills` — skill groups and the icon keys the public site renders.
+- `/admin/skills` — skill groups with icon-key autocomplete and a live preview.
 
-Every successful save shows a toast and revalidates the public routes. Unchecking
-**Published** hides an item without deleting it. On the home page, only
-**Featured** projects appear (up to five, lowest display order first); if none
-are featured, all published projects are shown. A carousel becomes a grid when
-there are three or fewer projects.
+Every successful save shows a toast and revalidates the affected public routes.
+Unchecking **Published** hides an item without deleting it. On the home page,
+**Featured** projects appear first (lowest display order) up to the limit set in
+Profile → Site metadata (default five); if none are featured, published projects
+fill those slots. The projects list warns when featured projects fall below the
+homepage cut. A carousel becomes a grid when there are three or fewer projects.
 
 ## 6. Production (Vercel)
 

@@ -117,7 +117,10 @@ export default async function Home() {
         <Hero profileData={profile} />
         <About profileData={profile} />
         <Skills groups={skills} />
-        <Projects initialProjects={projects} />
+        <Projects
+          initialProjects={projects}
+          projectLimit={profile.siteConfig.homepageProjectLimit ?? 5}
+        />
         <Certificates certificates={certificates} />
         <Contact profileData={profile} />
       </main>

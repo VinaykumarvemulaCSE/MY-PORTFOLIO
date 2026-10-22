@@ -13,8 +13,9 @@ The site is a Next.js App Router application with a small built-in CMS. Public c
 ### Public site
 
 - Single-page home with hero, about, skills, featured projects, certificates, and contact sections.
-- Featured projects are ordered from the CMS and capped at five. If no project is featured, published projects fill the same five slots.
+- Featured projects are ordered from the CMS and limited by a configurable homepage count (default 5). If no project is featured, published projects fill those slots.
 - Project archive with text search, category filters, and an interactive project modal.
+- Home carousel supports drag, pagination dots, and previous/next controls.
 - Project case-study pages with galleries, technical notes, links, and schema.org structured data.
 - Certificate archive and detail pages with credential metadata and verification links.
 - Project image lightbox with fit/fill controls; project galleries and certificate images are never force-cropped.
@@ -26,10 +27,13 @@ The site is a Next.js App Router application with a small built-in CMS. Public c
 ### Admin CMS
 
 Available at `/admin` after Firebase Authentication login.
-- Edit the profile, hero copy, education, contact details, social links, résumé, and site metadata.
+- Edit the profile, hero copy, focus areas, education, contact details, social links, résumé, and site metadata.
 - Create, edit, publish, feature, order, and delete projects and certificates.
+- Quick project reordering with homepage badges, cut warnings, and one-click move up/down.
+- Configure the homepage project limit in Profile → Site metadata (1–20).
 - Upload media directly to Cloudinary from the browser.
-- Multi-image galleries with upload, drag/drop, URL entry, reordering, cover selection, and full-size previews.
+- Multi-image galleries with upload, drag/drop, URL entry, reordering, cover selection, per-image alt text, and full-size previews.
+- Skill icon autocomplete and live preview from the supported icon map.
 - Server-side Zod validation for every CMS write.
 - Toast feedback and on-demand revalidation of public routes after saves.
 - Deletion/replacement cleanup of unused Cloudinary assets in the `portfolio/` folder only.
@@ -273,9 +277,9 @@ The contact rate limiter writes an `expiresAt` timestamp. Create a Firestore TTL
 
 ## CMS notes
 
-The home page displays featured projects first, sorted by `order`, capped at five. If no project is marked featured, published projects are used as the fallback pool, still capped at five. The home carousel is used when more than three projects are shown; otherwise a grid is used.
+The home page displays featured projects first, sorted by `order`, limited by the homepage project count in Profile → Site metadata (default 5). If no project is marked featured, published projects are used as the fallback pool. The admin project list shows order badges, which projects are on the homepage, and a warning when featured projects fall below the cut. The home carousel is used when more than three projects are shown; otherwise a grid is used.
 
-Unchecking **Published** hides an item from public reads without deleting it. Admin saves call `revalidatePath`, so static pages and metadata routes are refreshed without a redeploy. New project/certificate slugs are rendered on demand and cached afterward.
+Unchecking **Published** hides an item from public reads without deleting it. Admin saves use targeted `revalidatePath` calls: profile changes refresh the shared layout and metadata routes, while project and certificate changes refresh only the affected archive/detail pages. New project/certificate slugs are rendered on demand and cached afterward.
 
 Full editing instructions live in [`CMS.md`](./CMS.md).
 

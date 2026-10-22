@@ -46,6 +46,27 @@ function lines(formData: FormData, key: string): string[] {
     .filter(Boolean);
 }
 
+/** Keep blank rows so gallery alt text stays aligned with gallery URLs. */
+function rawLines(formData: FormData, key: string): string[] {
+  const value = formData.get(key);
+  return typeof value === "string"
+    ? value
+        .replace(/\r/g, "")
+        .split("\n")
+        .map((line) => line.trim())
+    : [];
+}
+
+function readFocusAreas(formData: FormData): ProfileViewModel["focusAreas"] {
+  const areas = lines(formData, "focusAreas")
+    .map((line) => {
+      const [title, ...rest] = line.split("|");
+      return { title: title?.trim() ?? "", description: rest.join("|").trim() };
+    })
+    .filter((area) => area.title && area.description);
+  return areas.length > 0 ? areas : undefined;
+}
+
 function commaList(formData: FormData, key: string): string[] {
   return text(formData, key)
     .split(",")
@@ -62,12 +83,26 @@ function optional(value: string): string | undefined {
   return value ? value : undefined;
 }
 
-function refresh() {
-  // Purge every cached page: content feeds the home page, archives and details.
+function refreshProfile() {
+  // Profile data is used by the shared layout, metadata routes and every page.
   revalidatePath("/", "layout");
   revalidatePath("/sitemap.xml");
   revalidatePath("/manifest.webmanifest");
   revalidatePath("/opengraph-image");
+}
+
+function refreshProjects(slug?: string) {
+  revalidatePath("/");
+  revalidatePath("/projects");
+  revalidatePath("/sitemap.xml");
+  if (slug) revalidatePath(`/work/${slug}`);
+}
+
+function refreshCertificates(slug?: string) {
+  revalidatePath("/");
+  revalidatePath("/certificates");
+  revalidatePath("/sitemap.xml");
+  if (slug) revalidatePath(`/certificates/${slug}`);
 }
 
 function projectImageUrls(project: ProjectViewModel): string[] {
@@ -138,6 +173,7 @@ export async function saveProfileAction(
     availableForOpportunities: checkbox(formData, "availableForOpportunities"),
     profileImage: text(formData, "profileImage"),
     resumeUrl: text(formData, "resumeUrl"),
+    focusAreas: readFocusAreas(formData),
     education: {
       degree: text(formData, "education.degree"),
       institution: text(formData, "education.institution"),
@@ -160,6 +196,10 @@ export async function saveProfileAction(
     siteConfig: {
       title: text(formData, "siteConfig.title"),
       description: text(formData, "siteConfig.description"),
+      homepageProjectLimit: Math.min(
+        20,
+        Math.max(1, Math.trunc(Number(text(formData, "siteConfig.homepageProjectLimit")) || 5))
+      ),
     },
   };
 
@@ -175,7 +215,7 @@ export async function saveProfileAction(
       await cleanupImages(removed);
     }
 
-    refresh();
+    refreshProfile();
     return { ok: true, message: "Profile saved." };
   } catch (error) {
     return errorMessage(error);
@@ -239,6 +279,10 @@ export async function saveProjectAction(
     status: text(formData, "status"),
     coverImage: optional(text(formData, "coverImage")),
     gallery: lines(formData, "gallery"),
+    galleryAlt: (() => {
+      const alts = rawLines(formData, "galleryAlt");
+      return alts.some(Boolean) ? alts : undefined;
+    })(),
     featured: checkbox(formData, "featured"),
     difficulty: optional(text(formData, "difficulty")),
     timeInvestment: optional(text(formData, "timeInvestment")),
@@ -267,7 +311,8 @@ export async function saveProjectAction(
       await cleanupImages(projectImageUrls(previous).filter((url) => !currentImages.has(url)));
     }
 
-    refresh();
+    refreshProjects(parsed.slug);
+    if (originalSlug && originalSlug !== parsed.slug) revalidatePath(`/work/${originalSlug}`);
     return { ok: true, message: "Project saved." };
   } catch (error) {
     return errorMessage(error);
@@ -283,8 +328,32 @@ export async function deleteProjectAction(formData: FormData): Promise<void> {
 
     await deleteDoc(COLLECTIONS.projects, slug);
     if (target) await cleanupImages(projectImageUrls(target));
-    refresh();
+    refreshProjects(slug);
   }
+  revalidatePath("/admin/projects");
+}
+
+export async function reorderProjectAction(formData: FormData): Promise<void> {
+  await requireAdmin();
+  if (!isFirebaseAdminConfigured()) return;
+
+  const slug = text(formData, "slug");
+  const direction = text(formData, "direction");
+  const projects = (await readProjects()) ?? [];
+  const index = projects.findIndex((project) => project.slug === slug);
+  const target = index + (direction === "up" ? -1 : 1);
+
+  if (index === -1 || target < 0 || target >= projects.length) return;
+
+  const reordered = [...projects];
+  [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+  await Promise.all(
+    reordered.map((project, position) =>
+      project.order === position + 1 ? null : saveProject({ ...project, order: position + 1 })
+    )
+  );
+
+  refreshProjects();
   revalidatePath("/admin/projects");
 }
 
@@ -343,7 +412,10 @@ export async function saveCertificateAction(
       await cleanupImages([previous.image]);
     }
 
-    refresh();
+    refreshCertificates(parsed.slug);
+    if (originalSlug && originalSlug !== parsed.slug) {
+      revalidatePath(`/certificates/${originalSlug}`);
+    }
     return { ok: true, message: "Certificate saved." };
   } catch (error) {
     return errorMessage(error);
@@ -359,7 +431,7 @@ export async function deleteCertificateAction(formData: FormData): Promise<void>
 
     await deleteDoc(COLLECTIONS.certificates, slug);
     if (target?.image) await cleanupImages([target.image]);
-    refresh();
+    refreshCertificates(slug);
   }
   revalidatePath("/admin/certificates");
 }
@@ -390,7 +462,7 @@ export async function saveSkillGroupsAction(
         .map((group) => deleteDoc(COLLECTIONS.skills, group.id))
     );
 
-    refresh();
+    revalidatePath("/");
     return { ok: true, message: "Skills saved." };
   } catch (error) {
     return errorMessage(error);

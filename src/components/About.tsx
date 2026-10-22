@@ -10,41 +10,38 @@ import {
   FiServer,
   FiTarget,
 } from "react-icons/fi";
+import { DEFAULT_FOCUS_AREAS } from "@/constants/focusAreas";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 import type { ProfileViewModel } from "@/lib/types";
 
-const focuses = [
-  {
-    icon: FiMonitor,
-    title: "Frontend Engineering",
-    desc: "Building responsive, accessible UIs with React and modern CSS frameworks.",
-    gradient: "from-primary/20 to-accent/10",
-  },
-  {
-    icon: FiServer,
-    title: "Backend Development",
-    desc: "Learning server-side programming, RESTful APIs, and database design.",
-    gradient: "from-accent/20 to-primary/10",
-  },
-  {
-    icon: FiLayers,
-    title: "Full Stack Architecture",
-    desc: "Understanding end-to-end application design, deployment, and DevOps.",
-    gradient: "from-primary/15 to-primary/5",
-  },
-  {
-    icon: FiTarget,
-    title: "Problem Solving",
-    desc: "Applying DSA knowledge and systematic thinking to build efficient solutions.",
-    gradient: "from-accent/15 to-accent/5",
-  },
+const FOCUS_ICONS = [FiMonitor, FiServer, FiLayers, FiTarget];
+const FOCUS_GRADIENTS = [
+  "from-primary/20 to-accent/10",
+  "from-accent/20 to-primary/10",
+  "from-primary/15 to-primary/5",
+  "from-accent/15 to-accent/5",
 ];
+
+function getFocuses(profileData?: ProfileViewModel) {
+  const areas =
+    profileData?.focusAreas && profileData.focusAreas.length > 0
+      ? profileData.focusAreas
+      : DEFAULT_FOCUS_AREAS;
+
+  return areas.map((area, index) => ({
+    icon: FOCUS_ICONS[index % FOCUS_ICONS.length] ?? FiTarget,
+    gradient: FOCUS_GRADIENTS[index % FOCUS_GRADIENTS.length] ?? FOCUS_GRADIENTS[0],
+    title: area.title,
+    desc: area.description,
+  }));
+}
 
 export default function About({ profileData }: { profileData?: ProfileViewModel }) {
   const { ref, isVisible } = useScrollAnimation();
   const education = profileData?.education;
   const hasEducation = Boolean(education?.degree);
+  const focuses = getFocuses(profileData);
 
   return (
     <section id="about" className="section-padding relative overflow-hidden">
@@ -72,7 +69,7 @@ export default function About({ profileData }: { profileData?: ProfileViewModel 
         <div className="grid md:grid-cols-2 gap-5">
           {focuses.map((f, i) => (
             <motion.div
-              key={f.title}
+              key={`${f.title}-${f.desc}`}
               initial={{ opacity: 0, y: 30 }}
               animate={isVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.1 * (i + 1), duration: 0.5 }}

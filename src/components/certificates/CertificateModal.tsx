@@ -142,6 +142,13 @@ export default function CertificateModal({ certificate, onClose }: CertificateMo
                 </a>
               )}
               <Link
+                href={`/certificates/${certificate.slug}`}
+                onClick={onClose}
+                className="flex-1 inline-flex items-center justify-center gap-2 bg-secondary/40 hover:bg-secondary border border-border/40 text-foreground py-3 rounded-xl text-sm font-semibold transition-all"
+              >
+                Full certificate page
+              </Link>
+              <Link
                 href="/#contact"
                 onClick={onClose}
                 className="flex-1 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20 cursor-pointer"

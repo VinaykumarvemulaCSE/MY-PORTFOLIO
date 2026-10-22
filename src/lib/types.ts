@@ -41,6 +41,8 @@ export interface ProjectViewModel {
   status: string;
   coverImage?: string;
   gallery?: string[];
+  /** Alt text parallel to `gallery`; blank entries fall back to a generated label. */
+  galleryAlt?: string[];
   featured?: boolean;
   difficulty?: string;
   timeInvestment?: string;
@@ -49,6 +51,11 @@ export interface ProjectViewModel {
   /** CMS-only flags. Public pages ignore `published`; the content layer filters on it. */
   published?: boolean;
   order?: number;
+}
+
+export interface FocusArea {
+  title: string;
+  description: string;
 }
 
 interface EducationViewModel {
@@ -68,6 +75,7 @@ export interface ProfileViewModel {
   availableForOpportunities: boolean;
   profileImage: string;
   resumeUrl: string;
+  focusAreas?: FocusArea[];
   education: EducationViewModel;
   contact: {
     email: string;
@@ -83,6 +91,7 @@ export interface ProfileViewModel {
   siteConfig: {
     title: string;
     description: string;
+    homepageProjectLimit?: number;
   };
 }
 

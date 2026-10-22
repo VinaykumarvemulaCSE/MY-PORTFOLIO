@@ -11,7 +11,7 @@ import {
   FiGithub,
   FiLayers,
 } from "react-icons/fi";
-import { getProjectImages } from "@/components/projects/projectUtils";
+import { getProjectImageAlt, getProjectImages } from "@/components/projects/projectUtils";
 import { TECH_ICONS } from "@/constants/techIcons";
 import { getProfile, getProjectBySlug, getProjectSlugs } from "@/lib/content";
 import { toJsonLd } from "@/lib/jsonLd";
@@ -194,7 +194,7 @@ export default async function WorkPage({ params }: PageProps) {
           <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-border/40 bg-secondary/20 mt-10">
             <Image
               src={project.coverImage}
-              alt={`${project.title} preview`}
+              alt={getProjectImageAlt(project, project.coverImage, 0)}
               fill
               className="object-cover object-top"
               sizes="(max-width: 1024px) 100vw, 900px"
@@ -255,14 +255,14 @@ export default async function WorkPage({ params }: PageProps) {
         {images.length > 1 && (
           <Section title="Gallery">
             <div className="grid sm:grid-cols-2 gap-4">
-              {images.slice(1).map((image) => (
+              {images.slice(1).map((image, index) => (
                 <div
                   key={image}
                   className="relative aspect-[16/10] rounded-xl overflow-hidden border border-border/40 bg-secondary/20"
                 >
                   <Image
                     src={image}
-                    alt={`${project.title} screenshot`}
+                    alt={getProjectImageAlt(project, image, index + 1)}
                     fill
                     className="object-contain"
                     sizes="(max-width: 640px) 100vw, 450px"

@@ -36,16 +36,22 @@ export function GalleryField({
   name,
   label,
   defaultValue,
+  altDefaultValue,
   coverFieldName,
   coverImage,
 }: {
   name: string;
   label: string;
   defaultValue?: string[];
+  altDefaultValue?: string[];
   coverFieldName?: string;
   coverImage?: string;
 }) {
-  const [urls, setUrls] = useState<string[]>(() => Array.from(new Set(defaultValue ?? [])));
+  const initialUrls = Array.from(new Set(defaultValue ?? []));
+  const [urls, setUrls] = useState<string[]>(initialUrls);
+  const [alts, setAlts] = useState<string[]>(() =>
+    initialUrls.map((_, index) => altDefaultValue?.[index] ?? "")
+  );
   const [manual, setManual] = useState("");
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState("");
@@ -76,6 +82,16 @@ export function GalleryField({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [previewIndex, urls.length]);
 
+  function addUrls(incoming: string[]) {
+    const fresh = Array.from(
+      new Set(incoming.map((url) => url.trim()).filter((url) => url && !urls.includes(url)))
+    );
+    if (fresh.length === 0) return;
+
+    setUrls((current) => addUnique(current, fresh));
+    setAlts((current) => [...current, ...Array(fresh.length).fill("")]);
+  }
+
   async function handleFiles(files: FileList | File[] | null) {
     const list = Array.from(files ?? []).filter((file) => file.type.startsWith("image/"));
     if (list.length === 0) return;
@@ -89,9 +105,9 @@ export function GalleryField({
         setProgress(`Uploading ${index + 1}/${list.length}…`);
         uploaded.push(await uploadFile(file));
       }
-      setUrls((current) => addUnique(current, uploaded));
+      addUrls(uploaded);
     } catch (uploadError) {
-      setUrls((current) => addUnique(current, uploaded));
+      addUrls(uploaded);
       setError(uploadError instanceof Error ? uploadError.message : "Upload failed.");
     } finally {
       setBusy(false);
@@ -100,9 +116,15 @@ export function GalleryField({
   }
 
   function move(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= urls.length) return;
+
     setUrls((current) => {
-      const target = index + direction;
-      if (target < 0 || target >= current.length) return current;
+      const next = [...current];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+    setAlts((current) => {
       const next = [...current];
       [next[index], next[target]] = [next[target], next[index]];
       return next;
@@ -136,6 +158,7 @@ export function GalleryField({
   return (
     <div ref={rootRef} className="flex flex-col gap-3">
       <input type="hidden" name={name} value={urls.join("\n")} />
+      <input type="hidden" name={`${name}Alt`} value={alts.join("\n")} />
 
       <div className="flex flex-col gap-2">
         <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
@@ -198,7 +221,7 @@ export function GalleryField({
           type="button"
           onClick={() => {
             if (!manual.trim()) return;
-            setUrls((current) => addUnique(current, [manual]));
+            addUrls([manual]);
             setManual("");
           }}
           className="mt-5 inline-flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-xs text-muted-foreground hover:border-primary/40 hover:text-foreground"
@@ -214,8 +237,8 @@ export function GalleryField({
         <>
           <div className="flex items-center justify-between text-[11px] text-muted-foreground">
             <span>
-              {urls.length} {urls.length === 1 ? "image" : "images"} in gallery. Click any thumbnail
-              to preview full-size.
+              {urls.length} {urls.length === 1 ? "image" : "images"} in gallery. Add alt text below
+              each thumbnail; click the image to preview full-size.
             </span>
           </div>
 
@@ -248,6 +271,7 @@ export function GalleryField({
                       type="button"
                       onClick={() => {
                         setUrls((current) => current.filter((_, i) => i !== index));
+                        setAlts((current) => current.filter((_, i) => i !== index));
                         setPreviewIndex((current) => {
                           if (current === null || current === index) return null;
                           return current > index ? current - 1 : current;
@@ -329,6 +353,22 @@ export function GalleryField({
                         <FiImage size={11} /> {isCover ? "Is Cover" : "Make Cover"}
                       </button>
                     ) : null}
+                  </div>
+
+                  <div className="border-t border-border/40 bg-background/60 p-1.5">
+                    <input
+                      value={alts[index] ?? ""}
+                      onChange={(event) =>
+                        setAlts((current) => {
+                          const next = [...current];
+                          next[index] = event.target.value;
+                          return next;
+                        })
+                      }
+                      placeholder="Alt text / caption"
+                      aria-label={`Alt text for image ${index + 1}`}
+                      className="w-full rounded border border-border/60 bg-background/80 px-1.5 py-1 text-[10px] text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                    />
                   </div>
                 </li>
               );

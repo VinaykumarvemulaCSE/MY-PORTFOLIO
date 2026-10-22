@@ -1,6 +1,13 @@
 import { cache } from "react";
 
-import { readCertificates, readProfile, readProjects, readSkillGroups } from "@/lib/firebase/store";
+import {
+  readCertificateBySlug,
+  readCertificates,
+  readProfile,
+  readProjectBySlug,
+  readProjects,
+  readSkillGroups,
+} from "@/lib/firebase/store";
 import type {
   CertificateViewModel,
   ProfileViewModel,
@@ -38,8 +45,7 @@ export const getProjects = cache(async (): Promise<ProjectViewModel[]> => {
 });
 
 export async function getProjectBySlug(slug: string): Promise<ProjectViewModel | null> {
-  const all = await getProjects();
-  return all.find((project) => project.slug === slug) ?? null;
+  return readProjectBySlug(slug, { publishedOnly: true });
 }
 
 export async function getProjectSlugs(): Promise<string[]> {
@@ -51,8 +57,7 @@ export const getCertificates = cache(async (): Promise<CertificateViewModel[]> =
 });
 
 export async function getCertificateBySlug(slug: string): Promise<CertificateViewModel | null> {
-  const all = await getCertificates();
-  return all.find((certificate) => certificate.slug === slug) ?? null;
+  return readCertificateBySlug(slug, { publishedOnly: true });
 }
 
 export async function getCertificateSlugs(): Promise<string[]> {

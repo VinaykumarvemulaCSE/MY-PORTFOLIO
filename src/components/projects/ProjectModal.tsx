@@ -21,7 +21,7 @@ import {
 import { TECH_ICONS } from "@/constants/techIcons";
 import type { ProjectViewModel } from "@/lib/types";
 
-import { getProjectImages, getProjectSummary } from "./projectUtils";
+import { getProjectImageAlt, getProjectImages, getProjectSummary } from "./projectUtils";
 
 type ModalView = "gallery" | "details" | "case_study";
 
@@ -244,7 +244,7 @@ export default function ProjectModal({
                   <div className="relative w-full max-w-5xl h-[55vh] md:h-[70vh]">
                     <Image
                       src={images[galleryIndex]}
-                      alt={`${project.title} screenshot ${galleryIndex + 1}`}
+                      alt={getProjectImageAlt(project, images[galleryIndex], galleryIndex)}
                       fill
                       className={fill ? "object-cover" : "object-contain drop-shadow-2xl"}
                       sizes="(max-width: 1200px) 100vw, 1200px"
@@ -319,7 +319,7 @@ export default function ProjectModal({
                     >
                       <Image
                         src={image}
-                        alt={`${project.title} thumbnail ${index + 1}`}
+                        alt={getProjectImageAlt(project, image, index)}
                         fill
                         className="object-cover"
                         sizes="80px"

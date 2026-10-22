@@ -83,6 +83,26 @@ export async function readProjects(
     .sort(byOrder);
 }
 
+export async function readProjectBySlug(
+  slug: string,
+  options: { publishedOnly?: boolean } = {}
+): Promise<ProjectViewModel | null> {
+  if (!isFirebaseAdminConfigured()) return null;
+  const db = getDb();
+  if (!db) return null;
+
+  const doc = await db.collection(COLLECTIONS.projects).doc(slug).get();
+  if (!doc.exists) return null;
+
+  const result = projectSchema.safeParse({ ...doc.data(), _docId: doc.id });
+  if (!result.success) {
+    console.error(`[firestore] invalid project ${slug}`, result.error.issues);
+    return null;
+  }
+  if (options.publishedOnly && result.data.published !== true) return null;
+  return result.data;
+}
+
 export async function readCertificates(
   options: { publishedOnly?: boolean } = {}
 ): Promise<CertificateViewModel[] | null> {
@@ -102,6 +122,26 @@ export async function readCertificates(
     })
     .flatMap((result) => (result.success ? [result.data] : []))
     .sort(byOrder);
+}
+
+export async function readCertificateBySlug(
+  slug: string,
+  options: { publishedOnly?: boolean } = {}
+): Promise<CertificateViewModel | null> {
+  if (!isFirebaseAdminConfigured()) return null;
+  const db = getDb();
+  if (!db) return null;
+
+  const doc = await db.collection(COLLECTIONS.certificates).doc(slug).get();
+  if (!doc.exists) return null;
+
+  const result = certificateSchema.safeParse({ ...doc.data(), _docId: doc.id });
+  if (!result.success) {
+    console.error(`[firestore] invalid certificate ${slug}`, result.error.issues);
+    return null;
+  }
+  if (options.publishedOnly && result.data.published !== true) return null;
+  return result.data;
 }
 
 export async function readSkillGroups(): Promise<SkillGroupViewModel[] | null> {

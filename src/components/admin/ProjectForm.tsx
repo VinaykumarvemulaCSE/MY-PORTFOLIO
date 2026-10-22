@@ -126,6 +126,7 @@ export function ProjectForm({
             name="gallery"
             label="Gallery"
             defaultValue={project.gallery}
+            altDefaultValue={project.galleryAlt}
             coverFieldName="coverImage"
             coverImage={project.coverImage}
           />

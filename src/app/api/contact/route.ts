@@ -24,9 +24,15 @@ function escapeHtml(value: string): string {
 }
 
 export async function POST(request: Request) {
+  // Prefer headers set by the hosting proxy. A raw x-forwarded-for value can be
+  // supplied by the client and would let an attacker rotate fake IPs.
+  const forwarded = request.headers.get("x-forwarded-for");
   const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    request.headers.get("x-real-ip") ??
+    request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("cf-connecting-ip")?.trim() ||
+    request.headers.get("x-real-ip")?.trim() ||
+    // Trust the proxy-appended hop, not the client-supplied first value.
+    forwarded?.split(",").at(-1)?.trim() ||
     "unknown";
 
   if (await isRateLimited(ip)) {

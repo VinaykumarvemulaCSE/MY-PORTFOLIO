@@ -1,6 +1,7 @@
 ﻿"use client";
 
 import { AnimatePresence, motion } from "motion/react";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 import { useActiveSection } from "@/hooks/useActiveSection";
@@ -16,8 +17,11 @@ const NAV_ITEMS = [
 
 export default function Navbar({ name }: { name: string }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const active = useActiveSection();
   const [firstWord, ...rest] = name.split(" ");
+  const hrefFor = (hash: string) => (isHome ? hash : `/${hash}`);
 
   return (
     <nav
@@ -25,7 +29,7 @@ export default function Navbar({ name }: { name: string }) {
       aria-label="Main navigation"
     >
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 md:px-8 h-16">
-        <a href="#home" className="font-heading font-bold text-xl text-foreground group">
+        <a href={hrefFor("#home")} className="font-heading font-bold text-xl text-foreground group">
           <span className="text-gradient">{firstWord}</span> {rest.join(" ")}
           <span className="inline-block w-1.5 h-1.5 rounded-full bg-primary ml-0.5 mb-2 group-hover:animate-pulse" />
         </a>
@@ -34,16 +38,16 @@ export default function Navbar({ name }: { name: string }) {
           {NAV_ITEMS.map((item) => (
             <li key={item.label}>
               <a
-                href={item.href}
+                href={hrefFor(item.href)}
                 className={`relative px-3.5 py-2 rounded-lg text-sm font-medium transition-all ${
-                  active === item.href.slice(1)
+                  isHome && active === item.href.slice(1)
                     ? "text-primary"
                     : "text-muted-foreground hover:text-foreground"
                 }`}
-                aria-current={active === item.href.slice(1) ? "page" : undefined}
+                aria-current={isHome && active === item.href.slice(1) ? "page" : undefined}
               >
                 {item.label}
-                {active === item.href.slice(1) && (
+                {isHome && active === item.href.slice(1) && (
                   <motion.div
                     layoutId="activeNav"
                     className="absolute inset-0 bg-primary/10 rounded-lg -z-10"
@@ -80,10 +84,10 @@ export default function Navbar({ name }: { name: string }) {
               {NAV_ITEMS.map((item) => (
                 <li key={item.label}>
                   <a
-                    href={item.href}
+                    href={hrefFor(item.href)}
                     onClick={() => setMobileOpen(false)}
                     className={`block px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                      active === item.href.slice(1)
+                      isHome && active === item.href.slice(1)
                         ? "text-primary bg-primary/10"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
