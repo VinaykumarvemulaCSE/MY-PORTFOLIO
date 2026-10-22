@@ -33,7 +33,7 @@ Available at `/admin` after Firebase Authentication login.
 - Configure the homepage project limit in Profile → Site metadata (1–20).
 - Upload media directly to Cloudinary from the browser.
 - Multi-image galleries with upload, drag/drop, URL entry, reordering, cover selection, per-image alt text, and full-size previews.
-- Skill icon autocomplete and live preview from the supported icon map.
+- Visual icon picker for skills and project tech stacks, with search and live previews.
 - Server-side Zod validation for every CMS write.
 - Toast feedback and on-demand revalidation of public routes after saves.
 - Deletion/replacement cleanup of unused Cloudinary assets in the `portfolio/` folder only.

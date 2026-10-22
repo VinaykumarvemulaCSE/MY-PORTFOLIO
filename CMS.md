@@ -70,12 +70,14 @@ current résumé is still served from `/resume.pdf`.
 - `/admin/profile` — hero, bio, focus areas, education, contact, socials, site
   metadata (including the homepage project limit).
 - `/admin/projects` — create/edit/delete projects, cover + gallery images
-  (drag and drop, multi-file, reorder, set cover, per-image alt text), case study
-  sections, demo credentials, publish/featured flags. Use the list arrows to
-  reorder; badges show the current order and which projects are on the homepage.
+  (drag and drop, multi-file, reorder, set cover, per-image alt text), tech-stack
+  icon picker, case study sections, demo credentials, publish/featured flags. Use
+  the list arrows to reorder; badges show the current order and which projects
+  are on the homepage.
 - `/admin/certificates` — certificates archive entries, their images and
   display order.
-- `/admin/skills` — skill groups with icon-key autocomplete and a live preview.
+- `/admin/skills` — skill groups with a searchable visual icon picker and live
+  previews.
 
 Every successful save shows a toast and revalidates the affected public routes.
 Unchecking **Published** hides an item without deleting it. On the home page,

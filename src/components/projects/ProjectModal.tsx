@@ -18,7 +18,7 @@ import {
   FiX,
 } from "react-icons/fi";
 
-import { TECH_ICONS } from "@/constants/techIcons";
+import { resolveTechIconValue } from "@/constants/techIcons";
 import type { ProjectViewModel } from "@/lib/types";
 
 import { getProjectImageAlt, getProjectImages, getProjectSummary } from "./projectUtils";
@@ -380,7 +380,7 @@ export default function ProjectModal({
                 </h3>
                 <div className="flex flex-wrap gap-2.5">
                   {(project.tech || []).map((tech) => {
-                    const info = TECH_ICONS[tech];
+                    const info = resolveTechIconValue(tech);
                     return (
                       <span
                         key={tech}
@@ -393,7 +393,7 @@ export default function ProjectModal({
                             className="group-hover:scale-110 transition-transform"
                           />
                         )}
-                        <span className="text-sm font-semibold">{tech}</span>
+                        <span className="text-sm font-semibold">{info?.name ?? tech}</span>
                       </span>
                     );
                   })}

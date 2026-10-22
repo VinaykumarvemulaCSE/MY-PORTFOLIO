@@ -152,11 +152,15 @@ export function normalizeTechIconKey(value?: string): string | undefined {
   return ICON_ALIASES[trimmed];
 }
 
+/** Resolve a key, friendly name, or alias to its icon metadata. */
+export function resolveTechIconValue(value?: string): TechIconInfo | undefined {
+  const key = normalizeTechIconKey(value);
+  return key ? TECH_ICONS[key] : undefined;
+}
+
 /** Keep the public skills list and the admin preview in sync. */
 export function resolveTechIcon(
   skill: Pick<SkillViewModel, "name" | "icon">
 ): TechIconInfo | undefined {
-  const iconKey = normalizeTechIconKey(skill.icon);
-  const nameKey = normalizeTechIconKey(skill.name);
-  return (iconKey ? TECH_ICONS[iconKey] : undefined) ?? (nameKey ? TECH_ICONS[nameKey] : undefined);
+  return resolveTechIconValue(skill.icon) ?? resolveTechIconValue(skill.name);
 }

@@ -3,9 +3,9 @@
 import { useActionState, useState } from "react";
 
 import { saveSkillGroupsAction } from "@/app/admin/(dashboard)/actions";
+import { TechIconPicker } from "@/components/admin/TechIconPicker";
 import { AdminCard, Field, FormMessage, inputClass, SubmitButton } from "@/components/admin/ui";
 import { useActionToast } from "@/components/admin/useActionToast";
-import { resolveTechIcon, TECH_ICONS } from "@/constants/techIcons";
 import { idleState } from "@/lib/action-state";
 import type { SkillGroupViewModel } from "@/lib/types";
 
@@ -47,17 +47,12 @@ export function SkillsEditor({ initial }: { initial: SkillGroupViewModel[] }) {
     <form action={formAction} className="flex flex-col gap-6">
       <FormMessage ok={state.ok} message={state.message} />
       <input type="hidden" name="groups" value={JSON.stringify(groups)} />
-      <datalist id="skill-icon-keys">
-        {Object.keys(TECH_ICONS).map((key) => (
-          <option key={key} value={key} />
-        ))}
-      </datalist>
 
       {groups.map((group, groupIndex) => (
         <AdminCard
           key={group.id}
           title={`Group ${groupIndex + 1}`}
-          description="Pick an icon key or type a friendly name; the preview matches the public site."
+          description="Pick from the full icon library; the preview matches the public site."
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Title">
@@ -83,59 +78,41 @@ export function SkillsEditor({ initial }: { initial: SkillGroupViewModel[] }) {
           </div>
 
           <div className="mt-4 flex flex-col gap-2">
-            {group.skills.map((skill, skillIndex) => {
-              const iconInfo = resolveTechIcon(skill);
-              const Icon = iconInfo?.icon;
-
-              return (
-                <div
-                  // biome-ignore lint/suspicious/noArrayIndexKey: rows are edited in place and have no id yet
-                  key={`${group.id}-skill-${skillIndex}`}
-                  className="flex flex-col gap-2 sm:flex-row"
+            {group.skills.map((skill, skillIndex) => (
+              <div
+                // biome-ignore lint/suspicious/noArrayIndexKey: rows are edited in place and have no id yet
+                key={`${group.id}-skill-${skillIndex}`}
+                className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(10rem,0.85fr)_auto]"
+              >
+                <input
+                  value={skill.name}
+                  onChange={(event) =>
+                    updateSkill(groupIndex, skillIndex, event.target.value, skill.icon ?? "")
+                  }
+                  placeholder="Skill name"
+                  className={`${inputClass} min-w-0`}
+                />
+                <TechIconPicker
+                  value={skill.icon ? [skill.icon] : []}
+                  onChange={(next) =>
+                    updateSkill(groupIndex, skillIndex, skill.name, next[0] ?? "")
+                  }
+                  emptyLabel="Choose icon"
+                  className="min-w-0"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    updateGroup(groupIndex, {
+                      skills: group.skills.filter((_, index) => index !== skillIndex),
+                    })
+                  }
+                  className="rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:border-destructive/50 hover:text-red-300"
                 >
-                  <input
-                    value={skill.name}
-                    onChange={(event) =>
-                      updateSkill(groupIndex, skillIndex, event.target.value, skill.icon ?? "")
-                    }
-                    placeholder="Skill name"
-                    className={inputClass}
-                  />
-                  <div className="flex min-w-0 flex-1 items-center gap-2">
-                    <span
-                      className="flex w-5 shrink-0 justify-center text-primary"
-                      title={iconInfo?.name ?? "Unknown icon key"}
-                    >
-                      {Icon ? (
-                        <Icon size={16} style={{ color: iconInfo?.color }} />
-                      ) : (
-                        <span className="text-xs text-amber-300">?</span>
-                      )}
-                    </span>
-                    <input
-                      value={skill.icon ?? ""}
-                      onChange={(event) =>
-                        updateSkill(groupIndex, skillIndex, skill.name, event.target.value)
-                      }
-                      placeholder="Icon key or name (e.g. React)"
-                      list="skill-icon-keys"
-                      className={inputClass}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      updateGroup(groupIndex, {
-                        skills: group.skills.filter((_, index) => index !== skillIndex),
-                      })
-                    }
-                    className="rounded-lg border border-border px-3 py-2 text-xs text-muted-foreground hover:border-destructive/50 hover:text-red-300"
-                  >
-                    Remove
-                  </button>
-                </div>
-              );
-            })}
+                  Remove
+                </button>
+              </div>
+            ))}
           </div>
 
           <div className="mt-3 flex flex-wrap gap-3">

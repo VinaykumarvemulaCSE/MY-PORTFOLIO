@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { saveProjectAction } from "@/app/admin/(dashboard)/actions";
 import { GalleryField } from "@/components/admin/GalleryField";
 import { ImageField } from "@/components/admin/ImageField";
+import { TechIconPicker } from "@/components/admin/TechIconPicker";
 import { AdminCard, Field, FormMessage, inputClass, SubmitButton } from "@/components/admin/ui";
 import { useActionToast } from "@/components/admin/useActionToast";
 import { idleState } from "@/lib/action-state";
@@ -18,6 +19,7 @@ export function ProjectForm({
   submitLabel?: string;
 }) {
   const [state, formAction, pending] = useActionState(saveProjectAction, idleState);
+  const [tech, setTech] = useState(project.tech);
   useActionToast(state);
   const metrics = (project.caseStudy?.metrics ?? [])
     .map((metric) => `${metric.label} | ${metric.value}`)
@@ -50,8 +52,14 @@ export function ProjectForm({
               className={inputClass}
             />
           </Field>
-          <Field label="Tech" hint="Comma separated.">
-            <input name="tech" defaultValue={project.tech.join(", ")} className={inputClass} />
+          <Field label="Tech" hint="Pick the icons shown on the card and case study.">
+            <TechIconPicker
+              name="tech"
+              value={tech}
+              onChange={setTech}
+              multiple
+              emptyLabel="Choose technologies"
+            />
           </Field>
           <Field label="Status" hint="Live, In progress, Archived…">
             <input name="status" defaultValue={project.status} required className={inputClass} />
