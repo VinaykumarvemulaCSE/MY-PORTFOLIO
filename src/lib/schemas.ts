@@ -20,6 +20,20 @@ const projectMetricSchema = z.object({
   value: z.string().trim().min(1),
 });
 
+/** Accept old string-only tech entries and the newer icon-aware objects. */
+export const projectTechSchema = z.union([
+  z
+    .string()
+    .trim()
+    .min(1)
+    .transform((name) => ({ name })),
+  z.object({
+    name: z.string().trim().min(1),
+    icon: optionalText,
+    color: optionalText,
+  }),
+]);
+
 const projectDemoCredentialSchema = z.object({
   label: optionalText,
   email: optionalText,
@@ -56,7 +70,8 @@ export const projectSchema = z.object({
   title: z.string().trim().min(1, "Title is required"),
   tagline: optionalText,
   description: z.string().trim().min(1, "Description is required"),
-  tech: z.array(z.string().trim().min(1)),
+  notes: optionalText,
+  tech: z.array(projectTechSchema),
   liveLink: optionalUrl,
   githubLink: optionalUrl,
   status: z.string().trim().min(1),

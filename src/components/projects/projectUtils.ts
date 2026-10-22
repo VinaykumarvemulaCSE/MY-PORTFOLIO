@@ -15,6 +15,15 @@ export function getProjectImageAlt(project: ProjectViewModel, url: string, index
   return project.galleryAlt?.[galleryIndex]?.trim() || `${project.title} screenshot ${index + 1}`;
 }
 
+/** Full write-up for the notes area, falling back to legacy long descriptions. */
+export function getProjectNotes(project: ProjectViewModel): string {
+  const notes = project.notes?.trim();
+  if (notes) return notes;
+
+  const description = project.description.trim();
+  return description && description !== getProjectSummary(project).trim() ? description : "";
+}
+
 /**
  * Cards need a short, readable hook. Older project descriptions contain full
  * README-style notes, so fall back to the first real prose paragraph instead of

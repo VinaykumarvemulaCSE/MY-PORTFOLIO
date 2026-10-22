@@ -24,6 +24,7 @@ import {
   profileSchema,
   projectDemoCredentialsSchema,
   projectSchema,
+  projectTechSchema,
   skillGroupSchema,
 } from "@/lib/schemas";
 import type {
@@ -32,6 +33,7 @@ import type {
   ProjectCaseStudy,
   ProjectDemoCredentials,
   ProjectMetric,
+  ProjectTech,
   ProjectViewModel,
 } from "@/lib/types";
 
@@ -263,6 +265,13 @@ function readDemoCredentials(formData: FormData): ProjectDemoCredentials[] | und
   return parsed.length > 0 ? parsed : undefined;
 }
 
+function readProjectTech(formData: FormData): ProjectTech[] {
+  const raw = text(formData, "tech");
+  if (!raw) return [];
+
+  return z.array(projectTechSchema).parse(JSON.parse(raw));
+}
+
 export async function saveProjectAction(
   _previous: ActionState,
   formData: FormData
@@ -278,7 +287,8 @@ export async function saveProjectAction(
     title: text(formData, "title"),
     tagline: optional(text(formData, "tagline")),
     description: text(formData, "description"),
-    tech: commaList(formData, "tech"),
+    notes: optional(text(formData, "notes")),
+    tech: readProjectTech(formData),
     liveLink: optional(text(formData, "liveLink")),
     githubLink: optional(text(formData, "githubLink")),
     status: text(formData, "status"),

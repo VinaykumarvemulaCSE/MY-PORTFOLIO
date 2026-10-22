@@ -71,13 +71,37 @@ current résumé is still served from `/resume.pdf`.
   metadata (including the homepage project limit).
 - `/admin/projects` — create/edit/delete projects, cover + gallery images
   (drag and drop, multi-file, reorder, set cover, per-image alt text), tech-stack
-  icon picker, case study sections, multiple demo credentials with optional
-  labels, publish/featured flags. Use the list arrows to reorder; badges show the
-  current order and which projects are on the homepage.
+  icon picker, optional complete project notes, case study sections, multiple
+  demo credentials with optional labels, publish/featured flags. Use the list
+  arrows to reorder; badges show the current order and which projects are on the
+  homepage.
 - `/admin/certificates` — certificates archive entries, their images and
   display order.
 - `/admin/skills` — skill groups with a searchable visual icon picker and live
   previews.
+
+### Icons
+
+The project and skill icon pickers share a curated local set plus the full
+Simple Icons catalog (~3,400 brands). Start typing to search the whole catalog.
+Curated icons load immediately; the rest are fetched from `cdn.simpleicons.org`
+(or Iconify for brands missing from Simple Icons, such as Zustand). If an icon
+cannot load, the site shows a generic code icon and keeps the technology name.
+
+The catalog in `src/constants/simpleIcons.generated.json` is generated — do not
+edit it by hand. From the repo root, run:
+
+```bash
+npm run sync:icons
+```
+
+### Project notes
+
+**Complete project notes** is optional plain text. It is shown in the project
+modal and on the `/work/{slug}` case-study page with line breaks preserved. Keep
+the shorter **Description** for cards and summaries; use the notes field for the
+longer write-up. If notes are empty, the site falls back to the full description
+when it contains more detail.
 
 Every successful save shows a toast and revalidates the affected public routes.
 Unchecking **Published** hides an item without deleting it. On the home page,

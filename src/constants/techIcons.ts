@@ -3,6 +3,7 @@ import { FiCloud, FiCode, FiCpu, FiDatabase, FiGlobe, FiLayers } from "react-ico
 import {
   SiAngular,
   SiBootstrap,
+  SiCloudinary,
   SiCplusplus,
   SiCss,
   SiDjango,
@@ -20,6 +21,7 @@ import {
   SiHtml5,
   SiJavascript,
   SiKubernetes,
+  SiLeaflet,
   SiMongodb,
   SiMui,
   SiMysql,
@@ -48,8 +50,6 @@ import {
   SiVite,
   SiVuedotjs,
 } from "react-icons/si";
-
-import type { SkillViewModel } from "@/lib/types";
 
 export interface TechIconInfo {
   name: string;
@@ -123,7 +123,12 @@ export const TECH_ICONS: Record<string, TechIconInfo> = {
   Terraform: { name: "Terraform", icon: SiTerraform, color: "#7B42BC" },
   Postman: { name: "Postman", icon: SiPostman, color: "#FF6C37" },
   Figma: { name: "Figma", icon: SiFigma, color: "#F24E1E" },
+  Cloudinary: { name: "Cloudinary", icon: SiCloudinary, color: "#3448C5" },
+  Leaflet: { name: "Leaflet", icon: SiLeaflet, color: "#199900" },
 };
+
+/** Brand icons that Simple Icons does not ship yet, fetched from Iconify. */
+export const EXTRA_TECH_ICONS = [{ name: "Zustand", icon: "iconify:devicon:zustand" }] as const;
 
 /** Friendly names that may be stored by older CMS content. */
 const ICON_ALIASES: Record<string, string> = {
@@ -152,15 +157,57 @@ export function normalizeTechIconKey(value?: string): string | undefined {
   return ICON_ALIASES[trimmed];
 }
 
+const REMOTE_ICON_ALIASES: Record<string, string> = {
+  zustand: "iconify:devicon:zustand",
+  "si:zustand": "iconify:devicon:zustand",
+};
+
+function toSimpleIconSlug(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/\+/g, "plus")
+    .replace(/#/g, "sharp")
+    .replace(/\./g, "dot")
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * Resolve an unknown name or stored icon to a remote icon id. Curated icons
+ * return `undefined` because they are rendered from the local React icon map.
+ */
+export function getRemoteIconKey(value?: string): string | undefined {
+  const trimmed = value?.trim();
+  if (!trimmed) return undefined;
+
+  const alias = REMOTE_ICON_ALIASES[trimmed.toLowerCase()];
+  if (alias) return alias;
+  if (trimmed.startsWith("iconify:") || trimmed.startsWith("si:")) return trimmed;
+  if (normalizeTechIconKey(trimmed)) return undefined;
+
+  return `si:${toSimpleIconSlug(trimmed)}`;
+}
+
+/** Build the remote SVG URL used when an icon is not in the curated map. */
+export function getRemoteIconUrl(value?: string, color?: string): string | undefined {
+  const key = getRemoteIconKey(value);
+  if (!key) return undefined;
+
+  if (key.startsWith("iconify:")) {
+    return `https://api.iconify.design/${key.slice("iconify:".length).replaceAll(":", "/")}.svg`;
+  }
+
+  const slug = key.slice("si:".length);
+  const hex = color?.replace("#", "").match(/^[0-9a-f]{6}$/i)?.[0] ?? "A1A1AA";
+  const rgb = Number.parseInt(hex, 16);
+  const luminance =
+    0.2126 * ((rgb >> 16) & 255) + 0.7152 * ((rgb >> 8) & 255) + 0.0722 * (rgb & 255);
+  const visibleHex = luminance < 28 || luminance > 235 ? "A1A1AA" : hex;
+  return `https://cdn.simpleicons.org/${encodeURIComponent(slug)}/${visibleHex}`;
+}
+
 /** Resolve a key, friendly name, or alias to its icon metadata. */
 export function resolveTechIconValue(value?: string): TechIconInfo | undefined {
   const key = normalizeTechIconKey(value);
   return key ? TECH_ICONS[key] : undefined;
-}
-
-/** Keep the public skills list and the admin preview in sync. */
-export function resolveTechIcon(
-  skill: Pick<SkillViewModel, "name" | "icon">
-): TechIconInfo | undefined {
-  return resolveTechIconValue(skill.icon) ?? resolveTechIconValue(skill.name);
 }

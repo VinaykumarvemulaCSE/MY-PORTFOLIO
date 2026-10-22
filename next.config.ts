@@ -7,7 +7,7 @@ const contentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.gstatic.com https://www.google.com",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' blob: data: https://res.cloudinary.com https://*.googleusercontent.com https://www.gstatic.com",
+  "img-src 'self' blob: data: https://res.cloudinary.com https://cdn.simpleicons.org https://api.iconify.design https://*.googleusercontent.com https://www.gstatic.com",
   "font-src 'self' data:",
   "connect-src 'self' https://*.googleapis.com https://*.firebaseapp.com https://api.cloudinary.com https://res.cloudinary.com https://www.google.com https://www.gstatic.com",
   "frame-src 'self' https://*.firebaseapp.com https://accounts.google.com https://www.google.com",

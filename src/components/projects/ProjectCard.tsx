@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FiExternalLink, FiFolder, FiGithub, FiImage, FiKey } from "react-icons/fi";
 
-import { resolveTechIconValue } from "@/constants/techIcons";
+import { TechIcon } from "@/components/TechIcon";
 import type { ProjectViewModel } from "@/lib/types";
 
 import { getProjectImages, getProjectSummary } from "./projectUtils";
@@ -121,21 +121,22 @@ export default function ProjectCard({ project, onOpen, variant = "grid" }: Proje
 
         <div className="flex items-center justify-between mt-auto gap-2">
           <div className="flex flex-wrap gap-1.5">
-            {(project.tech || []).slice(0, 4).map((tech) => {
-              const iconInfo = resolveTechIconValue(tech);
-              const Icon = iconInfo?.icon;
-              const label = iconInfo?.name ?? tech;
-              return (
-                <span
-                  key={tech}
-                  className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-md border border-border/50 bg-secondary/30 text-foreground"
-                  title={label}
-                >
-                  {Icon && <Icon size={11} style={{ color: iconInfo.color || "currentColor" }} />}
-                  <span>{label}</span>
-                </span>
-              );
-            })}
+            {(project.tech || []).slice(0, 4).map((tech) => (
+              <span
+                key={tech.icon ?? tech.name}
+                className="inline-flex items-center gap-1 text-[11px] font-mono px-2 py-0.5 rounded-md border border-border/50 bg-secondary/30 text-foreground"
+                title={tech.name}
+              >
+                <TechIcon
+                  name={tech.name}
+                  icon={tech.icon}
+                  color={tech.color}
+                  size={11}
+                  className="shrink-0"
+                />
+                <span>{tech.name}</span>
+              </span>
+            ))}
             {(project.tech || []).length > 4 && (
               <span className="text-[10px] font-mono px-2 py-0.5 rounded border border-border/50 bg-secondary/30 text-muted-foreground">
                 +{(project.tech || []).length - 4}

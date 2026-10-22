@@ -5,11 +5,11 @@ import { useActionState, useState } from "react";
 import { saveProjectAction } from "@/app/admin/(dashboard)/actions";
 import { GalleryField } from "@/components/admin/GalleryField";
 import { ImageField } from "@/components/admin/ImageField";
-import { TechIconPicker } from "@/components/admin/TechIconPicker";
+import { ProjectTechPicker } from "@/components/admin/TechIconPicker";
 import { AdminCard, Field, FormMessage, inputClass, SubmitButton } from "@/components/admin/ui";
 import { useActionToast } from "@/components/admin/useActionToast";
 import { idleState } from "@/lib/action-state";
-import type { ProjectDemoCredentials, ProjectViewModel } from "@/lib/types";
+import type { ProjectDemoCredentials, ProjectTech, ProjectViewModel } from "@/lib/types";
 
 export function ProjectForm({
   project,
@@ -19,7 +19,7 @@ export function ProjectForm({
   submitLabel?: string;
 }) {
   const [state, formAction, pending] = useActionState(saveProjectAction, idleState);
-  const [tech, setTech] = useState(project.tech);
+  const [tech, setTech] = useState<ProjectTech[]>(project.tech);
   const [demoCredentials, setDemoCredentials] = useState<ProjectDemoCredentials[]>(
     project.demoCredentials?.length ? project.demoCredentials : [{}]
   );
@@ -74,14 +74,16 @@ export function ProjectForm({
               className={inputClass}
             />
           </Field>
+          <Field
+            label="Complete project notes"
+            hint="Optional long-form write-up shown in the case-study notes."
+            className="sm:col-span-2"
+          >
+            <textarea name="notes" defaultValue={project.notes} rows={8} className={inputClass} />
+          </Field>
           <Field label="Tech" hint="Pick the icons shown on the card and case study.">
-            <TechIconPicker
-              name="tech"
-              value={tech}
-              onChange={setTech}
-              multiple
-              emptyLabel="Choose technologies"
-            />
+            <input type="hidden" name="tech" value={JSON.stringify(tech)} />
+            <ProjectTechPicker value={tech} onChange={setTech} emptyLabel="Choose technologies" />
           </Field>
           <Field label="Status" hint="Live, In progress, Archived…">
             <input name="status" defaultValue={project.status} required className={inputClass} />

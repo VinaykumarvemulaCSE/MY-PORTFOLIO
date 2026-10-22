@@ -18,10 +18,15 @@ import {
   FiX,
 } from "react-icons/fi";
 
-import { resolveTechIconValue } from "@/constants/techIcons";
+import { TechIcon } from "@/components/TechIcon";
 import type { ProjectViewModel } from "@/lib/types";
 
-import { getProjectImageAlt, getProjectImages, getProjectSummary } from "./projectUtils";
+import {
+  getProjectImageAlt,
+  getProjectImages,
+  getProjectNotes,
+  getProjectSummary,
+} from "./projectUtils";
 
 type ModalView = "gallery" | "details" | "case_study";
 
@@ -128,9 +133,8 @@ export default function ProjectModal({
         (caseStudy.challenges?.length ?? 0) > 0 ||
         (caseStudy.metrics?.length ?? 0) > 0)
   );
-  const hasNotes = Boolean(
-    project.description.trim() && project.description.trim() !== summary.trim()
-  );
+  const notes = getProjectNotes(project);
+  const hasNotes = Boolean(notes);
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -382,7 +386,7 @@ export default function ProjectModal({
                         />
                       </summary>
                       <div className="mt-3 max-h-[40vh] overflow-y-auto whitespace-pre-line text-sm text-muted-foreground leading-relaxed pr-2">
-                        {project.description}
+                        {notes}
                       </div>
                     </details>
                   )}
@@ -396,24 +400,21 @@ export default function ProjectModal({
                   Tech stack
                 </h3>
                 <div className="flex flex-wrap gap-2.5">
-                  {(project.tech || []).map((tech) => {
-                    const info = resolveTechIconValue(tech);
-                    return (
-                      <span
-                        key={tech}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/50 bg-background/40 text-foreground transition-all shadow-sm group"
-                      >
-                        {info && (
-                          <info.icon
-                            size={16}
-                            style={{ color: info.color }}
-                            className="group-hover:scale-110 transition-transform"
-                          />
-                        )}
-                        <span className="text-sm font-semibold">{info?.name ?? tech}</span>
-                      </span>
-                    );
-                  })}
+                  {(project.tech || []).map((tech) => (
+                    <span
+                      key={tech.icon ?? tech.name}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/50 bg-background/40 text-foreground transition-all shadow-sm group"
+                    >
+                      <TechIcon
+                        name={tech.name}
+                        icon={tech.icon}
+                        color={tech.color}
+                        size={16}
+                        className="group-hover:scale-110 transition-transform"
+                      />
+                      <span className="text-sm font-semibold">{tech.name}</span>
+                    </span>
+                  ))}
                 </div>
               </section>
 

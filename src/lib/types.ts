@@ -11,6 +11,13 @@ export interface ProjectMetric {
   value: string;
 }
 
+export interface ProjectTech {
+  name: string;
+  /** Simple Icons slug (`si:` optional), or an `iconify:` remote icon id. */
+  icon?: string;
+  color?: string;
+}
+
 export interface ProjectDemoCredentials {
   label?: string;
   email?: string;
@@ -36,7 +43,9 @@ export interface ProjectViewModel {
   /** Short, card-friendly summary. Falls back to `description` in the UI. */
   tagline?: string;
   description: string;
-  tech: string[];
+  /** Longer write-up shown under "Complete project notes". */
+  notes?: string;
+  tech: ProjectTech[];
   liveLink?: string;
   githubLink?: string;
   status: string;

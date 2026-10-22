@@ -13,7 +13,8 @@
       "!**/public",
       "!**/.agents",
       "!AGENTS.md",
-      "!next-env.d.ts"
+      "!next-env.d.ts",
+      "!src/constants/simpleIcons.generated.json"
     ]
   },
   "formatter": {

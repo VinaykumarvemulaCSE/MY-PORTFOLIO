@@ -11,8 +11,12 @@ import {
   FiGithub,
   FiLayers,
 } from "react-icons/fi";
-import { getProjectImageAlt, getProjectImages } from "@/components/projects/projectUtils";
-import { TECH_ICONS } from "@/constants/techIcons";
+import {
+  getProjectImageAlt,
+  getProjectImages,
+  getProjectNotes,
+} from "@/components/projects/projectUtils";
+import { TechIcon } from "@/components/TechIcon";
 import { getProfile, getProjectBySlug, getProjectSlugs } from "@/lib/content";
 import { toJsonLd } from "@/lib/jsonLd";
 import { absoluteUrl, getSiteUrl } from "@/lib/site";
@@ -75,6 +79,7 @@ export default async function WorkPage({ params }: PageProps) {
   const siteUrl = getSiteUrl();
   const caseStudy = project.caseStudy;
   const images = getProjectImages(project);
+  const notes = getProjectNotes(project);
 
   /*
    * `description` holds the full write-up migrated from the old CMS, with its
@@ -89,7 +94,8 @@ export default async function WorkPage({ params }: PageProps) {
     .filter(Boolean);
   const lead =
     narrativeLines.find((line) => line.length > 140) ?? narrativeLines[0] ?? project.description;
-  const hasFullNotes = project.description.trim().length > lead.length + 120;
+  const hasFullNotes =
+    Boolean(project.notes?.trim()) || project.description.trim().length > lead.length + 120;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -98,7 +104,7 @@ export default async function WorkPage({ params }: PageProps) {
     description: project.tagline || project.description.slice(0, 300),
     url: `${siteUrl}/work/${project.slug}`,
     codeRepository: project.githubLink,
-    programmingLanguage: project.tech,
+    programmingLanguage: project.tech.map((tech) => tech.name),
     author: { "@type": "Person", name: profile?.name ?? "Portfolio", url: siteUrl },
     ...(project.coverImage ? { image: absoluteUrl(project.coverImage) } : {}),
   };
@@ -150,19 +156,21 @@ export default async function WorkPage({ params }: PageProps) {
         </p>
 
         <div className="flex flex-wrap gap-2 mt-6">
-          {project.tech.map((tech) => {
-            const iconInfo = TECH_ICONS[tech];
-            const Icon = iconInfo?.icon;
-            return (
-              <span
-                key={tech}
-                className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg border border-border/50 bg-secondary/30 text-foreground"
-              >
-                {Icon && <Icon size={13} style={{ color: iconInfo.color }} />}
-                {tech}
-              </span>
-            );
-          })}
+          {project.tech.map((tech) => (
+            <span
+              key={tech.icon ?? tech.name}
+              className="inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-lg border border-border/50 bg-secondary/30 text-foreground"
+            >
+              <TechIcon
+                name={tech.name}
+                icon={tech.icon}
+                color={tech.color}
+                size={13}
+                className="shrink-0"
+              />
+              {tech.name}
+            </span>
+          ))}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 mt-8">
@@ -283,7 +291,7 @@ export default async function WorkPage({ params }: PageProps) {
               />
             </summary>
             <div className="mt-5 whitespace-pre-line text-sm md:text-base text-muted-foreground leading-relaxed">
-              {project.description}
+              {notes}
             </div>
           </details>
         )}

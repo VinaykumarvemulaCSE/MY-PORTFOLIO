@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
-import { resolveTechIconValue } from "@/constants/techIcons";
 import type { ProjectViewModel } from "@/lib/types";
 
 import ProjectCard, { type ProjectOpenView } from "./projects/ProjectCard";
@@ -33,16 +32,15 @@ export default function ProjectsBrowser({ projects }: ProjectsBrowserProps) {
         project.title.toLowerCase().includes(query) ||
         summary.toLowerCase().includes(query) ||
         project.description.toLowerCase().includes(query) ||
-        project.tech.some((tech) => {
-          const info = resolveTechIconValue(tech);
-          return (
-            tech.toLowerCase().includes(query) || Boolean(info?.name.toLowerCase().includes(query))
-          );
-        });
+        project.tech.some(
+          (tech) =>
+            tech.name.toLowerCase().includes(query) ||
+            Boolean(tech.icon?.toLowerCase().includes(query))
+        );
 
       if (activeCategory === "All") return matchesSearch;
 
-      const tech = project.tech.map((item) => item.toLowerCase());
+      const tech = project.tech.map((item) => item.name.toLowerCase());
       const hasBackend = ["node.js", "node", "express", "firebase", "sql"].some((item) =>
         tech.includes(item)
       );

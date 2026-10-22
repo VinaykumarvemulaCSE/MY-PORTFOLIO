@@ -12,7 +12,8 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck"
+    "check": "npm run lint && npm run typecheck",
+    "sync:icons": "node scripts/sync-simple-icons.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.2",

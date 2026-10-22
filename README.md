@@ -33,7 +33,8 @@ Available at `/admin` after Firebase Authentication login.
 - Configure the homepage project limit in Profile → Site metadata (1–20).
 - Upload media directly to Cloudinary from the browser.
 - Multi-image galleries with upload, drag/drop, URL entry, reordering, cover selection, per-image alt text, and full-size previews.
-- Visual icon picker for skills and project tech stacks, with search and live previews.
+- Visual icon picker for skills and project tech stacks, backed by the full Simple Icons catalog (~3,400 brands) with live previews and graceful fallbacks for unknown icons.
+- Optional long-form project notes shown in the project modal and case-study page; plain text, with line breaks preserved.
 - Multiple public demo accounts per project, each with an optional label and note.
 - Server-side Zod validation for every CMS write.
 - Toast feedback and on-demand revalidation of public routes after saves.
@@ -133,7 +134,10 @@ src/
     certificates/           Certificate cards and modal
     projects/               Project cards, modal, utilities
     ui/                     Small shared UI pieces
-  constants/techIcons.ts    Technology → icon/colour map
+    TechIcon.tsx            Shared local/remote/generic icon renderer
+  constants/
+    techIcons.ts            Curated technology icons and remote-icon helpers
+    simpleIcons.generated.json  Generated full Simple Icons catalog
   hooks/                    Intersection and scroll hooks
   lib/
     cloudinary.ts           Safe asset cleanup
@@ -147,6 +151,8 @@ public/
   sw.js                     Offline service worker
   offline.html              Offline fallback
   resume.pdf                Default résumé
+scripts/
+  sync-simple-icons.mjs     Refreshes the generated Simple Icons catalog
 firestore.rules             Browser-side Firestore security rules
 next.config.ts              Image domains, security headers, CSP
 CMS.md                      CMS operator documentation
@@ -288,16 +294,19 @@ Full editing instructions live in [`CMS.md`](./CMS.md).
 
 ## Scripts
 
-| Command             | Description                     |
-| ------------------- | ------------------------------- |
-| `npm run dev`       | Start the development server    |
-| `npm run build`     | Create a production build       |
-| `npm run start`     | Serve the production build      |
-| `npm run lint`      | Run Biome checks                |
-| `npm run lint:fix`  | Apply safe Biome fixes          |
-| `npm run format`    | Format with Biome               |
-| `npm run typecheck` | Run TypeScript without emitting |
-| `npm run check`     | Run lint and typecheck          |
+| Command              | Description                      |
+| -------------------- | -------------------------------- |
+| `npm run dev`        | Start the development server     |
+| `npm run build`      | Create a production build        |
+| `npm run start`      | Serve the production build       |
+| `npm run lint`       | Run Biome checks                 |
+| `npm run lint:fix`   | Apply safe Biome fixes           |
+| `npm run format`     | Format with Biome                |
+| `npm run typecheck`  | Run TypeScript without emitting  |
+| `npm run check`      | Run lint and typecheck           |
+| `npm run sync:icons` | Refresh the Simple Icons catalog |
+
+The icon catalog is generated from `simple-icons` on jsDelivr. Re-run `npm run sync:icons` when you want the latest brands, then commit the updated JSON. Curated icons are rendered locally; other icons are loaded on demand from `cdn.simpleicons.org` or Iconify, so the public bundle does not include the catalog.
 
 There is currently no unit or end-to-end test suite. CI validates lint, production build, and typecheck.
 
