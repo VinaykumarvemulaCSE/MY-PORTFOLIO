@@ -19,7 +19,13 @@ import {
   saveProject,
   saveSkillGroup,
 } from "@/lib/firebase/store";
-import { certificateSchema, profileSchema, projectSchema, skillGroupSchema } from "@/lib/schemas";
+import {
+  certificateSchema,
+  profileSchema,
+  projectDemoCredentialsSchema,
+  projectSchema,
+  skillGroupSchema,
+} from "@/lib/schemas";
 import type {
   CertificateViewModel,
   ProfileViewModel,
@@ -249,13 +255,12 @@ function readCaseStudy(formData: FormData): ProjectCaseStudy | undefined {
   return Object.values(candidate).some((value) => value !== undefined) ? candidate : undefined;
 }
 
-function readDemoCredentials(formData: FormData): ProjectDemoCredentials | undefined {
-  const candidate: ProjectDemoCredentials = {
-    email: optional(text(formData, "demo.email")),
-    password: optional(text(formData, "demo.password")),
-    note: optional(text(formData, "demo.note")),
-  };
-  return Object.values(candidate).some((value) => value !== undefined) ? candidate : undefined;
+function readDemoCredentials(formData: FormData): ProjectDemoCredentials[] | undefined {
+  const raw = text(formData, "demoCredentials");
+  if (!raw) return undefined;
+
+  const parsed = projectDemoCredentialsSchema.parse(JSON.parse(raw));
+  return parsed.length > 0 ? parsed : undefined;
 }
 
 export async function saveProjectAction(

@@ -20,11 +20,24 @@ const projectMetricSchema = z.object({
   value: z.string().trim().min(1),
 });
 
-const projectDemoCredentialsSchema = z.object({
+const projectDemoCredentialSchema = z.object({
+  label: optionalText,
   email: optionalText,
   password: optionalText,
   note: optionalText,
 });
+
+/** Read legacy single-object documents as a one-item list. */
+export const projectDemoCredentialsSchema = z
+  .union([
+    projectDemoCredentialSchema,
+    z.array(projectDemoCredentialSchema).max(10, "Use at most 10 demo credentials"),
+  ])
+  .transform((value) =>
+    (Array.isArray(value) ? value : [value]).filter(
+      (credential) => credential.label || credential.email || credential.password || credential.note
+    )
+  );
 
 const projectCaseStudySchema = z.object({
   problemTitle: optionalText,

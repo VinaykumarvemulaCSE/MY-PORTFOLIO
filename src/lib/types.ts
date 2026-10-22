@@ -12,6 +12,7 @@ export interface ProjectMetric {
 }
 
 export interface ProjectDemoCredentials {
+  label?: string;
   email?: string;
   password?: string;
   note?: string;
@@ -46,7 +47,7 @@ export interface ProjectViewModel {
   featured?: boolean;
   difficulty?: string;
   timeInvestment?: string;
-  demoCredentials?: ProjectDemoCredentials;
+  demoCredentials?: ProjectDemoCredentials[];
   caseStudy?: ProjectCaseStudy;
   /** CMS-only flags. Public pages ignore `published`; the content layer filters on it. */
   published?: boolean;

@@ -71,9 +71,9 @@ current résumé is still served from `/resume.pdf`.
   metadata (including the homepage project limit).
 - `/admin/projects` — create/edit/delete projects, cover + gallery images
   (drag and drop, multi-file, reorder, set cover, per-image alt text), tech-stack
-  icon picker, case study sections, demo credentials, publish/featured flags. Use
-  the list arrows to reorder; badges show the current order and which projects
-  are on the homepage.
+  icon picker, case study sections, multiple demo credentials with optional
+  labels, publish/featured flags. Use the list arrows to reorder; badges show the
+  current order and which projects are on the homepage.
 - `/admin/certificates` — certificates archive entries, their images and
   display order.
 - `/admin/skills` — skill groups with a searchable visual icon picker and live

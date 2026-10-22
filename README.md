@@ -34,6 +34,7 @@ Available at `/admin` after Firebase Authentication login.
 - Upload media directly to Cloudinary from the browser.
 - Multi-image galleries with upload, drag/drop, URL entry, reordering, cover selection, per-image alt text, and full-size previews.
 - Visual icon picker for skills and project tech stacks, with search and live previews.
+- Multiple public demo accounts per project, each with an optional label and note.
 - Server-side Zod validation for every CMS write.
 - Toast feedback and on-demand revalidation of public routes after saves.
 - Deletion/replacement cleanup of unused Cloudinary assets in the `portfolio/` folder only.

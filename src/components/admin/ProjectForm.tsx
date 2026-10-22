@@ -9,7 +9,7 @@ import { TechIconPicker } from "@/components/admin/TechIconPicker";
 import { AdminCard, Field, FormMessage, inputClass, SubmitButton } from "@/components/admin/ui";
 import { useActionToast } from "@/components/admin/useActionToast";
 import { idleState } from "@/lib/action-state";
-import type { ProjectViewModel } from "@/lib/types";
+import type { ProjectDemoCredentials, ProjectViewModel } from "@/lib/types";
 
 export function ProjectForm({
   project,
@@ -20,10 +20,32 @@ export function ProjectForm({
 }) {
   const [state, formAction, pending] = useActionState(saveProjectAction, idleState);
   const [tech, setTech] = useState(project.tech);
+  const [demoCredentials, setDemoCredentials] = useState<ProjectDemoCredentials[]>(
+    project.demoCredentials?.length ? project.demoCredentials : [{}]
+  );
   useActionToast(state);
   const metrics = (project.caseStudy?.metrics ?? [])
     .map((metric) => `${metric.label} | ${metric.value}`)
     .join("\n");
+
+  function updateDemoCredential(index: number, patch: Partial<ProjectDemoCredentials>) {
+    setDemoCredentials((current) =>
+      current.map((credential, credentialIndex) =>
+        credentialIndex === index ? { ...credential, ...patch } : credential
+      )
+    );
+  }
+
+  function addDemoCredential() {
+    setDemoCredentials((current) => (current.length >= 10 ? current : [...current, {}]));
+  }
+
+  function removeDemoCredential(index: number) {
+    setDemoCredentials((current) => {
+      const next = current.filter((_, credentialIndex) => credentialIndex !== index);
+      return next.length > 0 ? next : [{}];
+    });
+  }
 
   return (
     <form action={formAction} className="flex flex-col gap-6">
@@ -206,30 +228,82 @@ export function ProjectForm({
         </div>
       </AdminCard>
 
-      <AdminCard title="Demo credentials" description="Leave blank to hide the demo card.">
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="Email / username">
-            <input
-              name="demo.email"
-              defaultValue={project.demoCredentials?.email}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="Password">
-            <input
-              name="demo.password"
-              defaultValue={project.demoCredentials?.password}
-              className={inputClass}
-            />
-          </Field>
-          <Field label="Note">
-            <input
-              name="demo.note"
-              defaultValue={project.demoCredentials?.note}
-              className={inputClass}
-            />
-          </Field>
+      <AdminCard
+        title="Demo credentials"
+        description="Add demo accounts for visitors. These details are public, so only use test accounts."
+      >
+        <input type="hidden" name="demoCredentials" value={JSON.stringify(demoCredentials)} />
+
+        <div className="flex flex-col gap-3">
+          {demoCredentials.map((credential, index) => (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: rows are edited in place and have no id yet
+              key={index}
+              className="rounded-xl border border-border bg-background/40 p-4"
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Credential {index + 1}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeDemoCredential(index)}
+                  className="rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition hover:border-destructive/50 hover:text-red-300"
+                >
+                  Remove
+                </button>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                <Field label="Label (optional)">
+                  <input
+                    value={credential.label ?? ""}
+                    onChange={(event) => updateDemoCredential(index, { label: event.target.value })}
+                    placeholder="Admin"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="Email / username">
+                  <input
+                    value={credential.email ?? ""}
+                    onChange={(event) => updateDemoCredential(index, { email: event.target.value })}
+                    placeholder="demo@example.com"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="Password">
+                  <input
+                    value={credential.password ?? ""}
+                    onChange={(event) =>
+                      updateDemoCredential(index, { password: event.target.value })
+                    }
+                    placeholder="Password"
+                    className={inputClass}
+                  />
+                </Field>
+                <Field label="Note">
+                  <input
+                    value={credential.note ?? ""}
+                    onChange={(event) => updateDemoCredential(index, { note: event.target.value })}
+                    placeholder="Role or access notes"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+            </div>
+          ))}
+
+          <button
+            type="button"
+            onClick={addDemoCredential}
+            disabled={demoCredentials.length >= 10}
+            className="self-start rounded-lg border border-dashed border-border px-4 py-2 text-xs text-muted-foreground transition hover:border-primary/50 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            + Add credential
+          </button>
         </div>
+        <p className="mt-2 text-xs text-muted-foreground">
+          Up to 10 accounts. Blank rows are ignored.
+        </p>
       </AdminCard>
 
       <div className="flex items-center gap-3">

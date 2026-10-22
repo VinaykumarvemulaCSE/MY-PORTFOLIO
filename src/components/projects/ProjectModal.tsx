@@ -32,27 +32,44 @@ interface ProjectModalProps {
 }
 
 function DemoAccess({ project }: { project: ProjectViewModel }) {
-  const demo = project.demoCredentials;
-  if (!demo) return null;
+  const demos = project.demoCredentials ?? [];
+  if (demos.length === 0) return null;
 
   return (
-    <div className="p-4 md:p-5 rounded-2xl border border-primary/25 bg-primary/5 space-y-2">
+    <div className="p-4 md:p-5 rounded-2xl border border-primary/25 bg-primary/5 space-y-3">
       <p className="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-primary">
         <FiKey size={13} /> Demo access
       </p>
-      {demo.email && (
-        <p className="text-sm text-foreground">
-          <span className="text-muted-foreground">Email:</span>{" "}
-          <span className="font-mono">{demo.email}</span>
-        </p>
-      )}
-      {demo.password && (
-        <p className="text-sm text-foreground">
-          <span className="text-muted-foreground">Password:</span>{" "}
-          <span className="font-mono">{demo.password}</span>
-        </p>
-      )}
-      {demo.note && <p className="text-xs text-muted-foreground">{demo.note}</p>}
+      <div className="space-y-3">
+        {demos.map((demo, index) => {
+          const heading = demo.label || (demos.length > 1 ? `Account ${index + 1}` : undefined);
+
+          return (
+            <div
+              // biome-ignore lint/suspicious/noArrayIndexKey: demo credentials have no stable id
+              key={`${demo.email ?? "demo"}-${index}`}
+              className={
+                index === 0 ? "space-y-1.5" : "space-y-1.5 border-t border-primary/15 pt-3"
+              }
+            >
+              {heading ? <p className="text-xs font-semibold text-primary">{heading}</p> : null}
+              {demo.email && (
+                <p className="text-sm text-foreground">
+                  <span className="text-muted-foreground">Email:</span>{" "}
+                  <span className="font-mono">{demo.email}</span>
+                </p>
+              )}
+              {demo.password && (
+                <p className="text-sm text-foreground">
+                  <span className="text-muted-foreground">Password:</span>{" "}
+                  <span className="font-mono">{demo.password}</span>
+                </p>
+              )}
+              {demo.note && <p className="text-xs text-muted-foreground">{demo.note}</p>}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

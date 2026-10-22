@@ -113,7 +113,7 @@ export default function ProjectCard({ project, onOpen, variant = "grid" }: Proje
           {summary}
         </p>
 
-        {project.demoCredentials && (
+        {(project.demoCredentials?.length ?? 0) > 0 && (
           <p className="inline-flex items-center gap-1.5 text-[11px] font-mono text-primary mb-4">
             <FiKey size={12} /> Demo access available
           </p>
